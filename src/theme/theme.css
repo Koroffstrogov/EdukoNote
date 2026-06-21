@@ -536,11 +536,9 @@ a {
 }
 
 .staff-note-svg__clef {
-  fill: var(--color-transparent);
-  stroke: var(--color-plum);
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: calc(var(--stroke-staff) + var(--border-medium));
+  color: var(--color-plum);
+  overflow: visible;
+  pointer-events: none;
 }
 
 .staff-note-svg__line,
