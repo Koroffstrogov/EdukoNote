@@ -6,7 +6,7 @@ Le MVP permet de reconnaitre les notes en cle de sol, une note a la fois, avec c
 
 ## Fonctionnalites
 
-- Entrainement progressif : Mi, Sol et Si au depart, puis Fa, La, Do, Re et Do aigu.
+- Entrainement progressif sur deux octaves internes en cle de sol.
 - Defi 10 notes avec score final.
 - Revision des erreurs en priorite.
 - Progression stockee dans `localStorage`.

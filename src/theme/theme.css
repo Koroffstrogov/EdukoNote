@@ -494,6 +494,11 @@ a {
   gap: var(--space-3);
 }
 
+.exercise-action-panel {
+  display: grid;
+  gap: var(--space-3);
+}
+
 .answer-grid .app-button,
 .exercise-feedback .app-button {
   width: 100%;
@@ -531,10 +536,11 @@ a {
 }
 
 .staff-note-svg__clef {
-  fill: var(--color-plum);
-  font-family: var(--font-family-base);
-  font-size: 4.5rem;
-  font-weight: var(--font-weight-medium);
+  fill: var(--color-transparent);
+  stroke: var(--color-plum);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: calc(var(--stroke-staff) + var(--border-medium));
 }
 
 .staff-note-svg__line,
@@ -724,8 +730,7 @@ a {
     align-items: start;
   }
 
-  .answer-grid,
-  .exercise-feedback {
+  .exercise-action-panel {
     grid-column: 2;
   }
 }
@@ -786,6 +791,10 @@ a {
     gap: var(--space-2);
   }
 
+  .exercise-shell .exercise-action-panel {
+    gap: var(--space-2);
+  }
+
   .exercise-shell .answer-grid .app-button,
   .exercise-shell .exercise-feedback .app-button {
     min-height: var(--touch-target);
@@ -819,10 +828,6 @@ a {
   .exercise-shell .staff-note-svg {
     max-height: calc(var(--staff-height) - var(--space-6) - var(--space-1));
     min-height: calc(var(--staff-height) - var(--space-7) - var(--space-1));
-  }
-
-  .exercise-shell .staff-note-svg__clef {
-    font-size: calc(var(--font-size-2xl) + var(--font-size-xl) + var(--space-1));
   }
 
   .exercise-shell .app-topbar .app-button {

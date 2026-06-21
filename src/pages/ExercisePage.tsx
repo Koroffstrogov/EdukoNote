@@ -5,9 +5,9 @@ import { AppCard } from "../components/ui/AppCard";
 import { FeedbackCard } from "../components/ui/FeedbackCard";
 import { ProgressChip } from "../components/ui/ProgressChip";
 import type { ColorTokenId } from "../theme/tokens";
-import type { NoteId } from "../domain/notes";
+import type { AnswerLabel, NoteId } from "../domain/notes";
 import {
-  createQuestion,
+  generateNextQuestion,
   getQuestionPool,
   getReviewNotes,
   type ChallengeAnswer,
@@ -39,8 +39,12 @@ export function ExercisePage() {
   const mode = useMemo(() => readModeFromUrl(), []);
   const { progress, recordNoteAnswer } = useProgress();
   const reviewNotes = getReviewNotes(progress);
-  const [question, setQuestion] = useState<QuizQuestion>(() => createQuestion(getQuestionPool(mode, progress)));
-  const [selectedNoteId, setSelectedNoteId] = useState<NoteId | null>(null);
+  const recentHistoryRef = useRef<NoteId[]>([]);
+  const questionIndexRef = useRef(1);
+  const [question, setQuestion] = useState<QuizQuestion>(() =>
+    generateNextQuestion(null, recentHistoryRef.current, getQuestionPool(mode, progress), mode, Math.random, questionIndexRef.current),
+  );
+  const [selectedAnswerLabel, setSelectedAnswerLabel] = useState<AnswerLabel | null>(null);
   const [questionNumber, setQuestionNumber] = useState(1);
   const [answers, setAnswers] = useState<ChallengeAnswer[]>([]);
   const [isFinished, setIsFinished] = useState(false);
@@ -55,34 +59,28 @@ export function ExercisePage() {
   }
 
   const copy = modeCopy[mode];
-  const selectedAnswer = question.choices.find((choice) => choice.id === selectedNoteId);
-  const isCorrect = selectedNoteId === question.note.id;
+  const isCorrect = selectedAnswerLabel === question.note.answerLabel;
 
-  function handleAnswer(noteId: NoteId) {
+  function handleAnswer(answerLabel: AnswerLabel) {
     if (answeredRef.current) {
       return;
     }
 
     answeredRef.current = true;
-    setSelectedNoteId(noteId);
-    recordNoteAnswer(question.note.id, noteId === question.note.id);
+    setSelectedAnswerLabel(answerLabel);
+    recordNoteAnswer(question.note.id, answerLabel === question.note.answerLabel);
 
     if (mode === "challenge") {
-      const selectedNote = question.choices.find((choice) => choice.id === noteId);
-
-      if (selectedNote) {
-        setAnswers((currentAnswers) => [
-          ...currentAnswers,
-          {
-            questionNumber,
-            noteId: question.note.id,
-            noteLabel: question.note.label,
-            selectedNoteId: selectedNote.id,
-            selectedLabel: selectedNote.label,
-            isCorrect: selectedNote.id === question.note.id,
-          },
-        ]);
-      }
+      setAnswers((currentAnswers) => [
+        ...currentAnswers,
+        {
+          questionNumber,
+          noteId: question.note.id,
+          noteLabel: question.note.answerLabel,
+          selectedLabel: answerLabel,
+          isCorrect: answerLabel === question.note.answerLabel,
+        },
+      ]);
     }
   }
 
@@ -94,8 +92,16 @@ export function ExercisePage() {
 
     const nextPool = getQuestionPool(mode, progress);
 
-    setQuestion(createQuestion(nextPool, question.note.id));
-    setSelectedNoteId(null);
+    setQuestion((currentQuestion) => {
+      const nextHistory = [...recentHistoryRef.current, currentQuestion.note.id].slice(-3);
+      const nextQuestionIndex = questionIndexRef.current + 1;
+
+      recentHistoryRef.current = nextHistory;
+      questionIndexRef.current = nextQuestionIndex;
+
+      return generateNextQuestion(currentQuestion, nextHistory, nextPool, mode, Math.random, nextQuestionIndex);
+    });
+    setSelectedAnswerLabel(null);
     answeredRef.current = false;
 
     if (mode === "challenge") {
@@ -106,10 +112,12 @@ export function ExercisePage() {
   function restartChallenge(currentProgress = progress) {
     setAnswers([]);
     setQuestionNumber(1);
-    setSelectedNoteId(null);
+    setSelectedAnswerLabel(null);
     setIsFinished(false);
     answeredRef.current = false;
-    setQuestion(createQuestion(getQuestionPool("challenge", currentProgress)));
+    recentHistoryRef.current = [];
+    questionIndexRef.current = 1;
+    setQuestion(generateNextQuestion(null, recentHistoryRef.current, getQuestionPool("challenge", currentProgress), "challenge", Math.random, questionIndexRef.current));
   }
 
   return (
@@ -144,32 +152,34 @@ export function ExercisePage() {
           <StaffNote note={question.note} />
         </AppCard>
 
-        <section className="answer-grid" aria-label="Réponses proposées">
-          {question.choices.map((choice, index) => (
-            <AppButton
-              key={choice.id}
-              tone={getAnswerTone(choice.id, question.note.id, selectedNoteId, index)}
-              disabled={selectedNoteId !== null}
-              onClick={() => handleAnswer(choice.id)}
-            >
-              {choice.label}
-            </AppButton>
-          ))}
+        <section className="exercise-action-panel" aria-live="polite">
+          {selectedAnswerLabel ? (
+            <div className="exercise-feedback">
+              <FeedbackCard status={isCorrect ? "success" : "near"}>
+                {isCorrect ? `C’est ${question.note.answerLabel}` : `C’était ${question.note.answerLabel}`}
+              </FeedbackCard>
+              <AppButton tone="plum" onClick={handleNextQuestion}>
+                {mode === "challenge" && questionNumber >= CHALLENGE_LENGTH ? "Voir le score" : "Note suivante"}
+              </AppButton>
+              {!isCorrect ? (
+                <p className="exercise-hint">Tu avais choisi {selectedAnswerLabel}.</p>
+              ) : null}
+            </div>
+          ) : (
+            <div className="answer-grid" aria-label="Réponses proposées">
+              {question.choices.map((choice, index) => (
+                <AppButton
+                  key={choice}
+                  tone={getAnswerTone(choice, question.note.answerLabel, selectedAnswerLabel, index)}
+                  disabled={selectedAnswerLabel !== null}
+                  onClick={() => handleAnswer(choice)}
+                >
+                  {choice}
+                </AppButton>
+              ))}
+            </div>
+          )}
         </section>
-
-        {selectedNoteId ? (
-          <section className="exercise-feedback" aria-live="polite">
-            <FeedbackCard status={isCorrect ? "success" : "near"}>
-              {isCorrect ? `C’est ${question.note.label}` : `C’était ${question.note.label}`}
-            </FeedbackCard>
-            <AppButton tone="plum" onClick={handleNextQuestion}>
-              {mode === "challenge" && questionNumber >= CHALLENGE_LENGTH ? "Voir le score" : "Note suivante"}
-            </AppButton>
-            {selectedAnswer && !isCorrect ? (
-              <p className="exercise-hint">Tu avais choisi {selectedAnswer.label}.</p>
-            ) : null}
-          </section>
-        ) : null}
       </div>
     </main>
   );
@@ -212,20 +222,20 @@ function EmptyReviewState() {
 }
 
 function getAnswerTone(
-  choiceId: NoteId,
-  correctNoteId: NoteId,
-  selectedNoteId: NoteId | null,
+  choice: AnswerLabel,
+  correctAnswer: AnswerLabel,
+  selectedAnswer: AnswerLabel | null,
   index: number,
 ): ColorTokenId {
-  if (!selectedNoteId) {
+  if (!selectedAnswer) {
     return answerTones[index % answerTones.length];
   }
 
-  if (choiceId === correctNoteId) {
+  if (choice === correctAnswer) {
     return "mint";
   }
 
-  if (choiceId === selectedNoteId) {
+  if (choice === selectedAnswer) {
     return "vanilla";
   }
 

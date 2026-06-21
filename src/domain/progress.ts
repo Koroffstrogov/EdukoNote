@@ -14,6 +14,16 @@ export type ProgressState = {
   notes: Record<NoteId, NoteProgress>;
 };
 
+const legacyNoteIdMap: Partial<Record<string, NoteId>> = {
+  do: "do4",
+  re: "re4",
+  mi: "mi4",
+  fa: "fa4",
+  sol: "sol4",
+  la: "la4",
+  si: "si4",
+};
+
 export function createEmptyNoteProgress(): NoteProgress {
   return {
     views: 0,
@@ -49,7 +59,7 @@ export function normalizeProgress(value: unknown): ProgressState {
   return {
     version: 1,
     notes: NOTE_DEFINITIONS.reduce((accumulator, note) => {
-      const noteProgress = (candidateNotes as Partial<Record<NoteId, Partial<NoteProgress>>>)[note.id];
+      const noteProgress = readStoredNoteProgress(note.id, candidateNotes as Record<string, Partial<NoteProgress> | undefined>);
 
       accumulator[note.id] = {
         views: asCount(noteProgress?.views),
@@ -103,4 +113,16 @@ export function countTotalErrors(progress: ProgressState): number {
 
 function asCount(value: unknown): number {
   return typeof value === "number" && Number.isFinite(value) && value > 0 ? Math.floor(value) : 0;
+}
+
+function readStoredNoteProgress(noteId: NoteId, candidateNotes: Record<string, Partial<NoteProgress> | undefined>) {
+  const directProgress = candidateNotes[noteId];
+
+  if (directProgress) {
+    return directProgress;
+  }
+
+  const legacyNoteId = Object.entries(legacyNoteIdMap).find(([, mappedNoteId]) => mappedNoteId === noteId)?.[0];
+
+  return legacyNoteId ? candidateNotes[legacyNoteId] : undefined;
 }

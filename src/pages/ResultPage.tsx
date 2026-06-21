@@ -1,4 +1,4 @@
-import { getNoteById, type NoteId } from "../domain/notes";
+import type { AnswerLabel } from "../domain/notes";
 import { type ChallengeAnswer, getNotesToReview } from "../domain/quiz";
 import { AppButton } from "../components/ui/AppButton";
 import { AppCard } from "../components/ui/AppCard";
@@ -11,7 +11,7 @@ export type ResultPageProps = {
 
 export function ResultPage({ answers, onRestart }: ResultPageProps) {
   const score = answers.filter((answer) => answer.isCorrect).length;
-  const notesToReview = uniqueNotesToReview(answers);
+  const notesToReview = uniqueLabelsToReview(answers);
 
   return (
     <main className="app-shell">
@@ -54,8 +54,8 @@ export function ResultPage({ answers, onRestart }: ResultPageProps) {
           </h2>
           {notesToReview.length > 0 ? (
             <div className="chip-row">
-              {notesToReview.map((noteId) => (
-                <ProgressChip key={noteId} label={getNoteById(noteId).label} status="missed" />
+              {notesToReview.map((label) => (
+                <ProgressChip key={label} label={label} status="missed" />
               ))}
             </div>
           ) : (
@@ -70,6 +70,6 @@ export function ResultPage({ answers, onRestart }: ResultPageProps) {
   );
 }
 
-function uniqueNotesToReview(answers: ChallengeAnswer[]): NoteId[] {
-  return Array.from(new Set(getNotesToReview(answers).map((answer) => answer.noteId)));
+function uniqueLabelsToReview(answers: ChallengeAnswer[]): AnswerLabel[] {
+  return Array.from(new Set(getNotesToReview(answers).map((answer) => answer.noteLabel)));
 }

@@ -3,13 +3,13 @@ import { createEmptyProgress, normalizeProgress, recordAnswer, resetProgress } f
 
 describe("progress", () => {
   it("records views, correct answers, errors and practice date", () => {
-    const progress = recordAnswer(createEmptyProgress(), "mi", true, "2026-06-21T12:00:00.000Z");
-    const updatedProgress = recordAnswer(progress, "mi", false, "2026-06-21T12:05:00.000Z");
+    const progress = recordAnswer(createEmptyProgress(), "mi4", true, "2026-06-21T12:00:00.000Z");
+    const updatedProgress = recordAnswer(progress, "mi4", false, "2026-06-21T12:05:00.000Z");
 
-    expect(updatedProgress.notes.mi.views).toBe(2);
-    expect(updatedProgress.notes.mi.correct).toBe(1);
-    expect(updatedProgress.notes.mi.errors).toBe(1);
-    expect(updatedProgress.notes.mi.lastPracticedAt).toBe("2026-06-21T12:05:00.000Z");
+    expect(updatedProgress.notes.mi4.views).toBe(2);
+    expect(updatedProgress.notes.mi4.correct).toBe(1);
+    expect(updatedProgress.notes.mi4.errors).toBe(1);
+    expect(updatedProgress.notes.mi4.lastPracticedAt).toBe("2026-06-21T12:05:00.000Z");
   });
 
   it("normalizes missing notes and can reset everything", () => {
@@ -24,8 +24,8 @@ describe("progress", () => {
       },
     });
 
-    expect(progress.notes.mi.views).toBe(2);
-    expect(progress.notes.sol.views).toBe(0);
-    expect(resetProgress().notes.mi.views).toBe(0);
+    expect(progress.notes.mi4.views).toBe(2);
+    expect(progress.notes.sol4.views).toBe(0);
+    expect(resetProgress().notes.mi4.views).toBe(0);
   });
 });

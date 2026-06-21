@@ -1,13 +1,34 @@
-export type NoteId = "do" | "re" | "mi" | "fa" | "sol" | "la" | "si" | "do-high";
+export type AnswerLabel = "Do" | "Ré" | "Mi" | "Fa" | "Sol" | "La" | "Si";
+
+export type NoteId =
+  | "do4"
+  | "re4"
+  | "mi4"
+  | "fa4"
+  | "sol4"
+  | "la4"
+  | "si4"
+  | "do5"
+  | "re5"
+  | "mi5"
+  | "fa5"
+  | "sol5"
+  | "la5"
+  | "si5"
+  | "do6";
 
 export type NoteDefinition = {
   id: NoteId;
-  label: string;
+  label: AnswerLabel;
+  answerLabel: AnswerLabel;
+  stepIndex: number;
   svgY: number;
   difficulty: 1 | 2 | 3 | 4;
   unlockAfterCorrect: number;
   ledgerLines: number[];
 };
+
+export const ANSWER_LABELS: AnswerLabel[] = ["Do", "Ré", "Mi", "Fa", "Sol", "La", "Si"];
 
 export const STAFF_VIEWBOX = {
   width: 320,
@@ -16,74 +37,28 @@ export const STAFF_VIEWBOX = {
 
 export const STAFF_LINE_Y = [52, 68, 84, 100, 116] as const;
 
+const bottomLineY = 116;
+const staffStepHeight = 8;
+
 export const NOTE_DEFINITIONS: NoteDefinition[] = [
-  {
-    id: "do",
-    label: "Do",
-    svgY: 132,
-    difficulty: 3,
-    unlockAfterCorrect: 8,
-    ledgerLines: [132],
-  },
-  {
-    id: "re",
-    label: "Ré",
-    svgY: 124,
-    difficulty: 3,
-    unlockAfterCorrect: 11,
-    ledgerLines: [],
-  },
-  {
-    id: "mi",
-    label: "Mi",
-    svgY: 116,
-    difficulty: 1,
-    unlockAfterCorrect: 0,
-    ledgerLines: [],
-  },
-  {
-    id: "fa",
-    label: "Fa",
-    svgY: 108,
-    difficulty: 2,
-    unlockAfterCorrect: 3,
-    ledgerLines: [],
-  },
-  {
-    id: "sol",
-    label: "Sol",
-    svgY: 100,
-    difficulty: 1,
-    unlockAfterCorrect: 0,
-    ledgerLines: [],
-  },
-  {
-    id: "la",
-    label: "La",
-    svgY: 92,
-    difficulty: 2,
-    unlockAfterCorrect: 5,
-    ledgerLines: [],
-  },
-  {
-    id: "si",
-    label: "Si",
-    svgY: 84,
-    difficulty: 1,
-    unlockAfterCorrect: 0,
-    ledgerLines: [],
-  },
-  {
-    id: "do-high",
-    label: "Do aigu",
-    svgY: 76,
-    difficulty: 4,
-    unlockAfterCorrect: 14,
-    ledgerLines: [],
-  },
+  createNote("do4", "Do", -2, 3, 4, [132]),
+  createNote("re4", "Ré", -1, 3, 4),
+  createNote("mi4", "Mi", 0, 1, 0),
+  createNote("fa4", "Fa", 1, 2, 2),
+  createNote("sol4", "Sol", 2, 1, 0),
+  createNote("la4", "La", 3, 2, 2),
+  createNote("si4", "Si", 4, 1, 0),
+  createNote("do5", "Do", 5, 1, 0),
+  createNote("re5", "Ré", 6, 1, 0),
+  createNote("mi5", "Mi", 7, 2, 5),
+  createNote("fa5", "Fa", 8, 2, 5),
+  createNote("sol5", "Sol", 9, 3, 7),
+  createNote("la5", "La", 10, 3, 9, [36]),
+  createNote("si5", "Si", 11, 4, 11, [36]),
+  createNote("do6", "Do", 12, 4, 13, [36, 20]),
 ];
 
-export const INITIAL_TRAINING_NOTE_IDS: NoteId[] = ["mi", "sol", "si"];
+export const INITIAL_TRAINING_NOTE_IDS: NoteId[] = ["mi4", "sol4", "si4", "do5", "re5"];
 
 export function getNoteById(noteId: NoteId): NoteDefinition {
   const note = NOTE_DEFINITIONS.find((candidate) => candidate.id === noteId);
@@ -97,4 +72,24 @@ export function getNoteById(noteId: NoteId): NoteDefinition {
 
 export function isNoteId(value: string): value is NoteId {
   return NOTE_DEFINITIONS.some((note) => note.id === value);
+}
+
+function createNote(
+  id: NoteId,
+  answerLabel: AnswerLabel,
+  stepIndex: number,
+  difficulty: 1 | 2 | 3 | 4,
+  unlockAfterCorrect: number,
+  ledgerLines: number[] = [],
+): NoteDefinition {
+  return {
+    id,
+    label: answerLabel,
+    answerLabel,
+    stepIndex,
+    svgY: bottomLineY - stepIndex * staffStepHeight,
+    difficulty,
+    unlockAfterCorrect,
+    ledgerLines,
+  };
 }

@@ -2,8 +2,8 @@ import { AppButton } from "../components/ui/AppButton";
 import { AppCard } from "../components/ui/AppCard";
 import { HomeActionCard } from "../components/ui/HomeActionCard";
 import { ProgressChip } from "../components/ui/ProgressChip";
-import { NOTE_DEFINITIONS } from "../domain/notes";
-import { countTotalCorrect, countTotalErrors, countTotalViews, type NoteProgress } from "../domain/progress";
+import { ANSWER_LABELS, NOTE_DEFINITIONS, type AnswerLabel } from "../domain/notes";
+import { countTotalCorrect, countTotalErrors, countTotalViews, type NoteProgress, type ProgressState } from "../domain/progress";
 import { useProgress } from "../hooks/useProgress";
 
 export function HomePage() {
@@ -11,6 +11,7 @@ export function HomePage() {
   const totalViews = countTotalViews(progress);
   const totalCorrect = countTotalCorrect(progress);
   const totalErrors = countTotalErrors(progress);
+  const progressByLabel = summarizeProgressByLabel(progress.notes);
 
   return (
     <main className="app-shell">
@@ -35,21 +36,21 @@ export function HomePage() {
         <section className="home-actions" aria-label="Actions d'accueil provisoires">
           <HomeActionCard
             title="Entraînement"
-            text="Commencer avec Mi, Sol et Si, puis débloquer la suite."
+            text="Jouer maintenant."
             icon="♪"
             href="/exercise?mode=training"
             tone="rose"
           />
           <HomeActionCard
             title="Défi 10 notes"
-            text="Répondre à 10 questions et voir le score final."
+            text="10 notes."
             icon="10"
             href="/exercise?mode=challenge"
             tone="lavender"
           />
           <HomeActionCard
             title="Révision des erreurs"
-            text="Revoir en priorité les notes qui ont posé problème."
+            text="Reprendre les erreurs."
             icon="↺"
             href="/exercise?mode=review"
             tone="vanilla"
@@ -65,11 +66,11 @@ export function HomePage() {
                 : "La progression commencera après la première réponse."}
             </p>
             <div className="chip-row">
-              {NOTE_DEFINITIONS.map((note) => (
+              {progressByLabel.map(({ label, noteProgress }) => (
                 <ProgressChip
-                  key={note.id}
-                  label={`${note.label} ${progress.notes[note.id].correct}/${progress.notes[note.id].views}`}
-                  status={getProgressStatus(progress.notes[note.id])}
+                  key={label}
+                  label={`${label} ${noteProgress.correct}/${noteProgress.views}`}
+                  status={getProgressStatus(noteProgress)}
                 />
               ))}
             </div>
@@ -85,6 +86,27 @@ export function HomePage() {
       </div>
     </main>
   );
+}
+
+function summarizeProgressByLabel(notesProgress: ProgressState["notes"]): Array<{ label: AnswerLabel; noteProgress: NoteProgress }> {
+  return ANSWER_LABELS.map((label) => {
+    const noteProgress = NOTE_DEFINITIONS.filter((note) => note.answerLabel === label).reduce(
+      (summary, note) => ({
+        views: summary.views + notesProgress[note.id].views,
+        correct: summary.correct + notesProgress[note.id].correct,
+        errors: summary.errors + notesProgress[note.id].errors,
+        lastPracticedAt: null,
+      }),
+      {
+        views: 0,
+        correct: 0,
+        errors: 0,
+        lastPracticedAt: null,
+      } satisfies NoteProgress,
+    );
+
+    return { label, noteProgress };
+  });
 }
 
 function getProgressStatus(noteProgress: NoteProgress): "complete" | "current" | "missed" {

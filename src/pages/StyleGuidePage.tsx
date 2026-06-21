@@ -67,7 +67,7 @@ export function StyleGuidePage() {
         <section className="styleguide-grid styleguide-grid--wide" aria-label="Cartes question et feedback">
           <AppCard tone="sky" className="question-card">
             <h2 className="question-card__title">Quelle est cette note ?</h2>
-            <StaffPreview note="mi" />
+            <StaffPreview note="mi4" />
           </AppCard>
           <div className="styleguide-layout">
             <FeedbackCard status="success">C’est Mi</FeedbackCard>
@@ -111,7 +111,7 @@ export function StyleGuidePage() {
                 </div>
                 <AppCard tone="sky" className="question-card">
                   <h3 className="question-card__title">Quelle est cette note ?</h3>
-                  <StaffPreview note="fa" />
+                  <StaffPreview note="fa4" />
                 </AppCard>
                 <FeedbackCard status="near">C’était Fa</FeedbackCard>
                 <HomeActionCard title="Entraînement" text="Doux et lisible." icon="♪" tone="rose" />

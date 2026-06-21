@@ -6,7 +6,7 @@ export type StaffPreviewProps = {
   showLabel?: boolean;
 };
 
-export function StaffPreview({ note = "mi", showLabel = false }: StaffPreviewProps) {
+export function StaffPreview({ note = "mi4", showLabel = false }: StaffPreviewProps) {
   const noteDefinition = getNoteById(note);
 
   return (
