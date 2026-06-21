@@ -98,6 +98,7 @@ body {
 button,
 a {
   -webkit-tap-highlight-color: var(--color-transparent);
+  touch-action: manipulation;
 }
 
 button,
@@ -258,7 +259,7 @@ a {
 }
 
 .app-button:active {
-  transform: translateY(var(--space-1));
+  transform: translateY(calc(var(--space-1) / 2));
   box-shadow: var(--shadow-soft);
 }
 
@@ -435,6 +436,14 @@ a {
   box-shadow: var(--shadow-card);
   color: var(--color-text);
   text-decoration: none;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.home-action-card:active {
+  transform: translateY(calc(var(--space-1) / 2));
+  box-shadow: var(--shadow-soft);
 }
 
 .home-action-card--rose {
@@ -517,6 +526,7 @@ a {
 .staff-note-svg {
   display: block;
   width: 100%;
+  height: auto;
   min-height: var(--staff-height);
 }
 
@@ -717,5 +727,110 @@ a {
   .answer-grid,
   .exercise-feedback {
     grid-column: 2;
+  }
+}
+
+@media (max-height: 700px) and (max-width: 30rem) {
+  .exercise-shell {
+    padding: calc(var(--space-3) + env(safe-area-inset-top)) var(--space-3) calc(var(--space-4) + env(safe-area-inset-bottom));
+  }
+
+  .exercise-shell .app-topbar {
+    margin-bottom: var(--space-2);
+  }
+
+  .exercise-shell .brand-mark {
+    min-height: var(--touch-target);
+    font-size: var(--font-size-md);
+  }
+
+  .exercise-shell .brand-mark__symbol {
+    width: var(--touch-target);
+    height: var(--touch-target);
+  }
+
+  .exercise-shell .page-hero {
+    gap: var(--space-1);
+    margin-bottom: var(--space-2);
+  }
+
+  .exercise-shell .page-eyebrow {
+    padding: var(--space-1) var(--space-3);
+    font-size: var(--font-size-xs);
+  }
+
+  .exercise-shell .page-title {
+    font-size: var(--font-size-lg);
+    max-width: 100%;
+  }
+
+  .exercise-shell .exercise-layout {
+    gap: var(--space-2);
+  }
+
+  .exercise-shell .exercise-layout .app-card {
+    gap: var(--space-2);
+    padding: var(--space-3);
+  }
+
+  .exercise-shell .exercise-layout .question-card__title {
+    font-size: var(--font-size-lg);
+  }
+
+  .exercise-shell .exercise-meta .progress-chip {
+    min-height: var(--touch-target);
+    padding: var(--space-1) var(--space-3);
+  }
+
+  .exercise-shell .answer-grid {
+    gap: var(--space-2);
+  }
+
+  .exercise-shell .answer-grid .app-button,
+  .exercise-shell .exercise-feedback .app-button {
+    min-height: var(--touch-target);
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .exercise-shell .exercise-feedback {
+    gap: var(--space-2);
+    padding-bottom: var(--space-3);
+  }
+
+  .exercise-shell .exercise-feedback .app-card {
+    grid-template-columns: auto minmax(0, 1fr);
+    padding: var(--space-3);
+  }
+
+  .exercise-shell .exercise-feedback .feedback-card__badge {
+    width: var(--touch-target);
+    height: var(--touch-target);
+    font-size: var(--font-size-lg);
+  }
+
+  .exercise-shell .exercise-feedback .feedback-card__title {
+    font-size: var(--font-size-lg);
+  }
+
+  .exercise-shell .staff-note {
+    gap: var(--space-1);
+  }
+
+  .exercise-shell .staff-note-svg {
+    max-height: calc(var(--staff-height) - var(--space-6) - var(--space-1));
+    min-height: calc(var(--staff-height) - var(--space-7) - var(--space-1));
+  }
+
+  .exercise-shell .staff-note-svg__clef {
+    font-size: calc(var(--font-size-2xl) + var(--font-size-xl) + var(--space-1));
+  }
+
+  .exercise-shell .app-topbar .app-button {
+    min-height: var(--touch-target);
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .exercise-shell .exercise-hint {
+    display: none;
   }
 }

@@ -113,7 +113,7 @@ export function ExercisePage() {
   }
 
   return (
-    <main className="app-shell">
+    <main className="app-shell exercise-shell">
       <nav className="app-topbar" aria-label="Navigation principale">
         <a className="brand-mark" href="/" aria-label="Accueil EdukoNote">
           <span className="brand-mark__symbol" aria-hidden="true">
@@ -177,7 +177,7 @@ export function ExercisePage() {
 
 function EmptyReviewState() {
   return (
-    <main className="app-shell">
+    <main className="app-shell exercise-shell">
       <nav className="app-topbar" aria-label="Navigation principale">
         <a className="brand-mark" href="/" aria-label="Accueil EdukoNote">
           <span className="brand-mark__symbol" aria-hidden="true">

@@ -3,4 +3,6 @@ dist
 .vite
 .vite-dev-server.log
 .vite-dev-server.err.log
+.vite-preview-server.log
+.vite-preview-server.err.log
 *.local
