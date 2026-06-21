@@ -15,7 +15,7 @@ export function StaffNote({ note, showLabel = false }: StaffNoteProps) {
   const staffLineStartX = 52;
   const staffLineEndX = 282;
   const clefHeight = lineGap * 7.35;
-  const clefLoopAnchorRatio = 0.7;
+  const clefLoopAnchorRatio = 0.58;
   const clefX = 58;
   const clefY = solLineY - clefHeight * clefLoopAnchorRatio;
   const noteCenterX = 184;
@@ -29,10 +29,10 @@ export function StaffNote({ note, showLabel = false }: StaffNoteProps) {
     <figure className="staff-note" aria-labelledby={titleId}>
       <svg className="staff-note-svg" viewBox={`0 0 ${STAFF_VIEWBOX.width} ${STAFF_VIEWBOX.height}`} role="img">
         <title id={titleId}>Portée en clé de sol avec la note {note.label}</title>
-        <TrebleClef className="staff-note-svg__clef" x={clefX} y={clefY} height={clefHeight} />
         {STAFF_LINE_Y.map((lineY) => (
           <line className="staff-note-svg__line" key={lineY} x1={staffLineStartX} y1={lineY} x2={staffLineEndX} y2={lineY} />
         ))}
+        <TrebleClef className="staff-note-svg__clef" x={clefX} y={clefY} height={clefHeight} />
         {note.ledgerLines.map((lineY) => (
           <line className="staff-note-svg__ledger" key={lineY} x1={ledgerStartX} y1={lineY} x2={ledgerEndX} y2={lineY} />
         ))}
