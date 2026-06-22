@@ -18,8 +18,12 @@ export function StaffNote({ note, showLabel = false }: StaffNoteProps) {
   const bassFaLineY = STAFF_LINE_Y[1];
   const clefLayout = getClefLayout(note, lineGap, solLineY, bassFaLineY);
   const noteCenterX = 184;
+  const noteScale = 0.78;
+  const noteHeadRx = 18 * noteScale;
+  const noteHeadRy = 12 * noteScale;
+  const stemOffset = 12;
   const stemUp = note.stepIndex < 5;
-  const stemX = stemUp ? noteCenterX + 16 : noteCenterX - 16;
+  const stemX = stemUp ? noteCenterX + stemOffset : noteCenterX - stemOffset;
   const stemEndY = stemUp ? note.svgY - 60 : note.svgY + 60;
   const ledgerStartX = noteCenterX - 30;
   const ledgerEndX = noteCenterX + 30;
@@ -44,8 +48,8 @@ export function StaffNote({ note, showLabel = false }: StaffNoteProps) {
           className="staff-note-svg__head"
           cx={noteCenterX}
           cy={note.svgY}
-          rx="18"
-          ry="12"
+          rx={noteHeadRx}
+          ry={noteHeadRy}
           transform={`rotate(-14 ${noteCenterX} ${note.svgY})`}
         />
       </svg>
@@ -56,7 +60,7 @@ export function StaffNote({ note, showLabel = false }: StaffNoteProps) {
 
 function getClefLayout(note: NoteDefinition, lineGap: number, solLineY: number, bassFaLineY: number) {
   if (note.clef === "bass") {
-    const height = lineGap * 5.3;
+    const height = lineGap * 5.3 * 0.6;
     const faDotsCenterRatio = 0.3015;
 
     return {
@@ -69,11 +73,12 @@ function getClefLayout(note: NoteDefinition, lineGap: number, solLineY: number, 
 
   const height = lineGap * 7.35;
   const loopAnchorRatio = 0.58;
+  const yOffset = -6;
 
   return {
     clef: note.clef,
     x: 58,
-    y: solLineY - height * loopAnchorRatio,
+    y: solLineY - height * loopAnchorRatio + yOffset,
     height,
   };
 }
