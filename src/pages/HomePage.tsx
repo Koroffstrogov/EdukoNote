@@ -2,16 +2,17 @@ import { AppButton } from "../components/ui/AppButton";
 import { AppCard } from "../components/ui/AppCard";
 import { HomeActionCard } from "../components/ui/HomeActionCard";
 import { ProgressChip } from "../components/ui/ProgressChip";
-import { ANSWER_LABELS, NOTE_DEFINITIONS, type AnswerLabel } from "../domain/notes";
-import { countTotalCorrect, countTotalErrors, countTotalViews, type NoteProgress, type ProgressState } from "../domain/progress";
+import { ANSWER_LABELS, CLEF_LABELS, getNotesForClef, getOtherClef, type AnswerLabel, type Clef, type NoteId } from "../domain/notes";
+import { countTotalCorrect, countTotalErrors, countTotalViews, type NoteProgress } from "../domain/progress";
 import { useProgress } from "../hooks/useProgress";
 
 export function HomePage() {
-  const { progress, resetStoredProgress } = useProgress();
-  const totalViews = countTotalViews(progress);
-  const totalCorrect = countTotalCorrect(progress);
-  const totalErrors = countTotalErrors(progress);
-  const progressByLabel = summarizeProgressByLabel(progress.notes);
+  const { progress, activeClef, switchActiveClef, resetStoredProgress } = useProgress();
+  const nextClef = getOtherClef(activeClef);
+  const totalViews = countTotalViews(progress, activeClef);
+  const totalCorrect = countTotalCorrect(progress, activeClef);
+  const totalErrors = countTotalErrors(progress, activeClef);
+  const progressByLabel = summarizeProgressByLabel(progress.clefs[activeClef].notes, activeClef);
 
   return (
     <main className="app-shell">
@@ -22,13 +23,13 @@ export function HomePage() {
           </span>
           EdukoNote
         </a>
-        <AppButton href="/styleguide" tone="cream">
-          Style guide
+        <AppButton tone="cream" onClick={() => switchActiveClef(nextClef)} aria-label={`Passer en ${CLEF_LABELS[nextClef]}`}>
+          {CLEF_LABELS[nextClef]}
         </AppButton>
       </nav>
 
       <header className="page-hero">
-        <p className="page-eyebrow">Reconnaître les notes</p>
+        <p className="page-eyebrow">{CLEF_LABELS[activeClef]}</p>
         <h1 className="page-title">À toi de jouer</h1>
       </header>
 
@@ -88,9 +89,12 @@ export function HomePage() {
   );
 }
 
-function summarizeProgressByLabel(notesProgress: ProgressState["notes"]): Array<{ label: AnswerLabel; noteProgress: NoteProgress }> {
+function summarizeProgressByLabel(
+  notesProgress: Record<NoteId, NoteProgress>,
+  clef: Clef,
+): Array<{ label: AnswerLabel; noteProgress: NoteProgress }> {
   return ANSWER_LABELS.map((label) => {
-    const noteProgress = NOTE_DEFINITIONS.filter((note) => note.answerLabel === label).reduce(
+    const noteProgress = getNotesForClef(clef).filter((note) => note.answerLabel === label).reduce(
       (summary, note) => ({
         views: summary.views + notesProgress[note.id].views,
         correct: summary.correct + notesProgress[note.id].correct,

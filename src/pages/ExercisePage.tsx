@@ -5,7 +5,7 @@ import { AppCard } from "../components/ui/AppCard";
 import { FeedbackCard } from "../components/ui/FeedbackCard";
 import { ProgressChip } from "../components/ui/ProgressChip";
 import type { ColorTokenId } from "../theme/tokens";
-import type { AnswerLabel, NoteId } from "../domain/notes";
+import { CLEF_LABELS, getOtherClef, type AnswerLabel, type Clef, type NoteId } from "../domain/notes";
 import {
   generateNextQuestion,
   getQuestionPool,
@@ -37,12 +37,13 @@ const modeCopy: Record<QuizMode, { eyebrow: string; title: string }> = {
 
 export function ExercisePage() {
   const mode = useMemo(() => readModeFromUrl(), []);
-  const { progress, recordNoteAnswer } = useProgress();
-  const reviewNotes = getReviewNotes(progress);
-  const recentHistoryRef = useRef<NoteId[]>([]);
+  const { progress, activeClef, switchActiveClef, recordNoteAnswer, recordRecentNote } = useProgress();
+  const nextClef = getOtherClef(activeClef);
+  const reviewNotes = getReviewNotes(activeClef, progress);
+  const recentHistoryRef = useRef<NoteId[]>(progress.clefs[activeClef].recentHistory);
   const questionIndexRef = useRef(1);
   const [question, setQuestion] = useState<QuizQuestion>(() =>
-    generateNextQuestion(null, recentHistoryRef.current, getQuestionPool(mode, progress), mode, Math.random, questionIndexRef.current),
+    generateNextQuestion(null, recentHistoryRef.current, getQuestionPool(mode, activeClef, progress), mode, Math.random, questionIndexRef.current),
   );
   const [selectedAnswerLabel, setSelectedAnswerLabel] = useState<AnswerLabel | null>(null);
   const [questionNumber, setQuestionNumber] = useState(1);
@@ -55,7 +56,7 @@ export function ExercisePage() {
   }
 
   if (mode === "challenge" && isFinished) {
-    return <ResultPage answers={answers} onRestart={() => restartChallenge(progress)} />;
+    return <ResultPage answers={answers} activeClef={activeClef} onToggleClef={() => switchClefAndGoHome(nextClef)} onRestart={() => restartChallenge(progress)} />;
   }
 
   const copy = modeCopy[mode];
@@ -85,20 +86,21 @@ export function ExercisePage() {
   }
 
   function handleNextQuestion() {
+    recordRecentNote(question.note.id);
+
     if (mode === "challenge" && questionNumber >= CHALLENGE_LENGTH) {
       setIsFinished(true);
       return;
     }
 
-    const nextPool = getQuestionPool(mode, progress);
+    const nextPool = getQuestionPool(mode, activeClef, progress);
+    const nextHistory = [...recentHistoryRef.current, question.note.id].slice(-3);
+    const nextQuestionIndex = questionIndexRef.current + 1;
+
+    recentHistoryRef.current = nextHistory;
+    questionIndexRef.current = nextQuestionIndex;
 
     setQuestion((currentQuestion) => {
-      const nextHistory = [...recentHistoryRef.current, currentQuestion.note.id].slice(-3);
-      const nextQuestionIndex = questionIndexRef.current + 1;
-
-      recentHistoryRef.current = nextHistory;
-      questionIndexRef.current = nextQuestionIndex;
-
       return generateNextQuestion(currentQuestion, nextHistory, nextPool, mode, Math.random, nextQuestionIndex);
     });
     setSelectedAnswerLabel(null);
@@ -117,7 +119,12 @@ export function ExercisePage() {
     answeredRef.current = false;
     recentHistoryRef.current = [];
     questionIndexRef.current = 1;
-    setQuestion(generateNextQuestion(null, recentHistoryRef.current, getQuestionPool("challenge", currentProgress), "challenge", Math.random, questionIndexRef.current));
+    setQuestion(generateNextQuestion(null, recentHistoryRef.current, getQuestionPool("challenge", activeClef, currentProgress), "challenge", Math.random, questionIndexRef.current));
+  }
+
+  function switchClefAndGoHome(clef: Clef) {
+    switchActiveClef(clef);
+    window.location.href = "/";
   }
 
   return (
@@ -129,8 +136,8 @@ export function ExercisePage() {
           </span>
           EdukoNote
         </a>
-        <AppButton href="/" tone="cream">
-          Accueil
+        <AppButton tone="cream" onClick={() => switchClefAndGoHome(nextClef)} aria-label={`Passer en ${CLEF_LABELS[nextClef]}`}>
+          {CLEF_LABELS[nextClef]}
         </AppButton>
       </nav>
 
@@ -186,6 +193,14 @@ export function ExercisePage() {
 }
 
 function EmptyReviewState() {
+  const { activeClef, switchActiveClef } = useProgress();
+  const nextClef = getOtherClef(activeClef);
+
+  function switchClefAndGoHome(clef: Clef) {
+    switchActiveClef(clef);
+    window.location.href = "/";
+  }
+
   return (
     <main className="app-shell exercise-shell">
       <nav className="app-topbar" aria-label="Navigation principale">
@@ -195,8 +210,8 @@ function EmptyReviewState() {
           </span>
           EdukoNote
         </a>
-        <AppButton href="/" tone="cream">
-          Accueil
+        <AppButton tone="cream" onClick={() => switchClefAndGoHome(nextClef)} aria-label={`Passer en ${CLEF_LABELS[nextClef]}`}>
+          {CLEF_LABELS[nextClef]}
         </AppButton>
       </nav>
 

@@ -1,4 +1,4 @@
-import type { AnswerLabel } from "../domain/notes";
+import { CLEF_LABELS, getOtherClef, type AnswerLabel, type Clef } from "../domain/notes";
 import { type ChallengeAnswer, getNotesToReview } from "../domain/quiz";
 import { AppButton } from "../components/ui/AppButton";
 import { AppCard } from "../components/ui/AppCard";
@@ -6,12 +6,15 @@ import { ProgressChip } from "../components/ui/ProgressChip";
 
 export type ResultPageProps = {
   answers: ChallengeAnswer[];
+  activeClef: Clef;
+  onToggleClef: () => void;
   onRestart: () => void;
 };
 
-export function ResultPage({ answers, onRestart }: ResultPageProps) {
+export function ResultPage({ answers, activeClef, onToggleClef, onRestart }: ResultPageProps) {
   const score = answers.filter((answer) => answer.isCorrect).length;
   const notesToReview = uniqueLabelsToReview(answers);
+  const nextClef = getOtherClef(activeClef);
 
   return (
     <main className="app-shell">
@@ -22,8 +25,8 @@ export function ResultPage({ answers, onRestart }: ResultPageProps) {
           </span>
           EdukoNote
         </a>
-        <AppButton href="/" tone="cream">
-          Accueil
+        <AppButton tone="cream" onClick={onToggleClef} aria-label={`Passer en ${CLEF_LABELS[nextClef]}`}>
+          {CLEF_LABELS[nextClef]}
         </AppButton>
       </nav>
 

@@ -1,7 +1,10 @@
 import {
   ANSWER_LABELS,
-  NOTE_DEFINITIONS,
+  getInitialTrainingNoteIds,
+  getNoteById,
+  getNotesForClef,
   type AnswerLabel,
+  type Clef,
   type NoteDefinition,
   type NoteId,
 } from "./notes";
@@ -24,37 +27,41 @@ export type ChallengeAnswer = {
   isCorrect: boolean;
 };
 
-export function getUnlockedTrainingNotes(progress: ProgressState): NoteDefinition[] {
-  const totalCorrect = countTotalCorrect(progress);
-  const unlockedNotes = NOTE_DEFINITIONS.filter((note) => note.unlockAfterCorrect <= totalCorrect);
+export function getUnlockedTrainingNotes(clef: Clef, progress: ProgressState): NoteDefinition[] {
+  const notes = getNotesForClef(clef);
+  const totalCorrect = countTotalCorrect(progress, clef);
+  const initialNoteIds = new Set(getInitialTrainingNoteIds(clef));
+  const unlockedNotes = notes.filter((note) => initialNoteIds.has(note.id) || note.unlockAfterCorrect <= totalCorrect);
 
-  return unlockedNotes.length > 0 ? unlockedNotes : NOTE_DEFINITIONS.filter((note) => note.unlockAfterCorrect === 0);
+  return unlockedNotes.length > 0 ? unlockedNotes : notes.filter((note) => note.unlockAfterCorrect === 0);
 }
 
-export function getReviewNotes(progress: ProgressState): NoteDefinition[] {
-  return NOTE_DEFINITIONS.filter((note) => progress.notes[note.id].errors > 0).sort((first, second) => {
-    const firstProgress = progress.notes[first.id];
-    const secondProgress = progress.notes[second.id];
-    const errorDifference = secondProgress.errors - firstProgress.errors;
+export function getReviewNotes(clef: Clef, progress: ProgressState): NoteDefinition[] {
+  return getNotesForClef(clef)
+    .filter((note) => progress.clefs[clef].notes[note.id].errors > 0)
+    .sort((first, second) => {
+      const firstProgress = progress.clefs[clef].notes[first.id];
+      const secondProgress = progress.clefs[clef].notes[second.id];
+      const errorDifference = secondProgress.errors - firstProgress.errors;
 
-    if (errorDifference !== 0) {
-      return errorDifference;
-    }
+      if (errorDifference !== 0) {
+        return errorDifference;
+      }
 
-    return firstProgress.correct - secondProgress.correct;
-  });
+      return firstProgress.correct - secondProgress.correct;
+    });
 }
 
-export function getQuestionPool(mode: QuizMode, progress: ProgressState): NoteDefinition[] {
+export function getQuestionPool(mode: QuizMode, clef: Clef, progress: ProgressState): NoteDefinition[] {
   if (mode === "review") {
-    return getReviewNotes(progress);
+    return getReviewNotes(clef, progress);
   }
 
   if (mode === "challenge") {
-    return NOTE_DEFINITIONS;
+    return getNotesForClef(clef);
   }
 
-  return getUnlockedTrainingNotes(progress);
+  return getUnlockedTrainingNotes(clef, progress);
 }
 
 export function createQuestion(
@@ -75,20 +82,26 @@ export function generateNextQuestion(
   random: () => number = Math.random,
   questionIndex = 1,
 ): QuizQuestion {
-  const safePool = availableNotes.length > 0 ? availableNotes : NOTE_DEFINITIONS;
+  const clef = availableNotes[0]?.clef ?? previousQuestion?.note.clef ?? "treble";
+  const safePool = availableNotes.length > 0 ? availableNotes : getNotesForClef(clef);
   const note = pickNextNote(safePool, previousQuestion?.note.id, recentHistory, random);
-  const choices = createChoices(note, random);
+  const choices = createChoices(note, note.clef, random);
 
   return {
-    id: `${mode}-${questionIndex}-${note.id}`,
+    id: `${mode}-${clef}-${questionIndex}-${note.id}`,
     questionIndex,
     note,
     choices,
   };
 }
 
-export function createChoices(correctNote: NoteDefinition, random: () => number = Math.random): AnswerLabel[] {
-  const plausibleDistractors = NOTE_DEFINITIONS.filter((note) => note.answerLabel !== correctNote.answerLabel)
+export function createChoices(
+  correctNote: NoteDefinition,
+  clef: Clef = correctNote.clef,
+  random: () => number = Math.random,
+): AnswerLabel[] {
+  const plausibleDistractors = getNotesForClef(clef)
+    .filter((note) => note.answerLabel !== correctNote.answerLabel)
     .sort((first, second) => Math.abs(first.stepIndex - correctNote.stepIndex) - Math.abs(second.stepIndex - correctNote.stepIndex))
     .map((note) => note.answerLabel);
   const uniqueDistractors = uniqueLabels(plausibleDistractors).slice(0, 3);
@@ -151,7 +164,7 @@ function shuffle<T>(items: T[], random: () => number): T[] {
 }
 
 function createPreviousQuestion(noteId: NoteId): QuizQuestion {
-  const note = NOTE_DEFINITIONS.find((candidate) => candidate.id === noteId) ?? NOTE_DEFINITIONS[0];
+  const note = getNoteById(noteId);
 
   return {
     id: `previous-${note.id}`,

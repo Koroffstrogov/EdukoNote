@@ -1,22 +1,36 @@
 import { describe, expect, it } from "vitest";
 import { ANSWER_LABELS, getNoteById } from "./notes";
-import { createEmptyProgress, recordAnswer } from "./progress";
-import { createChoices, generateNextQuestion, getReviewNotes, getUnlockedTrainingNotes } from "./quiz";
+import { createEmptyProgress, recordAnswer, recordRecentQuestion } from "./progress";
+import { createChoices, generateNextQuestion, getQuestionPool, getReviewNotes, getUnlockedTrainingNotes } from "./quiz";
 
 describe("quiz", () => {
-  it("starts training with a varied first pool", () => {
-    const unlockedNotes = getUnlockedTrainingNotes(createEmptyProgress()).map((note) => note.id);
+  it("starts treble training with the existing first pool", () => {
+    const unlockedNotes = getUnlockedTrainingNotes("treble", createEmptyProgress()).map((note) => note.id);
 
     expect(unlockedNotes).toEqual(["mi4", "sol4", "si4", "do5", "re5"]);
   });
 
-  it("unlocks Fa and La after a few good answers", () => {
-    const firstAnswer = recordAnswer(createEmptyProgress(), "mi4", true);
-    const secondAnswer = recordAnswer(firstAnswer, "sol4", true);
-    const unlockedNotes = getUnlockedTrainingNotes(secondAnswer).map((note) => note.id);
+  it("starts bass training with the five staff-line notes", () => {
+    const unlockedNotes = getUnlockedTrainingNotes("bass", createEmptyProgress()).map((note) => note.id);
+
+    expect(unlockedNotes).toEqual(["bass-sol2", "bass-si2", "bass-re3", "bass-fa3", "bass-la3"]);
+    expect(unlockedNotes.every((noteId) => getNoteById(noteId).clef === "bass")).toBe(true);
+  });
+
+  it("unlocks Fa and La in treble after a few good answers", () => {
+    const firstAnswer = recordAnswer(createEmptyProgress(), "treble", "mi4", true);
+    const secondAnswer = recordAnswer(firstAnswer, "treble", "sol4", true);
+    const unlockedNotes = getUnlockedTrainingNotes("treble", secondAnswer).map((note) => note.id);
 
     expect(unlockedNotes).toContain("fa4");
     expect(unlockedNotes).toContain("la4");
+  });
+
+  it("keeps bass question pools inside bass notes", () => {
+    const pool = getQuestionPool("challenge", "bass", createEmptyProgress());
+
+    expect(pool).toHaveLength(15);
+    expect(pool.every((note) => note.clef === "bass")).toBe(true);
   });
 
   it("generates a different next internal note when several notes are available", () => {
@@ -27,41 +41,55 @@ describe("quiz", () => {
     expect(nextQuestion.note.id).not.toBe(previousQuestion.note.id);
   });
 
-  it("avoids recent internal notes when possible", () => {
+  it("avoids recent notes for each clef when possible", () => {
+    const progress = recordRecentQuestion(
+      recordRecentQuestion(recordRecentQuestion(createEmptyProgress(), "bass", "bass-sol2"), "bass", "bass-si2"),
+      "bass",
+      "bass-re3",
+    );
+
     const nextQuestion = generateNextQuestion(
       null,
-      ["mi4", "sol4", "si4"],
-      [getNoteById("mi4"), getNoteById("sol4"), getNoteById("si4"), getNoteById("do5")],
+      progress.clefs.bass.recentHistory,
+      [getNoteById("bass-sol2"), getNoteById("bass-si2"), getNoteById("bass-re3"), getNoteById("bass-fa3")],
       "training",
       () => 0,
       4,
     );
 
-    expect(nextQuestion.note.id).toBe("do5");
+    expect(nextQuestion.note.id).toBe("bass-fa3");
   });
 
-  it("creates four unique answer labels including the correct answer", () => {
-    const choices = createChoices(getNoteById("do6"), () => 0);
+  it("creates four unique answer labels including the correct answer for both clefs", () => {
+    const trebleChoices = createChoices(getNoteById("do6"), "treble", () => 0);
+    const bassChoices = createChoices(getNoteById("bass-do4"), "bass", () => 0);
 
-    expect(choices).toHaveLength(4);
-    expect(choices).toContain("Do");
-    expect(new Set(choices).size).toBe(4);
+    expect(trebleChoices).toHaveLength(4);
+    expect(trebleChoices).toContain("Do");
+    expect(new Set(trebleChoices).size).toBe(4);
+    expect(bassChoices).toHaveLength(4);
+    expect(bassChoices).toContain("Do");
+    expect(new Set(bassChoices).size).toBe(4);
   });
 
   it("only exposes the seven plain note names as answer labels", () => {
-    const question = generateNextQuestion(null, [], [getNoteById("do6")], "challenge", () => 0, 1);
+    const trebleQuestion = generateNextQuestion(null, [], [getNoteById("do6")], "challenge", () => 0, 1);
+    const bassQuestion = generateNextQuestion(null, [], [getNoteById("bass-do4")], "challenge", () => 0, 1);
 
-    expect(question.note.answerLabel).toBe("Do");
-    expect(question.choices.every((choice) => ANSWER_LABELS.includes(choice))).toBe(true);
+    expect(trebleQuestion.note.answerLabel).toBe("Do");
+    expect(bassQuestion.note.answerLabel).toBe("Do");
+    expect(trebleQuestion.choices.every((choice) => ANSWER_LABELS.includes(choice))).toBe(true);
+    expect(bassQuestion.choices.every((choice) => ANSWER_LABELS.includes(choice))).toBe(true);
   });
 
-  it("prioritizes notes with the most errors in review", () => {
-    const firstError = recordAnswer(createEmptyProgress(), "fa4", false);
-    const secondError = recordAnswer(firstError, "re4", false);
-    const thirdError = recordAnswer(secondError, "re4", false);
-    const reviewNotes = getReviewNotes(thirdError).map((note) => note.id);
+  it("prioritizes review notes only for the requested clef", () => {
+    const bassError = recordAnswer(createEmptyProgress(), "bass", "bass-fa3", false);
+    const trebleError = recordAnswer(bassError, "treble", "re4", false);
+    const repeatedTrebleError = recordAnswer(trebleError, "treble", "re4", false);
+    const bassReviewNotes = getReviewNotes("bass", repeatedTrebleError).map((note) => note.id);
+    const trebleReviewNotes = getReviewNotes("treble", repeatedTrebleError).map((note) => note.id);
 
-    expect(reviewNotes[0]).toBe("re4");
-    expect(reviewNotes).toContain("fa4");
+    expect(bassReviewNotes).toEqual(["bass-fa3"]);
+    expect(trebleReviewNotes[0]).toBe("re4");
   });
 });

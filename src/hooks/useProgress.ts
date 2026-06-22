@@ -1,6 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
-import { PROGRESS_STORAGE_KEY, normalizeProgress, recordAnswer, resetProgress, type ProgressState } from "../domain/progress";
-import type { NoteId } from "../domain/notes";
+import type { Clef, NoteId } from "../domain/notes";
+import {
+  LEGACY_PROGRESS_STORAGE_KEY,
+  PROGRESS_STORAGE_KEY,
+  normalizeProgress,
+  recordAnswer,
+  recordRecentQuestion,
+  resetProgress,
+  setActiveClef,
+  type ProgressState,
+} from "../domain/progress";
 
 function readStoredProgress(): ProgressState {
   if (typeof window === "undefined") {
@@ -9,8 +18,11 @@ function readStoredProgress(): ProgressState {
 
   try {
     const rawValue = window.localStorage.getItem(PROGRESS_STORAGE_KEY);
+    const rawLegacyValue = window.localStorage.getItem(LEGACY_PROGRESS_STORAGE_KEY);
+    const parsedValue = rawValue ? JSON.parse(rawValue) : null;
+    const parsedLegacyValue = rawLegacyValue ? JSON.parse(rawLegacyValue) : null;
 
-    return normalizeProgress(rawValue ? JSON.parse(rawValue) : null);
+    return normalizeProgress(parsedValue, parsedLegacyValue);
   } catch {
     return normalizeProgress(null);
   }
@@ -31,17 +43,34 @@ export function useProgress() {
     writeStoredProgress(progress);
   }, [progress]);
 
+  const switchActiveClef = useCallback((clef: Clef) => {
+    setProgress((currentProgress) => {
+      const nextProgress = setActiveClef(currentProgress, clef);
+
+      writeStoredProgress(nextProgress);
+
+      return nextProgress;
+    });
+  }, []);
+
   const recordNoteAnswer = useCallback((noteId: NoteId, isCorrect: boolean) => {
-    setProgress((currentProgress) => recordAnswer(currentProgress, noteId, isCorrect));
+    setProgress((currentProgress) => recordAnswer(currentProgress, currentProgress.activeClef, noteId, isCorrect));
+  }, []);
+
+  const recordRecentNote = useCallback((noteId: NoteId) => {
+    setProgress((currentProgress) => recordRecentQuestion(currentProgress, currentProgress.activeClef, noteId));
   }, []);
 
   const resetStoredProgress = useCallback(() => {
-    setProgress(resetProgress());
+    setProgress((currentProgress) => resetProgress(currentProgress, currentProgress.activeClef));
   }, []);
 
   return {
     progress,
+    activeClef: progress.activeClef,
+    switchActiveClef,
     recordNoteAnswer,
+    recordRecentNote,
     resetStoredProgress,
   };
 }

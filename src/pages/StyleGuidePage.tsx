@@ -69,6 +69,10 @@ export function StyleGuidePage() {
             <h2 className="question-card__title">Quelle est cette note ?</h2>
             <StaffPreview note="mi4" />
           </AppCard>
+          <AppCard tone="sky" className="question-card">
+            <h2 className="question-card__title">Quelle est cette note ?</h2>
+            <StaffPreview note="bass-fa3" />
+          </AppCard>
           <div className="styleguide-layout">
             <FeedbackCard status="success">C’est Mi</FeedbackCard>
             <FeedbackCard status="near">C’était Fa</FeedbackCard>
