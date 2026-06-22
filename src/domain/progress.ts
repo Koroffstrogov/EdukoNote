@@ -1,4 +1,4 @@
-import { NOTE_DEFINITIONS, getNotesForClef, isClef, isNoteId, type Clef, type NoteId } from "./notes";
+import { getNotesForClef, isClef, isNoteId, type Clef, type NoteId } from "./notes";
 
 export const PROGRESS_STORAGE_KEY = "edukonote.progress.v2";
 export const LEGACY_PROGRESS_STORAGE_KEY = "edukonote.progress.v1";
@@ -11,7 +11,7 @@ export type NoteProgress = {
 };
 
 export type ClefProgress = {
-  notes: Record<NoteId, NoteProgress>;
+  notes: Partial<Record<NoteId, NoteProgress>>;
   recentHistory: NoteId[];
 };
 
@@ -50,20 +50,20 @@ export function createEmptyProgress(): ProgressState {
     version: 2,
     activeClef: "treble",
     clefs: {
-      treble: createEmptyClefProgress(),
-      bass: createEmptyClefProgress(),
+      treble: createEmptyClefProgress("treble"),
+      bass: createEmptyClefProgress("bass"),
     },
   };
 }
 
-export function createEmptyClefProgress(): ClefProgress {
+export function createEmptyClefProgress(clef: Clef): ClefProgress {
   return {
-    notes: NOTE_DEFINITIONS.reduce(
+    notes: getNotesForClef(clef).reduce(
       (accumulator, note) => ({
         ...accumulator,
         [note.id]: createEmptyNoteProgress(),
       }),
-      {} as Record<NoteId, NoteProgress>,
+      {} as Partial<Record<NoteId, NoteProgress>>,
     ),
     recentHistory: [],
   };
@@ -143,21 +143,21 @@ export function resetProgress(progress: ProgressState, clef: Clef): ProgressStat
     ...progress,
     clefs: {
       ...progress.clefs,
-      [clef]: createEmptyClefProgress(),
+      [clef]: createEmptyClefProgress(clef),
     },
   };
 }
 
 export function countTotalCorrect(progress: ProgressState, clef: Clef): number {
-  return getNotesForClef(clef).reduce((total, note) => total + progress.clefs[clef].notes[note.id].correct, 0);
+  return getNotesForClef(clef).reduce((total, note) => total + getStoredNoteProgress(progress, clef, note.id).correct, 0);
 }
 
 export function countTotalViews(progress: ProgressState, clef: Clef): number {
-  return getNotesForClef(clef).reduce((total, note) => total + progress.clefs[clef].notes[note.id].views, 0);
+  return getNotesForClef(clef).reduce((total, note) => total + getStoredNoteProgress(progress, clef, note.id).views, 0);
 }
 
 export function countTotalErrors(progress: ProgressState, clef: Clef): number {
-  return getNotesForClef(clef).reduce((total, note) => total + progress.clefs[clef].notes[note.id].errors, 0);
+  return getNotesForClef(clef).reduce((total, note) => total + getStoredNoteProgress(progress, clef, note.id).errors, 0);
 }
 
 function normalizeProgressV2(candidate: ProgressState): ProgressState {
@@ -186,8 +186,8 @@ function migrateLegacyProgress(value: unknown): ProgressState {
     clefs: {
       ...emptyProgress.clefs,
       treble: {
-        ...emptyProgress.clefs.treble,
         notes: normalizeNotes(candidateNotes, "treble", true),
+        recentHistory: [],
       },
     },
   };
@@ -213,12 +213,9 @@ function normalizeNotes(
   candidateNotes: Record<string, Partial<NoteProgress> | undefined>,
   clef: Clef,
   readLegacyIds: boolean,
-): Record<NoteId, NoteProgress> {
-  return NOTE_DEFINITIONS.reduce((accumulator, note) => {
-    const noteProgress =
-      note.clef === clef
-        ? readStoredNoteProgress(note.id, candidateNotes, readLegacyIds)
-        : undefined;
+): Partial<Record<NoteId, NoteProgress>> {
+  return getNotesForClef(clef).reduce((accumulator, note) => {
+    const noteProgress = readStoredNoteProgress(note.id, candidateNotes, readLegacyIds);
 
     accumulator[note.id] = {
       views: asCount(noteProgress?.views),
@@ -228,7 +225,7 @@ function normalizeNotes(
     };
 
     return accumulator;
-  }, {} as Record<NoteId, NoteProgress>);
+  }, {} as Partial<Record<NoteId, NoteProgress>>);
 }
 
 function isProgressV2(value: unknown): value is ProgressState {
@@ -261,4 +258,8 @@ function readStoredNoteProgress(
 
 function noteBelongsToClef(noteId: NoteId, clef: Clef): boolean {
   return getNotesForClef(clef).some((note) => note.id === noteId);
+}
+
+function getStoredNoteProgress(progress: ProgressState, clef: Clef, noteId: NoteId): NoteProgress {
+  return progress.clefs[clef].notes[noteId] ?? createEmptyNoteProgress();
 }

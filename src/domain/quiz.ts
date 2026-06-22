@@ -38,10 +38,20 @@ export function getUnlockedTrainingNotes(clef: Clef, progress: ProgressState): N
 
 export function getReviewNotes(clef: Clef, progress: ProgressState): NoteDefinition[] {
   return getNotesForClef(clef)
-    .filter((note) => progress.clefs[clef].notes[note.id].errors > 0)
+    .filter((note) => (progress.clefs[clef].notes[note.id]?.errors ?? 0) > 0)
     .sort((first, second) => {
-      const firstProgress = progress.clefs[clef].notes[first.id];
-      const secondProgress = progress.clefs[clef].notes[second.id];
+      const firstProgress = progress.clefs[clef].notes[first.id] ?? {
+        views: 0,
+        correct: 0,
+        errors: 0,
+        lastPracticedAt: null,
+      };
+      const secondProgress = progress.clefs[clef].notes[second.id] ?? {
+        views: 0,
+        correct: 0,
+        errors: 0,
+        lastPracticedAt: null,
+      };
       const errorDifference = secondProgress.errors - firstProgress.errors;
 
       if (errorDifference !== 0) {

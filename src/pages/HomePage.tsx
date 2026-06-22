@@ -90,17 +90,21 @@ export function HomePage() {
 }
 
 function summarizeProgressByLabel(
-  notesProgress: Record<NoteId, NoteProgress>,
+  notesProgress: Partial<Record<NoteId, NoteProgress>>,
   clef: Clef,
 ): Array<{ label: AnswerLabel; noteProgress: NoteProgress }> {
   return ANSWER_LABELS.map((label) => {
     const noteProgress = getNotesForClef(clef).filter((note) => note.answerLabel === label).reduce(
-      (summary, note) => ({
-        views: summary.views + notesProgress[note.id].views,
-        correct: summary.correct + notesProgress[note.id].correct,
-        errors: summary.errors + notesProgress[note.id].errors,
-        lastPracticedAt: null,
-      }),
+      (summary, note) => {
+        const currentProgress = notesProgress[note.id] ?? emptyNoteProgress;
+
+        return {
+          views: summary.views + currentProgress.views,
+          correct: summary.correct + currentProgress.correct,
+          errors: summary.errors + currentProgress.errors,
+          lastPracticedAt: null,
+        };
+      },
       {
         views: 0,
         correct: 0,
@@ -112,6 +116,13 @@ function summarizeProgressByLabel(
     return { label, noteProgress };
   });
 }
+
+const emptyNoteProgress: NoteProgress = {
+  views: 0,
+  correct: 0,
+  errors: 0,
+  lastPracticedAt: null,
+};
 
 function getProgressStatus(noteProgress: NoteProgress): "complete" | "current" | "missed" {
   if (noteProgress.errors > noteProgress.correct) {
