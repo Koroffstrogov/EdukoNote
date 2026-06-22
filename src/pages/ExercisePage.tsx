@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { StaffNote } from "../components/music/StaffNote";
 import { AppButton } from "../components/ui/AppButton";
 import { AppCard } from "../components/ui/AppCard";
@@ -14,10 +14,12 @@ import {
   type QuizMode,
   type QuizQuestion,
 } from "../domain/quiz";
+import { getSpeedTimeLimitSeconds } from "../domain/speed";
 import { useProgress } from "../hooks/useProgress";
 import { ResultPage } from "./ResultPage";
 
 const CHALLENGE_LENGTH = 10;
+const SPEED_TIMER_TICK_MS = 100;
 const answerTones: ColorTokenId[] = ["rose", "lavender", "vanilla", "mint"];
 
 const modeCopy: Record<QuizMode, { eyebrow: string; title: string }> = {
@@ -33,14 +35,18 @@ const modeCopy: Record<QuizMode, { eyebrow: string; title: string }> = {
     eyebrow: "Révision",
     title: "On reprend doucement",
   },
+  speed: {
+    eyebrow: "Vitesse",
+    title: "Série rapide",
+  },
 };
 
 export function ExercisePage() {
   const mode = useMemo(() => readModeFromUrl(), []);
   const { progress, activeClef, switchActiveClef, recordNoteAnswer, recordRecentNote } = useProgress();
   const nextClef = getOtherClef(activeClef);
-  const reviewNotes = getReviewNotes(activeClef, progress);
-  const recentHistoryRef = useRef<NoteId[]>(progress.clefs[activeClef].recentHistory);
+  const reviewNotes = mode === "review" ? getReviewNotes(activeClef, progress) : [];
+  const recentHistoryRef = useRef<NoteId[]>(mode === "speed" ? [] : progress.clefs[activeClef].recentHistory);
   const questionIndexRef = useRef(1);
   const [question, setQuestion] = useState<QuizQuestion>(() =>
     generateNextQuestion(null, recentHistoryRef.current, getQuestionPool(mode, activeClef, progress), mode, Math.random, questionIndexRef.current),
@@ -49,7 +55,44 @@ export function ExercisePage() {
   const [questionNumber, setQuestionNumber] = useState(1);
   const [answers, setAnswers] = useState<ChallengeAnswer[]>([]);
   const [isFinished, setIsFinished] = useState(false);
+  const [speedScore, setSpeedScore] = useState(0);
+  const [speedFinished, setSpeedFinished] = useState(false);
+  const [speedTimeLeftMs, setSpeedTimeLeftMs] = useState(() => secondsToMs(getSpeedTimeLimitSeconds(0)));
   const answeredRef = useRef(false);
+
+  useEffect(() => {
+    if (mode !== "speed" || speedFinished) {
+      return undefined;
+    }
+
+    const timeLimitMs = secondsToMs(getSpeedTimeLimitSeconds(speedScore));
+    const startedAt = Date.now();
+    let isActive = true;
+
+    answeredRef.current = false;
+    setSpeedTimeLeftMs(timeLimitMs);
+
+    const timerId = window.setInterval(() => {
+      const timeLeftMs = Math.max(0, timeLimitMs - (Date.now() - startedAt));
+
+      if (!isActive) {
+        return;
+      }
+
+      setSpeedTimeLeftMs(timeLeftMs);
+
+      if (timeLeftMs <= 0) {
+        answeredRef.current = true;
+        setSpeedFinished(true);
+        window.clearInterval(timerId);
+      }
+    }, SPEED_TIMER_TICK_MS);
+
+    return () => {
+      isActive = false;
+      window.clearInterval(timerId);
+    };
+  }, [mode, question.id, speedFinished, speedScore]);
 
   if (mode === "review" && reviewNotes.length === 0) {
     return <EmptyReviewState />;
@@ -57,6 +100,10 @@ export function ExercisePage() {
 
   if (mode === "challenge" && isFinished) {
     return <ResultPage answers={answers} activeClef={activeClef} onToggleClef={() => switchClefAndGoHome(nextClef)} onRestart={() => restartChallenge(progress)} />;
+  }
+
+  if (mode === "speed" && speedFinished) {
+    return <SpeedResultState score={speedScore} activeClef={activeClef} onToggleClef={() => switchClefAndGoHome(nextClef)} onRestart={restartSpeed} />;
   }
 
   const copy = modeCopy[mode];
@@ -68,6 +115,12 @@ export function ExercisePage() {
     }
 
     answeredRef.current = true;
+
+    if (mode === "speed") {
+      handleSpeedAnswer(answerLabel);
+      return;
+    }
+
     setSelectedAnswerLabel(answerLabel);
     recordNoteAnswer(question.note.id, answerLabel === question.note.answerLabel);
 
@@ -83,6 +136,25 @@ export function ExercisePage() {
         },
       ]);
     }
+  }
+
+  function handleSpeedAnswer(answerLabel: AnswerLabel) {
+    if (answerLabel !== question.note.answerLabel) {
+      setSpeedFinished(true);
+      return;
+    }
+
+    const nextScore = speedScore + 1;
+    const nextHistory = [...recentHistoryRef.current, question.note.id].slice(-3);
+    const nextQuestionIndex = questionIndexRef.current + 1;
+    const nextPool = getQuestionPool("speed", activeClef, progress);
+
+    recentHistoryRef.current = nextHistory;
+    questionIndexRef.current = nextQuestionIndex;
+    setSpeedScore(nextScore);
+    setQuestion((currentQuestion) =>
+      generateNextQuestion(currentQuestion, nextHistory, nextPool, "speed", Math.random, nextQuestionIndex),
+    );
   }
 
   function handleNextQuestion() {
@@ -122,6 +194,17 @@ export function ExercisePage() {
     setQuestion(generateNextQuestion(null, recentHistoryRef.current, getQuestionPool("challenge", activeClef, currentProgress), "challenge", Math.random, questionIndexRef.current));
   }
 
+  function restartSpeed() {
+    setSpeedScore(0);
+    setSpeedFinished(false);
+    setSpeedTimeLeftMs(secondsToMs(getSpeedTimeLimitSeconds(0)));
+    setSelectedAnswerLabel(null);
+    answeredRef.current = false;
+    recentHistoryRef.current = [];
+    questionIndexRef.current = 1;
+    setQuestion(generateNextQuestion(null, recentHistoryRef.current, getQuestionPool("speed", activeClef, progress), "speed", Math.random, questionIndexRef.current));
+  }
+
   function switchClefAndGoHome(clef: Clef) {
     switchActiveClef(clef);
     window.location.href = "/";
@@ -149,7 +232,12 @@ export function ExercisePage() {
       <div className="exercise-layout">
         <AppCard tone="sky" className="question-card">
           <div className="exercise-meta">
-            {mode === "challenge" ? (
+            {mode === "speed" ? (
+              <>
+                <ProgressChip label={`Score ${speedScore}`} status="current" />
+                <ProgressChip label={`${formatSpeedTime(speedTimeLeftMs)}s`} status={speedTimeLeftMs <= 1000 ? "missed" : "current"} />
+              </>
+            ) : mode === "challenge" ? (
               <ProgressChip label={`${questionNumber}/${CHALLENGE_LENGTH}`} status="current" />
             ) : (
               <ProgressChip label={mode === "training" ? "Sans chrono" : "Erreurs"} status="current" />
@@ -236,6 +324,50 @@ function EmptyReviewState() {
   );
 }
 
+type SpeedResultStateProps = {
+  score: number;
+  activeClef: Clef;
+  onToggleClef: () => void;
+  onRestart: () => void;
+};
+
+function SpeedResultState({ score, activeClef, onToggleClef, onRestart }: SpeedResultStateProps) {
+  const nextClef = getOtherClef(activeClef);
+
+  return (
+    <main className="app-shell">
+      <nav className="app-topbar" aria-label="Navigation principale">
+        <a className="brand-mark" href="/" aria-label="Accueil EdukoNote">
+          <span className="brand-mark__symbol" aria-hidden="true">
+            ♪
+          </span>
+          EdukoNote
+        </a>
+        <AppButton tone="cream" onClick={onToggleClef} aria-label={`Passer en ${CLEF_LABELS[nextClef]}`}>
+          {CLEF_LABELS[nextClef]}
+        </AppButton>
+      </nav>
+
+      <header className="page-hero">
+        <p className="page-eyebrow">Vitesse</p>
+        <h1 className="page-title">Score {score}</h1>
+      </header>
+
+      <AppCard tone="vanilla">
+        <h2 className="app-card__title">{score} notes à la suite</h2>
+        <div className="button-row">
+          <AppButton tone="plum" onClick={onRestart}>
+            Rejouer
+          </AppButton>
+          <AppButton href="/" tone="cream">
+            Retour accueil
+          </AppButton>
+        </div>
+      </AppCard>
+    </main>
+  );
+}
+
 function getAnswerTone(
   choice: AnswerLabel,
   correctAnswer: AnswerLabel,
@@ -260,9 +392,20 @@ function getAnswerTone(
 function readModeFromUrl(): QuizMode {
   const mode = new URLSearchParams(window.location.search).get("mode");
 
-  if (mode === "challenge" || mode === "review") {
+  if (mode === "challenge" || mode === "review" || mode === "speed") {
     return mode;
   }
 
   return "training";
+}
+
+function secondsToMs(seconds: number): number {
+  return Math.round(seconds * 1000);
+}
+
+function formatSpeedTime(timeLeftMs: number): string {
+  return (Math.ceil(timeLeftMs / 100) / 10).toLocaleString("fr-FR", {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
 }

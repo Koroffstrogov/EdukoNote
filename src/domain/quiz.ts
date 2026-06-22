@@ -10,7 +10,7 @@ import {
 } from "./notes";
 import { countTotalCorrect, type ProgressState } from "./progress";
 
-export type QuizMode = "training" | "challenge" | "review";
+export type QuizMode = "training" | "challenge" | "review" | "speed";
 
 export type QuizQuestion = {
   id: string;
@@ -67,7 +67,7 @@ export function getQuestionPool(mode: QuizMode, clef: Clef, progress: ProgressSt
     return getReviewNotes(clef, progress);
   }
 
-  if (mode === "challenge") {
+  if (mode === "challenge" || mode === "speed") {
     return getNotesForClef(clef);
   }
 

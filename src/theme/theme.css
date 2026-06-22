@@ -485,6 +485,8 @@ a {
 
 .exercise-meta {
   display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
   justify-content: flex-end;
 }
 

@@ -56,6 +56,13 @@ export function HomePage() {
             href="/exercise?mode=review"
             tone="vanilla"
           />
+          <HomeActionCard
+            title="Vitesse"
+            text="Série rapide."
+            icon="⏱"
+            href="/exercise?mode=speed"
+            tone="rose"
+          />
         </section>
 
         <section className="home-summary" aria-label="Résumé de progression">
