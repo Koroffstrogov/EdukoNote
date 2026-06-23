@@ -1,4 +1,4 @@
-import { getNotesForClef, isClef, isNoteId, type Clef, type NoteId } from "./notes";
+import { CLEFS, getNotesForClef, isClef, isNoteId, type Clef, type NoteId } from "./notes";
 
 export const PROGRESS_STORAGE_KEY = "edukonote.progress.v2";
 export const LEGACY_PROGRESS_STORAGE_KEY = "edukonote.progress.v1";
@@ -49,11 +49,18 @@ export function createEmptyProgress(): ProgressState {
   return {
     version: 2,
     activeClef: "treble",
-    clefs: {
-      treble: createEmptyClefProgress("treble"),
-      bass: createEmptyClefProgress("bass"),
-    },
+    clefs: createEmptyClefsProgress(),
   };
+}
+
+function createEmptyClefsProgress(): Record<Clef, ClefProgress> {
+  return CLEFS.reduce(
+    (accumulator, clef) => ({
+      ...accumulator,
+      [clef]: createEmptyClefProgress(clef),
+    }),
+    {} as Record<Clef, ClefProgress>,
+  );
 }
 
 export function createEmptyClefProgress(clef: Clef): ClefProgress {
@@ -167,6 +174,7 @@ function normalizeProgressV2(candidate: ProgressState): ProgressState {
     clefs: {
       treble: normalizeClefProgress("treble", candidate.clefs?.treble),
       bass: normalizeClefProgress("bass", candidate.clefs?.bass),
+      tenor: normalizeClefProgress("tenor", candidate.clefs?.tenor),
     },
   };
 }

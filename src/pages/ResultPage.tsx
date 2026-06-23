@@ -1,4 +1,4 @@
-import { CLEF_LABELS, getOtherClef, type AnswerLabel, type Clef } from "../domain/notes";
+import { CLEF_LABELS, getNextClef, type AnswerLabel, type Clef } from "../domain/notes";
 import { type ChallengeAnswer, getNotesToReview } from "../domain/quiz";
 import { AppButton } from "../components/ui/AppButton";
 import { AppCard } from "../components/ui/AppCard";
@@ -14,7 +14,7 @@ export type ResultPageProps = {
 export function ResultPage({ answers, activeClef, onToggleClef, onRestart }: ResultPageProps) {
   const score = answers.filter((answer) => answer.isCorrect).length;
   const notesToReview = uniqueLabelsToReview(answers);
-  const nextClef = getOtherClef(activeClef);
+  const nextClef = getNextClef(activeClef);
 
   return (
     <main className="app-shell">

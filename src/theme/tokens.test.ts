@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { PALETTE_LABELS, PALETTES, isPaletteId, paletteTokens } from "./tokens";
+import { PALETTE_LABELS, PALETTES, getPaletteForClef, isPaletteId, paletteTokens } from "./tokens";
 
 describe("palette tokens", () => {
   it("keeps the four palette ids stable", () => {
@@ -18,5 +18,11 @@ describe("palette tokens", () => {
   it("validates palette ids", () => {
     expect(isPaletteId("jelly-mint")).toBe(true);
     expect(isPaletteId("unknown")).toBe(false);
+  });
+
+  it("maps each clef to its automatic palette", () => {
+    expect(getPaletteForClef("treble")).toBe("prune-2026");
+    expect(getPaletteForClef("bass")).toBe("blue-piano");
+    expect(getPaletteForClef("tenor")).toBe("cloud-teal");
   });
 });

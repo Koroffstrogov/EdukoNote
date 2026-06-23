@@ -1,3 +1,5 @@
+import type { Clef } from "../domain/notes";
+
 export const colorTokens = [
   {
     id: "rose",
@@ -74,6 +76,16 @@ export const PALETTE_LABELS: Record<PaletteId, string> = Object.fromEntries(
 
 export function isPaletteId(value: unknown): value is PaletteId {
   return typeof value === "string" && PALETTES.includes(value as PaletteId);
+}
+
+export const CLEF_PALETTES: Record<Clef, PaletteId> = {
+  treble: "prune-2026",
+  bass: "blue-piano",
+  tenor: "cloud-teal",
+};
+
+export function getPaletteForClef(clef: Clef): PaletteId {
+  return CLEF_PALETTES[clef];
 }
 
 export const spacingTokens = {

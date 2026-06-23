@@ -1,15 +1,14 @@
 import { AppButton } from "../components/ui/AppButton";
 import { AppCard } from "../components/ui/AppCard";
 import { HomeActionCard } from "../components/ui/HomeActionCard";
-import { PaletteSelector } from "../components/ui/PaletteSelector";
 import { ProgressChip } from "../components/ui/ProgressChip";
 import {
   ANSWER_LABELS,
   CLEF_LABELS,
   READING_ZONE_LABELS,
   READING_ZONES,
+  getNextClef,
   getNotesForClef,
-  getOtherClef,
   type AnswerLabel,
   type Clef,
   type NoteId,
@@ -20,8 +19,8 @@ import { useSettings } from "../hooks/useSettings";
 
 export function HomePage() {
   const { progress, activeClef, switchActiveClef, resetStoredProgress } = useProgress();
-  const { settings, updatePalette, updateReadingZone } = useSettings();
-  const nextClef = getOtherClef(activeClef);
+  const { settings, updateReadingZone } = useSettings();
+  const nextClef = getNextClef(activeClef);
   const activeReadingZone = settings.readingZones[activeClef];
   const totalViews = countTotalViews(progress, activeClef);
   const totalCorrect = countTotalCorrect(progress, activeClef);
@@ -65,8 +64,6 @@ export function HomePage() {
             ))}
           </div>
         </section>
-
-        <PaletteSelector activePalette={settings.palette} onChange={updatePalette} />
 
         <section className="home-actions" aria-label="Actions d'accueil provisoires">
           <HomeActionCard

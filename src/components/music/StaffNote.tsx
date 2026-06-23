@@ -1,6 +1,7 @@
 import { useId } from "react";
 import { STAFF_LINE_Y, STAFF_VIEWBOX, type NoteDefinition } from "../../domain/notes";
 import { BassClef } from "./BassClef";
+import { CClef } from "./CClef";
 import { TrebleClef } from "./TrebleClef";
 
 export type StaffNoteProps = {
@@ -31,14 +32,16 @@ export function StaffNote({ note, showLabel = false }: StaffNoteProps) {
   return (
     <figure className="staff-note" aria-labelledby={titleId}>
       <svg className="staff-note-svg" viewBox={`0 0 ${STAFF_VIEWBOX.width} ${STAFF_VIEWBOX.height}`} role="img">
-        <title id={titleId}>Portée en {note.clef === "treble" ? "clé de sol" : "clé de fa"} avec la note {note.label}</title>
+        <title id={titleId}>Portée en {getClefTitle(note.clef)} avec la note {note.label}</title>
         {STAFF_LINE_Y.map((lineY) => (
           <line className="staff-note-svg__line" key={lineY} x1={staffLineStartX} y1={lineY} x2={staffLineEndX} y2={lineY} />
         ))}
         {clefLayout.clef === "treble" ? (
           <TrebleClef className="staff-note-svg__clef" x={clefLayout.x} y={clefLayout.y} height={clefLayout.height} />
-        ) : (
+        ) : clefLayout.clef === "bass" ? (
           <BassClef className="staff-note-svg__clef" x={clefLayout.x} y={clefLayout.y} height={clefLayout.height} />
+        ) : (
+          <CClef className="staff-note-svg__clef" x={clefLayout.x} y={clefLayout.y} height={clefLayout.height} />
         )}
         {note.ledgerLines.map((lineY) => (
           <line className="staff-note-svg__ledger" key={lineY} x1={ledgerStartX} y1={lineY} x2={ledgerEndX} y2={lineY} />
@@ -71,6 +74,18 @@ function getClefLayout(note: NoteDefinition, lineGap: number, solLineY: number, 
     };
   }
 
+  if (note.clef === "tenor") {
+    const height = lineGap * 5.4;
+    const cLineAnchorRatio = 0.5;
+
+    return {
+      clef: note.clef,
+      x: 54,
+      y: bassFaLineY - height * cLineAnchorRatio,
+      height,
+    };
+  }
+
   const height = lineGap * 7.35;
   const loopAnchorRatio = 0.58;
   const yOffset = -6;
@@ -81,4 +96,16 @@ function getClefLayout(note: NoteDefinition, lineGap: number, solLineY: number, 
     y: solLineY - height * loopAnchorRatio + yOffset,
     height,
   };
+}
+
+function getClefTitle(clef: NoteDefinition["clef"]): string {
+  if (clef === "treble") {
+    return "clé de sol";
+  }
+
+  if (clef === "bass") {
+    return "clé de fa";
+  }
+
+  return "clé d’Ut 4";
 }

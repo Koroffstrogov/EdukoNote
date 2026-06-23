@@ -1,59 +1,42 @@
 import { describe, expect, it } from "vitest";
-import { createDefaultSettings, normalizeSettings, setPalette, setReadingZone } from "./settings";
+import { createDefaultSettings, normalizeSettings, setReadingZone } from "./settings";
 
 describe("settings", () => {
-  it("defaults reading zones to full for both clefs and palette to prune", () => {
+  it("defaults reading zones to full for all clefs", () => {
     expect(createDefaultSettings()).toEqual({
       version: 1,
-      palette: "prune-2026",
       readingZones: {
         treble: "full",
         bass: "full",
+        tenor: "full",
       },
     });
   });
 
-  it("keeps treble and bass reading zones independent", () => {
+  it("keeps reading zones independent by clef", () => {
     const trebleSettings = setReadingZone(createDefaultSettings(), "treble", "lower");
     const bassSettings = setReadingZone(trebleSettings, "bass", "upper");
+    const tenorSettings = setReadingZone(bassSettings, "tenor", "lower");
 
-    expect(bassSettings.readingZones.treble).toBe("lower");
-    expect(bassSettings.readingZones.bass).toBe("upper");
+    expect(tenorSettings.readingZones.treble).toBe("lower");
+    expect(tenorSettings.readingZones.bass).toBe("upper");
+    expect(tenorSettings.readingZones.tenor).toBe("lower");
   });
 
-  it("changes palette without changing reading zones", () => {
-    const settings = setReadingZone(createDefaultSettings(), "treble", "lower");
-    const updatedSettings = setPalette(settings, "cloud-teal");
-
-    expect(updatedSettings.palette).toBe("cloud-teal");
-    expect(updatedSettings.readingZones).toEqual(settings.readingZones);
-  });
-
-  it("normalizes invalid stored values", () => {
-    const settings = normalizeSettings({
-      version: 1,
-      palette: "invalid",
-      readingZones: {
-        treble: "lower",
-        bass: "invalid",
-      },
-    });
-
-    expect(settings.palette).toBe("prune-2026");
-    expect(settings.readingZones.treble).toBe("lower");
-    expect(settings.readingZones.bass).toBe("full");
-  });
-
-  it("normalizes valid stored palette values", () => {
+  it("normalizes invalid stored values and ignores stale palette settings", () => {
     const settings = normalizeSettings({
       version: 1,
       palette: "blue-piano",
       readingZones: {
-        treble: "full",
-        bass: "full",
+        treble: "lower",
+        bass: "invalid",
+        tenor: "upper",
       },
     });
 
-    expect(settings.palette).toBe("blue-piano");
+    expect("palette" in settings).toBe(false);
+    expect(settings.readingZones.treble).toBe("lower");
+    expect(settings.readingZones.bass).toBe("full");
+    expect(settings.readingZones.tenor).toBe("upper");
   });
 });

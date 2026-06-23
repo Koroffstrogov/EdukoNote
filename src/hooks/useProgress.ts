@@ -10,6 +10,7 @@ import {
   setActiveClef,
   type ProgressState,
 } from "../domain/progress";
+import { getPaletteForClef } from "../theme/tokens";
 
 function readStoredProgress(): ProgressState {
   if (typeof window === "undefined") {
@@ -40,6 +41,10 @@ export function useProgress() {
   const [progress, setProgress] = useState<ProgressState>(() => readStoredProgress());
 
   useEffect(() => {
+    if (typeof document !== "undefined") {
+      document.documentElement.dataset.palette = getPaletteForClef(progress.activeClef);
+    }
+
     writeStoredProgress(progress);
   }, [progress]);
 

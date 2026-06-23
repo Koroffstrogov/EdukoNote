@@ -3,14 +3,13 @@ import { AppButton } from "../components/ui/AppButton";
 import { AppCard } from "../components/ui/AppCard";
 import { FeedbackCard } from "../components/ui/FeedbackCard";
 import { HomeActionCard } from "../components/ui/HomeActionCard";
-import { PaletteSelector } from "../components/ui/PaletteSelector";
 import { ProgressChip } from "../components/ui/ProgressChip";
-import { useSettings } from "../hooks/useSettings";
-import { colorTokens } from "../theme/tokens";
+import { CLEF_LABELS, type Clef } from "../domain/notes";
+import { CLEF_PALETTES, PALETTE_LABELS, colorTokens } from "../theme/tokens";
+
+const clefThemePreviews: Clef[] = ["treble", "bass", "tenor"];
 
 export function StyleGuidePage() {
-  const { settings, updatePalette } = useSettings();
-
   return (
     <main className="app-shell">
       <nav className="app-topbar" aria-label="Navigation principale">
@@ -34,7 +33,28 @@ export function StyleGuidePage() {
       </header>
 
       <div className="styleguide-layout">
-        <PaletteSelector activePalette={settings.palette} onChange={updatePalette} />
+        <section className="style-section" aria-labelledby="clef-themes-title">
+          <h2 className="style-section__title" id="clef-themes-title">
+            Thèmes par clé
+          </h2>
+          <div className="theme-clef-grid">
+            {clefThemePreviews.map((clef) => {
+              const palette = CLEF_PALETTES[clef];
+
+              return (
+                <article className="theme-clef-card" data-palette={palette} key={clef}>
+                  <span className="theme-clef-card__swatches" aria-hidden="true">
+                    <span className="theme-clef-card__swatch theme-clef-card__swatch--primary" />
+                    <span className="theme-clef-card__swatch theme-clef-card__swatch--accent-1" />
+                    <span className="theme-clef-card__swatch theme-clef-card__swatch--accent-2" />
+                  </span>
+                  <p className="theme-clef-card__title">{CLEF_LABELS[clef]}</p>
+                  <p className="theme-clef-card__text">{PALETTE_LABELS[palette]}</p>
+                </article>
+              );
+            })}
+          </div>
+        </section>
 
         <section className="style-section" aria-labelledby="palette-title">
           <h2 className="style-section__title" id="palette-title">
@@ -71,6 +91,10 @@ export function StyleGuidePage() {
           <AppCard tone="sky" className="question-card">
             <h2 className="question-card__title">Quelle est cette note ?</h2>
             <StaffPreview note="bass-fa3" />
+          </AppCard>
+          <AppCard tone="sky" className="question-card">
+            <h2 className="question-card__title">Quelle est cette note ?</h2>
+            <StaffPreview note="tenor-do4" />
           </AppCard>
           <div className="styleguide-layout">
             <FeedbackCard status="success">C’est Mi</FeedbackCard>

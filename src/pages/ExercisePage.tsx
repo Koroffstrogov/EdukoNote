@@ -5,7 +5,7 @@ import { AppCard } from "../components/ui/AppCard";
 import { FeedbackCard } from "../components/ui/FeedbackCard";
 import { ProgressChip } from "../components/ui/ProgressChip";
 import type { ColorTokenId } from "../theme/tokens";
-import { CLEF_LABELS, READING_ZONE_LABELS, getOtherClef, type AnswerLabel, type Clef, type NoteId } from "../domain/notes";
+import { CLEF_LABELS, READING_ZONE_LABELS, getNextClef, type AnswerLabel, type Clef, type NoteId } from "../domain/notes";
 import {
   generateNextQuestion,
   getQuestionPool,
@@ -43,7 +43,7 @@ export function ExercisePage() {
   const { progress, activeClef, switchActiveClef, recordNoteAnswer, recordRecentNote } = useProgress();
   const { settings } = useSettings();
   const activeReadingZone = settings.readingZones[activeClef];
-  const nextClef = getOtherClef(activeClef);
+  const nextClef = getNextClef(activeClef);
   const reviewNotes = mode === "review" ? getReviewNotes(activeClef, progress, activeReadingZone) : [];
   const recentHistoryRef = useRef<NoteId[]>(mode === "speed" ? [] : progress.clefs[activeClef].recentHistory);
   const questionIndexRef = useRef(1);
@@ -285,7 +285,7 @@ function EmptyReviewState() {
   const { activeClef, switchActiveClef } = useProgress();
   const { settings } = useSettings();
   const activeReadingZone = settings.readingZones[activeClef];
-  const nextClef = getOtherClef(activeClef);
+  const nextClef = getNextClef(activeClef);
 
   function switchClefAndGoHome(clef: Clef) {
     switchActiveClef(clef);
@@ -337,7 +337,7 @@ type SpeedResultStateProps = {
 };
 
 function SpeedResultState({ score, activeClef, onToggleClef, onRestart }: SpeedResultStateProps) {
-  const nextClef = getOtherClef(activeClef);
+  const nextClef = getNextClef(activeClef);
 
   return (
     <main className="app-shell">

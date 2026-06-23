@@ -1,4 +1,4 @@
-export type Clef = "treble" | "bass";
+export type Clef = "treble" | "bass" | "tenor";
 
 export type AnswerLabel = "Do" | "Ré" | "Mi" | "Fa" | "Sol" | "La" | "Si";
 
@@ -40,7 +40,24 @@ export type BassNoteId =
   | "bass-si3"
   | "bass-do4";
 
-export type NoteId = TrebleNoteId | BassNoteId;
+export type TenorNoteId =
+  | "tenor-do3"
+  | "tenor-re3"
+  | "tenor-mi3"
+  | "tenor-fa3"
+  | "tenor-sol3"
+  | "tenor-la3"
+  | "tenor-si3"
+  | "tenor-do4"
+  | "tenor-re4"
+  | "tenor-mi4"
+  | "tenor-fa4"
+  | "tenor-sol4"
+  | "tenor-la4"
+  | "tenor-si4"
+  | "tenor-do5";
+
+export type NoteId = TrebleNoteId | BassNoteId | TenorNoteId;
 
 export type NoteDefinition = {
   id: NoteId;
@@ -57,11 +74,12 @@ export type NoteDefinition = {
 
 export const ANSWER_LABELS: AnswerLabel[] = ["Do", "Ré", "Mi", "Fa", "Sol", "La", "Si"];
 
-export const CLEFS: Clef[] = ["treble", "bass"];
+export const CLEFS: Clef[] = ["treble", "bass", "tenor"];
 
 export const CLEF_LABELS: Record<Clef, string> = {
   treble: "Clé de Sol",
   bass: "Clé de Fa",
+  tenor: "Clé d’Ut 4",
 };
 
 export const READING_ZONES: ReadingZone[] = ["lower", "upper", "full"];
@@ -118,19 +136,40 @@ export const BASS_NOTE_DEFINITIONS: NoteDefinition[] = [
   createNote("bass-do4", "bass", "Do", 10, 4, 13, "upper", [36]),
 ];
 
+export const TENOR_NOTE_DEFINITIONS: NoteDefinition[] = [
+  createNote("tenor-do3", "tenor", "Do", -1, 3, 4, "lower"),
+  createNote("tenor-re3", "tenor", "Ré", 0, 1, 0, "lower"),
+  createNote("tenor-mi3", "tenor", "Mi", 1, 2, 2, "lower"),
+  createNote("tenor-fa3", "tenor", "Fa", 2, 1, 0, "lower"),
+  createNote("tenor-sol3", "tenor", "Sol", 3, 2, 2, "lower"),
+  createNote("tenor-la3", "tenor", "La", 4, 1, 0, "lower"),
+  createNote("tenor-si3", "tenor", "Si", 5, 2, 2, "lower"),
+  createNote("tenor-do4", "tenor", "Do", 6, 1, 0, "upper"),
+  createNote("tenor-re4", "tenor", "Ré", 7, 2, 5, "upper"),
+  createNote("tenor-mi4", "tenor", "Mi", 8, 2, 0, "upper"),
+  createNote("tenor-fa4", "tenor", "Fa", 9, 3, 7, "upper"),
+  createNote("tenor-sol4", "tenor", "Sol", 10, 3, 9, "upper", [36]),
+  createNote("tenor-la4", "tenor", "La", 11, 4, 11, "upper", [36]),
+  createNote("tenor-si4", "tenor", "Si", 12, 4, 13, "upper", [36, 20]),
+  createNote("tenor-do5", "tenor", "Do", 13, 4, 13, "upper", [36, 20]),
+];
+
 export const NOTE_DEFINITIONS_BY_CLEF: Record<Clef, NoteDefinition[]> = {
   treble: TREBLE_NOTE_DEFINITIONS,
   bass: BASS_NOTE_DEFINITIONS,
+  tenor: TENOR_NOTE_DEFINITIONS,
 };
 
 export const NOTE_DEFINITIONS: NoteDefinition[] = [
   ...NOTE_DEFINITIONS_BY_CLEF.treble,
   ...NOTE_DEFINITIONS_BY_CLEF.bass,
+  ...NOTE_DEFINITIONS_BY_CLEF.tenor,
 ];
 
 export const INITIAL_TRAINING_NOTE_IDS_BY_CLEF: Record<Clef, NoteId[]> = {
   treble: ["mi4", "sol4", "si4", "do5", "re5"],
   bass: ["bass-sol2", "bass-si2", "bass-re3", "bass-fa3", "bass-la3"],
+  tenor: ["tenor-re3", "tenor-fa3", "tenor-la3", "tenor-do4", "tenor-mi4"],
 };
 
 export const INITIAL_TRAINING_NOTE_IDS: NoteId[] = INITIAL_TRAINING_NOTE_IDS_BY_CLEF.treble;
@@ -153,8 +192,10 @@ export function getInitialTrainingNoteIds(clef: Clef): NoteId[] {
   return INITIAL_TRAINING_NOTE_IDS_BY_CLEF[clef];
 }
 
-export function getOtherClef(clef: Clef): Clef {
-  return clef === "treble" ? "bass" : "treble";
+export function getNextClef(clef: Clef): Clef {
+  const currentIndex = CLEFS.indexOf(clef);
+
+  return CLEFS[(currentIndex + 1) % CLEFS.length] ?? "treble";
 }
 
 export function getNoteById(noteId: NoteId): NoteDefinition {
@@ -176,7 +217,7 @@ export function isNoteId(value: unknown): value is NoteId {
 }
 
 export function isClef(value: unknown): value is Clef {
-  return value === "treble" || value === "bass";
+  return value === "treble" || value === "bass" || value === "tenor";
 }
 
 export function isReadingZone(value: unknown): value is ReadingZone {

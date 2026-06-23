@@ -3,11 +3,9 @@ import type { Clef, ReadingZone } from "../domain/notes";
 import {
   SETTINGS_STORAGE_KEY,
   normalizeSettings,
-  setPalette,
   setReadingZone,
   type SettingsState,
 } from "../domain/settings";
-import type { PaletteId } from "../theme/tokens";
 
 function readStoredSettings(): SettingsState {
   if (typeof window === "undefined") {
@@ -36,10 +34,6 @@ export function useSettings() {
   const [settings, setSettings] = useState<SettingsState>(() => readStoredSettings());
 
   useEffect(() => {
-    if (typeof document !== "undefined") {
-      document.documentElement.dataset.palette = settings.palette;
-    }
-
     writeStoredSettings(settings);
   }, [settings]);
 
@@ -47,13 +41,8 @@ export function useSettings() {
     setSettings((currentSettings) => setReadingZone(currentSettings, clef, readingZone));
   }, []);
 
-  const updatePalette = useCallback((palette: PaletteId) => {
-    setSettings((currentSettings) => setPalette(currentSettings, palette));
-  }, []);
-
   return {
     settings,
-    updatePalette,
     updateReadingZone,
   };
 }
