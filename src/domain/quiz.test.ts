@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ANSWER_LABELS, getNoteById } from "./notes";
+import { ANSWER_LABELS, getNoteById, getNotesForClefAndReadingZone } from "./notes";
 import { createEmptyProgress, recordAnswer, recordRecentQuestion } from "./progress";
 import { createChoices, generateNextQuestion, getQuestionPool, getReviewNotes, getUnlockedTrainingNotes } from "./quiz";
 
@@ -15,6 +15,23 @@ describe("quiz", () => {
 
     expect(unlockedNotes).toEqual(["bass-sol2", "bass-si2", "bass-re3", "bass-fa3", "bass-la3"]);
     expect(unlockedNotes.every((noteId) => getNoteById(noteId).clef === "bass")).toBe(true);
+  });
+
+  it("filters notes by reading zone without mixing clefs", () => {
+    const trebleLowerNotes = getNotesForClefAndReadingZone("treble", "lower").map((note) => note.id);
+    const trebleUpperNotes = getNotesForClefAndReadingZone("treble", "upper").map((note) => note.id);
+    const bassLowerNotes = getNotesForClefAndReadingZone("bass", "lower").map((note) => note.id);
+    const bassUpperNotes = getNotesForClefAndReadingZone("bass", "upper").map((note) => note.id);
+
+    expect(trebleLowerNotes).toEqual(["do4", "re4", "mi4", "fa4", "sol4", "la4", "si4"]);
+    expect(trebleUpperNotes).toEqual(["do5", "re5", "mi5", "fa5", "sol5", "la5", "si5", "do6"]);
+    expect(bassLowerNotes).toEqual(["bass-do2", "bass-re2", "bass-mi2", "bass-fa2", "bass-sol2", "bass-la2", "bass-si2"]);
+    expect(bassUpperNotes).toEqual(["bass-do3", "bass-re3", "bass-mi3", "bass-fa3", "bass-sol3", "bass-la3", "bass-si3", "bass-do4"]);
+  });
+
+  it("keeps full reading zone equal to all notes for the active clef", () => {
+    expect(getNotesForClefAndReadingZone("treble", "full").map((note) => note.id)).toHaveLength(15);
+    expect(getNotesForClefAndReadingZone("bass", "full").map((note) => note.id)).toHaveLength(15);
   });
 
   it("unlocks Fa and La in treble after a few good answers", () => {
@@ -41,6 +58,24 @@ describe("quiz", () => {
     expect(treblePool.every((note) => note.clef === "treble")).toBe(true);
     expect(bassPool).toHaveLength(15);
     expect(bassPool.every((note) => note.clef === "bass")).toBe(true);
+  });
+
+  it("filters challenge and speed pools by reading zone", () => {
+    const progress = createEmptyProgress();
+    const challengePool = getQuestionPool("challenge", "treble", progress, "lower").map((note) => note.id);
+    const speedPool = getQuestionPool("speed", "bass", progress, "upper").map((note) => note.id);
+
+    expect(challengePool).toEqual(["do4", "re4", "mi4", "fa4", "sol4", "la4", "si4"]);
+    expect(speedPool).toEqual(["bass-do3", "bass-re3", "bass-mi3", "bass-fa3", "bass-sol3", "bass-la3", "bass-si3", "bass-do4"]);
+  });
+
+  it("filters training pools by reading zone after unlock logic", () => {
+    const progress = createEmptyProgress();
+    const lowerPool = getQuestionPool("training", "treble", progress, "lower").map((note) => note.id);
+    const upperPool = getQuestionPool("training", "treble", progress, "upper").map((note) => note.id);
+
+    expect(lowerPool).toEqual(["mi4", "sol4", "si4"]);
+    expect(upperPool).toEqual(["do5", "re5"]);
   });
 
   it("does not change speed pools after progression updates", () => {
@@ -109,14 +144,16 @@ describe("quiz", () => {
     expect(bassQuestion.choices.every((choice) => ANSWER_LABELS.includes(choice))).toBe(true);
   });
 
-  it("prioritizes review notes only for the requested clef", () => {
+  it("prioritizes review notes only for the requested clef and reading zone", () => {
     const bassError = recordAnswer(createEmptyProgress(), "bass", "bass-fa3", false);
     const trebleError = recordAnswer(bassError, "treble", "re4", false);
     const repeatedTrebleError = recordAnswer(trebleError, "treble", "re4", false);
-    const bassReviewNotes = getReviewNotes("bass", repeatedTrebleError).map((note) => note.id);
-    const trebleReviewNotes = getReviewNotes("treble", repeatedTrebleError).map((note) => note.id);
+    const bassReviewNotes = getReviewNotes("bass", repeatedTrebleError, "upper").map((note) => note.id);
+    const bassLowerReviewNotes = getReviewNotes("bass", repeatedTrebleError, "lower").map((note) => note.id);
+    const trebleReviewNotes = getReviewNotes("treble", repeatedTrebleError, "lower").map((note) => note.id);
 
     expect(bassReviewNotes).toEqual(["bass-fa3"]);
+    expect(bassLowerReviewNotes).toEqual([]);
     expect(trebleReviewNotes[0]).toBe("re4");
   });
 });

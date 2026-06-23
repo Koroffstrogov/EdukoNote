@@ -2,6 +2,10 @@ export type Clef = "treble" | "bass";
 
 export type AnswerLabel = "Do" | "Ré" | "Mi" | "Fa" | "Sol" | "La" | "Si";
 
+export type PracticeRange = "lower" | "upper";
+
+export type ReadingZone = PracticeRange | "full";
+
 export type TrebleNoteId =
   | "do4"
   | "re4"
@@ -48,6 +52,7 @@ export type NoteDefinition = {
   difficulty: 1 | 2 | 3 | 4;
   unlockAfterCorrect: number;
   ledgerLines: number[];
+  practiceRange: PracticeRange;
 };
 
 export const ANSWER_LABELS: AnswerLabel[] = ["Do", "Ré", "Mi", "Fa", "Sol", "La", "Si"];
@@ -57,6 +62,14 @@ export const CLEFS: Clef[] = ["treble", "bass"];
 export const CLEF_LABELS: Record<Clef, string> = {
   treble: "Clé de Sol",
   bass: "Clé de Fa",
+};
+
+export const READING_ZONES: ReadingZone[] = ["lower", "upper", "full"];
+
+export const READING_ZONE_LABELS: Record<ReadingZone, string> = {
+  lower: "Bas",
+  upper: "Haut",
+  full: "Tout",
 };
 
 export const STAFF_VIEWBOX = {
@@ -70,39 +83,39 @@ const bottomLineY = 116;
 const staffStepHeight = 8;
 
 export const TREBLE_NOTE_DEFINITIONS: NoteDefinition[] = [
-  createNote("do4", "treble", "Do", -2, 3, 4, [132]),
-  createNote("re4", "treble", "Ré", -1, 3, 4),
-  createNote("mi4", "treble", "Mi", 0, 1, 0),
-  createNote("fa4", "treble", "Fa", 1, 2, 2),
-  createNote("sol4", "treble", "Sol", 2, 1, 0),
-  createNote("la4", "treble", "La", 3, 2, 2),
-  createNote("si4", "treble", "Si", 4, 1, 0),
-  createNote("do5", "treble", "Do", 5, 1, 0),
-  createNote("re5", "treble", "Ré", 6, 1, 0),
-  createNote("mi5", "treble", "Mi", 7, 2, 5),
-  createNote("fa5", "treble", "Fa", 8, 2, 5),
-  createNote("sol5", "treble", "Sol", 9, 3, 7),
-  createNote("la5", "treble", "La", 10, 3, 9, [36]),
-  createNote("si5", "treble", "Si", 11, 4, 11, [36]),
-  createNote("do6", "treble", "Do", 12, 4, 13, [36, 20]),
+  createNote("do4", "treble", "Do", -2, 3, 4, "lower", [132]),
+  createNote("re4", "treble", "Ré", -1, 3, 4, "lower"),
+  createNote("mi4", "treble", "Mi", 0, 1, 0, "lower"),
+  createNote("fa4", "treble", "Fa", 1, 2, 2, "lower"),
+  createNote("sol4", "treble", "Sol", 2, 1, 0, "lower"),
+  createNote("la4", "treble", "La", 3, 2, 2, "lower"),
+  createNote("si4", "treble", "Si", 4, 1, 0, "lower"),
+  createNote("do5", "treble", "Do", 5, 1, 0, "upper"),
+  createNote("re5", "treble", "Ré", 6, 1, 0, "upper"),
+  createNote("mi5", "treble", "Mi", 7, 2, 5, "upper"),
+  createNote("fa5", "treble", "Fa", 8, 2, 5, "upper"),
+  createNote("sol5", "treble", "Sol", 9, 3, 7, "upper"),
+  createNote("la5", "treble", "La", 10, 3, 9, "upper", [36]),
+  createNote("si5", "treble", "Si", 11, 4, 11, "upper", [36]),
+  createNote("do6", "treble", "Do", 12, 4, 13, "upper", [36, 20]),
 ];
 
 export const BASS_NOTE_DEFINITIONS: NoteDefinition[] = [
-  createNote("bass-do2", "bass", "Do", -4, 4, 13, [132, 148]),
-  createNote("bass-re2", "bass", "Ré", -3, 4, 11, [132]),
-  createNote("bass-mi2", "bass", "Mi", -2, 3, 9, [132]),
-  createNote("bass-fa2", "bass", "Fa", -1, 3, 7),
-  createNote("bass-sol2", "bass", "Sol", 0, 1, 0),
-  createNote("bass-la2", "bass", "La", 1, 2, 2),
-  createNote("bass-si2", "bass", "Si", 2, 1, 0),
-  createNote("bass-do3", "bass", "Do", 3, 2, 2),
-  createNote("bass-re3", "bass", "Ré", 4, 1, 0),
-  createNote("bass-mi3", "bass", "Mi", 5, 2, 5),
-  createNote("bass-fa3", "bass", "Fa", 6, 1, 0),
-  createNote("bass-sol3", "bass", "Sol", 7, 2, 5),
-  createNote("bass-la3", "bass", "La", 8, 1, 0),
-  createNote("bass-si3", "bass", "Si", 9, 3, 9),
-  createNote("bass-do4", "bass", "Do", 10, 4, 13, [36]),
+  createNote("bass-do2", "bass", "Do", -4, 4, 13, "lower", [132, 148]),
+  createNote("bass-re2", "bass", "Ré", -3, 4, 11, "lower", [132]),
+  createNote("bass-mi2", "bass", "Mi", -2, 3, 9, "lower", [132]),
+  createNote("bass-fa2", "bass", "Fa", -1, 3, 7, "lower"),
+  createNote("bass-sol2", "bass", "Sol", 0, 1, 0, "lower"),
+  createNote("bass-la2", "bass", "La", 1, 2, 2, "lower"),
+  createNote("bass-si2", "bass", "Si", 2, 1, 0, "lower"),
+  createNote("bass-do3", "bass", "Do", 3, 2, 2, "upper"),
+  createNote("bass-re3", "bass", "Ré", 4, 1, 0, "upper"),
+  createNote("bass-mi3", "bass", "Mi", 5, 2, 5, "upper"),
+  createNote("bass-fa3", "bass", "Fa", 6, 1, 0, "upper"),
+  createNote("bass-sol3", "bass", "Sol", 7, 2, 5, "upper"),
+  createNote("bass-la3", "bass", "La", 8, 1, 0, "upper"),
+  createNote("bass-si3", "bass", "Si", 9, 3, 9, "upper"),
+  createNote("bass-do4", "bass", "Do", 10, 4, 13, "upper", [36]),
 ];
 
 export const NOTE_DEFINITIONS_BY_CLEF: Record<Clef, NoteDefinition[]> = {
@@ -124,6 +137,16 @@ export const INITIAL_TRAINING_NOTE_IDS: NoteId[] = INITIAL_TRAINING_NOTE_IDS_BY_
 
 export function getNotesForClef(clef: Clef): NoteDefinition[] {
   return NOTE_DEFINITIONS_BY_CLEF[clef];
+}
+
+export function getNotesForClefAndReadingZone(clef: Clef, readingZone: ReadingZone): NoteDefinition[] {
+  const notes = getNotesForClef(clef);
+
+  if (readingZone === "full") {
+    return notes;
+  }
+
+  return notes.filter((note) => note.practiceRange === readingZone);
 }
 
 export function getInitialTrainingNoteIds(clef: Clef): NoteId[] {
@@ -156,6 +179,10 @@ export function isClef(value: unknown): value is Clef {
   return value === "treble" || value === "bass";
 }
 
+export function isReadingZone(value: unknown): value is ReadingZone {
+  return value === "lower" || value === "upper" || value === "full";
+}
+
 function createNote(
   id: NoteId,
   clef: Clef,
@@ -163,6 +190,7 @@ function createNote(
   stepIndex: number,
   difficulty: 1 | 2 | 3 | 4,
   unlockAfterCorrect: number,
+  practiceRange: PracticeRange,
   ledgerLines: number[] = [],
 ): NoteDefinition {
   return {
@@ -175,5 +203,6 @@ function createNote(
     difficulty,
     unlockAfterCorrect,
     ledgerLines,
+    practiceRange,
   };
 }

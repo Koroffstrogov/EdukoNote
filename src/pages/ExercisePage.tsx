@@ -5,7 +5,7 @@ import { AppCard } from "../components/ui/AppCard";
 import { FeedbackCard } from "../components/ui/FeedbackCard";
 import { ProgressChip } from "../components/ui/ProgressChip";
 import type { ColorTokenId } from "../theme/tokens";
-import { CLEF_LABELS, getOtherClef, type AnswerLabel, type Clef, type NoteId } from "../domain/notes";
+import { CLEF_LABELS, READING_ZONE_LABELS, getOtherClef, type AnswerLabel, type Clef, type NoteId } from "../domain/notes";
 import {
   generateNextQuestion,
   getQuestionPool,
@@ -16,27 +16,24 @@ import {
 } from "../domain/quiz";
 import { getSpeedTimeLimitSeconds } from "../domain/speed";
 import { useProgress } from "../hooks/useProgress";
+import { useSettings } from "../hooks/useSettings";
 import { ResultPage } from "./ResultPage";
 
 const CHALLENGE_LENGTH = 10;
 const SPEED_TIMER_TICK_MS = 100;
 const answerTones: ColorTokenId[] = ["rose", "lavender", "vanilla", "mint"];
 
-const modeCopy: Record<QuizMode, { eyebrow: string; title: string }> = {
+const modeCopy: Record<QuizMode, { title: string }> = {
   training: {
-    eyebrow: "Entraînement",
     title: "Une note à la fois",
   },
   challenge: {
-    eyebrow: "Défi 10 notes",
     title: "Score en 10 notes",
   },
   review: {
-    eyebrow: "Révision",
     title: "On reprend doucement",
   },
   speed: {
-    eyebrow: "Vitesse",
     title: "Série rapide",
   },
 };
@@ -44,12 +41,14 @@ const modeCopy: Record<QuizMode, { eyebrow: string; title: string }> = {
 export function ExercisePage() {
   const mode = useMemo(() => readModeFromUrl(), []);
   const { progress, activeClef, switchActiveClef, recordNoteAnswer, recordRecentNote } = useProgress();
+  const { settings } = useSettings();
+  const activeReadingZone = settings.readingZones[activeClef];
   const nextClef = getOtherClef(activeClef);
-  const reviewNotes = mode === "review" ? getReviewNotes(activeClef, progress) : [];
+  const reviewNotes = mode === "review" ? getReviewNotes(activeClef, progress, activeReadingZone) : [];
   const recentHistoryRef = useRef<NoteId[]>(mode === "speed" ? [] : progress.clefs[activeClef].recentHistory);
   const questionIndexRef = useRef(1);
   const [question, setQuestion] = useState<QuizQuestion>(() =>
-    generateNextQuestion(null, recentHistoryRef.current, getQuestionPool(mode, activeClef, progress), mode, Math.random, questionIndexRef.current),
+    generateNextQuestion(null, recentHistoryRef.current, getQuestionPool(mode, activeClef, progress, activeReadingZone), mode, Math.random, questionIndexRef.current),
   );
   const [selectedAnswerLabel, setSelectedAnswerLabel] = useState<AnswerLabel | null>(null);
   const [questionNumber, setQuestionNumber] = useState(1);
@@ -147,7 +146,7 @@ export function ExercisePage() {
     const nextScore = speedScore + 1;
     const nextHistory = [...recentHistoryRef.current, question.note.id].slice(-3);
     const nextQuestionIndex = questionIndexRef.current + 1;
-    const nextPool = getQuestionPool("speed", activeClef, progress);
+    const nextPool = getQuestionPool("speed", activeClef, progress, activeReadingZone);
 
     recentHistoryRef.current = nextHistory;
     questionIndexRef.current = nextQuestionIndex;
@@ -165,7 +164,7 @@ export function ExercisePage() {
       return;
     }
 
-    const nextPool = getQuestionPool(mode, activeClef, progress);
+    const nextPool = getQuestionPool(mode, activeClef, progress, activeReadingZone);
     const nextHistory = [...recentHistoryRef.current, question.note.id].slice(-3);
     const nextQuestionIndex = questionIndexRef.current + 1;
 
@@ -191,7 +190,7 @@ export function ExercisePage() {
     answeredRef.current = false;
     recentHistoryRef.current = [];
     questionIndexRef.current = 1;
-    setQuestion(generateNextQuestion(null, recentHistoryRef.current, getQuestionPool("challenge", activeClef, currentProgress), "challenge", Math.random, questionIndexRef.current));
+    setQuestion(generateNextQuestion(null, recentHistoryRef.current, getQuestionPool("challenge", activeClef, currentProgress, activeReadingZone), "challenge", Math.random, questionIndexRef.current));
   }
 
   function restartSpeed() {
@@ -202,7 +201,7 @@ export function ExercisePage() {
     answeredRef.current = false;
     recentHistoryRef.current = [];
     questionIndexRef.current = 1;
-    setQuestion(generateNextQuestion(null, recentHistoryRef.current, getQuestionPool("speed", activeClef, progress), "speed", Math.random, questionIndexRef.current));
+    setQuestion(generateNextQuestion(null, recentHistoryRef.current, getQuestionPool("speed", activeClef, progress, activeReadingZone), "speed", Math.random, questionIndexRef.current));
   }
 
   function switchClefAndGoHome(clef: Clef) {
@@ -225,7 +224,9 @@ export function ExercisePage() {
       </nav>
 
       <header className="page-hero">
-        <p className="page-eyebrow">{copy.eyebrow}</p>
+        <p className="page-eyebrow">
+          {CLEF_LABELS[activeClef]} · {READING_ZONE_LABELS[activeReadingZone]}
+        </p>
         <h1 className="page-title">{copy.title}</h1>
       </header>
 
@@ -282,6 +283,8 @@ export function ExercisePage() {
 
 function EmptyReviewState() {
   const { activeClef, switchActiveClef } = useProgress();
+  const { settings } = useSettings();
+  const activeReadingZone = settings.readingZones[activeClef];
   const nextClef = getOtherClef(activeClef);
 
   function switchClefAndGoHome(clef: Clef) {
@@ -304,8 +307,10 @@ function EmptyReviewState() {
       </nav>
 
       <header className="page-hero">
-        <p className="page-eyebrow">Révision</p>
-        <h1 className="page-title">Aucune erreur pour l’instant</h1>
+        <p className="page-eyebrow">
+          {CLEF_LABELS[activeClef]} · {READING_ZONE_LABELS[activeReadingZone]}
+        </p>
+        <h1 className="page-title">Aucune erreur ici</h1>
       </header>
 
       <AppCard tone="mint">

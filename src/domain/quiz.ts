@@ -3,10 +3,12 @@ import {
   getInitialTrainingNoteIds,
   getNoteById,
   getNotesForClef,
+  getNotesForClefAndReadingZone,
   type AnswerLabel,
   type Clef,
   type NoteDefinition,
   type NoteId,
+  type ReadingZone,
 } from "./notes";
 import { countTotalCorrect, type ProgressState } from "./progress";
 
@@ -27,8 +29,8 @@ export type ChallengeAnswer = {
   isCorrect: boolean;
 };
 
-export function getUnlockedTrainingNotes(clef: Clef, progress: ProgressState): NoteDefinition[] {
-  const notes = getNotesForClef(clef);
+export function getUnlockedTrainingNotes(clef: Clef, progress: ProgressState, readingZone: ReadingZone = "full"): NoteDefinition[] {
+  const notes = getNotesForClefAndReadingZone(clef, readingZone);
   const totalCorrect = countTotalCorrect(progress, clef);
   const initialNoteIds = new Set(getInitialTrainingNoteIds(clef));
   const unlockedNotes = notes.filter((note) => initialNoteIds.has(note.id) || note.unlockAfterCorrect <= totalCorrect);
@@ -36,8 +38,8 @@ export function getUnlockedTrainingNotes(clef: Clef, progress: ProgressState): N
   return unlockedNotes.length > 0 ? unlockedNotes : notes.filter((note) => note.unlockAfterCorrect === 0);
 }
 
-export function getReviewNotes(clef: Clef, progress: ProgressState): NoteDefinition[] {
-  return getNotesForClef(clef)
+export function getReviewNotes(clef: Clef, progress: ProgressState, readingZone: ReadingZone = "full"): NoteDefinition[] {
+  return getNotesForClefAndReadingZone(clef, readingZone)
     .filter((note) => (progress.clefs[clef].notes[note.id]?.errors ?? 0) > 0)
     .sort((first, second) => {
       const firstProgress = progress.clefs[clef].notes[first.id] ?? {
@@ -62,16 +64,16 @@ export function getReviewNotes(clef: Clef, progress: ProgressState): NoteDefinit
     });
 }
 
-export function getQuestionPool(mode: QuizMode, clef: Clef, progress: ProgressState): NoteDefinition[] {
+export function getQuestionPool(mode: QuizMode, clef: Clef, progress: ProgressState, readingZone: ReadingZone = "full"): NoteDefinition[] {
   if (mode === "review") {
-    return getReviewNotes(clef, progress);
+    return getReviewNotes(clef, progress, readingZone);
   }
 
   if (mode === "challenge" || mode === "speed") {
-    return getNotesForClef(clef);
+    return getNotesForClefAndReadingZone(clef, readingZone);
   }
 
-  return getUnlockedTrainingNotes(clef, progress);
+  return getUnlockedTrainingNotes(clef, progress, readingZone);
 }
 
 export function createQuestion(
