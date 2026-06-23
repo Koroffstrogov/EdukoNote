@@ -45,6 +45,37 @@ export const colorTokens = [
 
 export type ColorTokenId = (typeof colorTokens)[number]["id"];
 
+export const paletteTokens = [
+  {
+    id: "prune-2026",
+    name: "Prune magique",
+  },
+  {
+    id: "cloud-teal",
+    name: "Nuage teal",
+  },
+  {
+    id: "jelly-mint",
+    name: "Menthe pop",
+  },
+  {
+    id: "blue-piano",
+    name: "Piano bleu",
+  },
+] as const;
+
+export type PaletteId = (typeof paletteTokens)[number]["id"];
+
+export const PALETTES = paletteTokens.map((palette) => palette.id) as PaletteId[];
+
+export const PALETTE_LABELS: Record<PaletteId, string> = Object.fromEntries(
+  paletteTokens.map((palette) => [palette.id, palette.name]),
+) as Record<PaletteId, string>;
+
+export function isPaletteId(value: unknown): value is PaletteId {
+  return typeof value === "string" && PALETTES.includes(value as PaletteId);
+}
+
 export const spacingTokens = {
   none: "var(--space-0)",
   tiny: "var(--space-1)",

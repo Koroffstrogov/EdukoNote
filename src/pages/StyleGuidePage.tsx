@@ -1,19 +1,16 @@
-import type { CSSProperties } from "react";
 import { StaffPreview } from "../components/music/StaffPreview";
 import { AppButton } from "../components/ui/AppButton";
 import { AppCard } from "../components/ui/AppCard";
 import { FeedbackCard } from "../components/ui/FeedbackCard";
 import { HomeActionCard } from "../components/ui/HomeActionCard";
+import { PaletteSelector } from "../components/ui/PaletteSelector";
 import { ProgressChip } from "../components/ui/ProgressChip";
+import { useSettings } from "../hooks/useSettings";
 import { colorTokens } from "../theme/tokens";
 
-function paletteStyle(cssVariable: string): CSSProperties {
-  return {
-    "--palette-swatch": `var(${cssVariable})`,
-  } as CSSProperties;
-}
-
 export function StyleGuidePage() {
+  const { settings, updatePalette } = useSettings();
+
   return (
     <main className="app-shell">
       <nav className="app-topbar" aria-label="Navigation principale">
@@ -37,13 +34,15 @@ export function StyleGuidePage() {
       </header>
 
       <div className="styleguide-layout">
+        <PaletteSelector activePalette={settings.palette} onChange={updatePalette} />
+
         <section className="style-section" aria-labelledby="palette-title">
           <h2 className="style-section__title" id="palette-title">
-            Palette
+            Palette de base
           </h2>
           <div className="palette-grid">
             {colorTokens.map((color) => (
-              <article className="palette-card" key={color.id} style={paletteStyle(color.cssVariable)}>
+              <article className={`palette-card palette-card--${color.id}`} key={color.id}>
                 <span className="palette-card__sample" aria-hidden="true" />
                 <p className="palette-card__name">{color.name}</p>
                 <p className="palette-card__code">{color.hex}</p>
