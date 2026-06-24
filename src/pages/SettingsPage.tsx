@@ -36,7 +36,6 @@ export function SettingsPage() {
 
   function chooseClef(clef: Clef) {
     switchActiveClef(clef);
-    window.location.href = "/";
   }
 
   return (
