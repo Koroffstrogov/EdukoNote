@@ -4,8 +4,9 @@ import { AppButton } from "../components/ui/AppButton";
 import { AppCard } from "../components/ui/AppCard";
 import { FeedbackCard } from "../components/ui/FeedbackCard";
 import { ProgressChip } from "../components/ui/ProgressChip";
+import { SettingsButton } from "../components/ui/SettingsButton";
 import type { ColorTokenId } from "../theme/tokens";
-import { CLEF_LABELS, READING_ZONE_LABELS, getNextClef, type AnswerLabel, type Clef, type NoteId } from "../domain/notes";
+import { CLEF_LABELS, READING_ZONE_LABELS, type AnswerLabel, type NoteId } from "../domain/notes";
 import {
   generateNextQuestion,
   getQuestionPool,
@@ -32,10 +33,9 @@ const modeLabels: Record<QuizMode, string> = {
 
 export function ExercisePage() {
   const mode = useMemo(() => readModeFromUrl(), []);
-  const { progress, activeClef, switchActiveClef, recordNoteAnswer, recordRecentNote } = useProgress();
+  const { progress, activeClef, recordNoteAnswer, recordRecentNote } = useProgress();
   const { settings } = useSettings();
   const activeReadingZone = settings.readingZones[activeClef];
-  const nextClef = getNextClef(activeClef);
   const reviewNotes = mode === "review" ? getReviewNotes(activeClef, progress, activeReadingZone) : [];
   const recentHistoryRef = useRef<NoteId[]>(mode === "speed" ? [] : progress.clefs[activeClef].recentHistory);
   const questionIndexRef = useRef(1);
@@ -90,11 +90,11 @@ export function ExercisePage() {
   }
 
   if (mode === "challenge" && isFinished) {
-    return <ResultPage answers={answers} activeClef={activeClef} onToggleClef={() => switchClefAndGoHome(nextClef)} onRestart={() => restartChallenge(progress)} />;
+    return <ResultPage answers={answers} onRestart={() => restartChallenge(progress)} />;
   }
 
   if (mode === "speed" && speedFinished) {
-    return <SpeedResultState score={speedScore} activeClef={activeClef} onToggleClef={() => switchClefAndGoHome(nextClef)} onRestart={restartSpeed} />;
+    return <SpeedResultState score={speedScore} onRestart={restartSpeed} />;
   }
 
   const isCorrect = selectedAnswerLabel === question.note.answerLabel;
@@ -195,11 +195,6 @@ export function ExercisePage() {
     setQuestion(generateNextQuestion(null, recentHistoryRef.current, getQuestionPool("speed", activeClef, progress, activeReadingZone), "speed", Math.random, questionIndexRef.current));
   }
 
-  function switchClefAndGoHome(clef: Clef) {
-    switchActiveClef(clef);
-    window.location.href = "/";
-  }
-
   return (
     <main className="app-shell exercise-shell">
       <nav className="app-topbar" aria-label="Navigation principale">
@@ -209,9 +204,7 @@ export function ExercisePage() {
           </span>
           EdukoNote
         </a>
-        <AppButton tone="cream" onClick={() => switchClefAndGoHome(nextClef)} aria-label={`Passer en ${CLEF_LABELS[nextClef]}`}>
-          {CLEF_LABELS[nextClef]}
-        </AppButton>
+        <SettingsButton />
       </nav>
 
       <header className="page-hero">
@@ -272,15 +265,9 @@ export function ExercisePage() {
 }
 
 function EmptyReviewState() {
-  const { activeClef, switchActiveClef } = useProgress();
+  const { activeClef } = useProgress();
   const { settings } = useSettings();
   const activeReadingZone = settings.readingZones[activeClef];
-  const nextClef = getNextClef(activeClef);
-
-  function switchClefAndGoHome(clef: Clef) {
-    switchActiveClef(clef);
-    window.location.href = "/";
-  }
 
   return (
     <main className="app-shell exercise-shell">
@@ -291,9 +278,7 @@ function EmptyReviewState() {
           </span>
           EdukoNote
         </a>
-        <AppButton tone="cream" onClick={() => switchClefAndGoHome(nextClef)} aria-label={`Passer en ${CLEF_LABELS[nextClef]}`}>
-          {CLEF_LABELS[nextClef]}
-        </AppButton>
+        <SettingsButton />
       </nav>
 
       <header className="page-hero">
@@ -321,14 +306,10 @@ function EmptyReviewState() {
 
 type SpeedResultStateProps = {
   score: number;
-  activeClef: Clef;
-  onToggleClef: () => void;
   onRestart: () => void;
 };
 
-function SpeedResultState({ score, activeClef, onToggleClef, onRestart }: SpeedResultStateProps) {
-  const nextClef = getNextClef(activeClef);
-
+function SpeedResultState({ score, onRestart }: SpeedResultStateProps) {
   return (
     <main className="app-shell">
       <nav className="app-topbar" aria-label="Navigation principale">
@@ -338,9 +319,7 @@ function SpeedResultState({ score, activeClef, onToggleClef, onRestart }: SpeedR
           </span>
           EdukoNote
         </a>
-        <AppButton tone="cream" onClick={onToggleClef} aria-label={`Passer en ${CLEF_LABELS[nextClef]}`}>
-          {CLEF_LABELS[nextClef]}
-        </AppButton>
+        <SettingsButton />
       </nav>
 
       <header className="page-hero">

@@ -1,5 +1,6 @@
 import { HomePage } from "./pages/HomePage";
 import { ExercisePage } from "./pages/ExercisePage";
+import { SettingsPage } from "./pages/SettingsPage";
 import { StyleGuidePage } from "./pages/StyleGuidePage";
 
 export function App() {
@@ -11,6 +12,10 @@ export function App() {
 
   if (path === "/exercise") {
     return <ExercisePage />;
+  }
+
+  if (path === "/settings") {
+    return <SettingsPage />;
   }
 
   return <HomePage />;

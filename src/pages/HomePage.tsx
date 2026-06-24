@@ -2,12 +2,12 @@ import { AppButton } from "../components/ui/AppButton";
 import { AppCard } from "../components/ui/AppCard";
 import { HomeActionCard } from "../components/ui/HomeActionCard";
 import { ProgressChip } from "../components/ui/ProgressChip";
+import { SettingsButton } from "../components/ui/SettingsButton";
 import {
   ANSWER_LABELS,
   CLEF_LABELS,
   READING_ZONE_LABELS,
   READING_ZONES,
-  getNextClef,
   getNotesForClef,
   type AnswerLabel,
   type Clef,
@@ -18,9 +18,8 @@ import { useProgress } from "../hooks/useProgress";
 import { useSettings } from "../hooks/useSettings";
 
 export function HomePage() {
-  const { progress, activeClef, switchActiveClef, resetStoredProgress } = useProgress();
+  const { progress, activeClef, resetStoredProgress } = useProgress();
   const { settings, updateReadingZone } = useSettings();
-  const nextClef = getNextClef(activeClef);
   const activeReadingZone = settings.readingZones[activeClef];
   const totalViews = countTotalViews(progress, activeClef);
   const totalCorrect = countTotalCorrect(progress, activeClef);
@@ -36,9 +35,7 @@ export function HomePage() {
           </span>
           EdukoNote
         </a>
-        <AppButton tone="cream" onClick={() => switchActiveClef(nextClef)} aria-label={`Passer en ${CLEF_LABELS[nextClef]}`}>
-          {CLEF_LABELS[nextClef]}
-        </AppButton>
+        <SettingsButton />
       </nav>
 
       <header className="page-hero">
