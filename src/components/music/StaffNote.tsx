@@ -75,7 +75,7 @@ function getClefLayout(note: NoteDefinition, lineGap: number, solLineY: number, 
   }
 
   if (note.clef === "tenor") {
-    const height = lineGap * 5.4;
+    const height = lineGap * 5.4 * 0.75;
     const cLineAnchorRatio = 0.5;
 
     return {
