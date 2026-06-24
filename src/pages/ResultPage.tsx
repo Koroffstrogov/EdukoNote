@@ -3,7 +3,6 @@ import { type ChallengeAnswer, getNotesToReview } from "../domain/quiz";
 import { AppButton } from "../components/ui/AppButton";
 import { AppCard } from "../components/ui/AppCard";
 import { ProgressChip } from "../components/ui/ProgressChip";
-import { SettingsButton } from "../components/ui/SettingsButton";
 
 export type ResultPageProps = {
   answers: ChallengeAnswer[];
@@ -23,7 +22,9 @@ export function ResultPage({ answers, onRestart }: ResultPageProps) {
           </span>
           EdukoNote
         </a>
-        <SettingsButton />
+        <AppButton href="/" tone="cream">
+          Accueil
+        </AppButton>
       </nav>
 
       <header className="page-hero">

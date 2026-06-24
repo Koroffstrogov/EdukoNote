@@ -4,7 +4,6 @@ import { AppButton } from "../components/ui/AppButton";
 import { AppCard } from "../components/ui/AppCard";
 import { FeedbackCard } from "../components/ui/FeedbackCard";
 import { ProgressChip } from "../components/ui/ProgressChip";
-import { SettingsButton } from "../components/ui/SettingsButton";
 import type { ColorTokenId } from "../theme/tokens";
 import { CLEF_LABELS, READING_ZONE_LABELS, type AnswerLabel, type NoteId } from "../domain/notes";
 import {
@@ -204,7 +203,9 @@ export function ExercisePage() {
           </span>
           EdukoNote
         </a>
-        <SettingsButton />
+        <AppButton href="/" tone="cream">
+          Accueil
+        </AppButton>
       </nav>
 
       <header className="page-hero">
@@ -278,7 +279,9 @@ function EmptyReviewState() {
           </span>
           EdukoNote
         </a>
-        <SettingsButton />
+        <AppButton href="/" tone="cream">
+          Accueil
+        </AppButton>
       </nav>
 
       <header className="page-hero">
@@ -319,7 +322,9 @@ function SpeedResultState({ score, onRestart }: SpeedResultStateProps) {
           </span>
           EdukoNote
         </a>
-        <SettingsButton />
+        <AppButton href="/" tone="cream">
+          Accueil
+        </AppButton>
       </nav>
 
       <header className="page-hero">
