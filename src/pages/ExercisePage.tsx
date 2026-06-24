@@ -23,19 +23,11 @@ const CHALLENGE_LENGTH = 10;
 const SPEED_TIMER_TICK_MS = 100;
 const answerTones: ColorTokenId[] = ["rose", "lavender", "vanilla", "mint"];
 
-const modeCopy: Record<QuizMode, { title: string }> = {
-  training: {
-    title: "Une note à la fois",
-  },
-  challenge: {
-    title: "Score en 10 notes",
-  },
-  review: {
-    title: "On reprend doucement",
-  },
-  speed: {
-    title: "Série rapide",
-  },
+const modeLabels: Record<QuizMode, string> = {
+  training: "Entraînement",
+  challenge: "Défi",
+  review: "Révision",
+  speed: "Vitesse",
 };
 
 export function ExercisePage() {
@@ -105,7 +97,6 @@ export function ExercisePage() {
     return <SpeedResultState score={speedScore} activeClef={activeClef} onToggleClef={() => switchClefAndGoHome(nextClef)} onRestart={restartSpeed} />;
   }
 
-  const copy = modeCopy[mode];
   const isCorrect = selectedAnswerLabel === question.note.answerLabel;
 
   function handleAnswer(answerLabel: AnswerLabel) {
@@ -225,25 +216,24 @@ export function ExercisePage() {
 
       <header className="page-hero">
         <p className="page-eyebrow">
-          {CLEF_LABELS[activeClef]} · {READING_ZONE_LABELS[activeReadingZone]}
+          {modeLabels[mode]} · {CLEF_LABELS[activeClef]} · {READING_ZONE_LABELS[activeReadingZone]}
         </p>
-        <h1 className="page-title">{copy.title}</h1>
       </header>
 
       <div className="exercise-layout">
         <AppCard tone="sky" className="question-card">
-          <div className="exercise-meta">
-            {mode === "speed" ? (
-              <>
-                <ProgressChip label={`Score ${speedScore}`} status="current" />
-                <ProgressChip label={`${formatSpeedTime(speedTimeLeftMs)}s`} status={speedTimeLeftMs <= 1000 ? "missed" : "current"} />
-              </>
-            ) : mode === "challenge" ? (
-              <ProgressChip label={`${questionNumber}/${CHALLENGE_LENGTH}`} status="current" />
-            ) : (
-              <ProgressChip label={mode === "training" ? "Sans chrono" : "Erreurs"} status="current" />
-            )}
-          </div>
+          {mode === "speed" || mode === "challenge" ? (
+            <div className="exercise-meta">
+              {mode === "speed" ? (
+                <>
+                  <ProgressChip label={`Score ${speedScore}`} status="current" />
+                  <ProgressChip label={`${formatSpeedTime(speedTimeLeftMs)}s`} status={speedTimeLeftMs <= 1000 ? "missed" : "current"} />
+                </>
+              ) : (
+                <ProgressChip label={`${questionNumber}/${CHALLENGE_LENGTH}`} status="current" />
+              )}
+            </div>
+          ) : null}
           <h2 className="question-card__title">Quelle est cette note ?</h2>
           <StaffNote note={question.note} />
         </AppCard>

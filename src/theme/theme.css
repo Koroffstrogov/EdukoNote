@@ -113,6 +113,8 @@
   --content-max: 68rem;
   --phone-preview-width: 20rem;
   --staff-height: 8.5rem;
+  --exercise-staff-width: clamp(19.5rem, 88vw, 23rem);
+  --exercise-card-padding: clamp(var(--space-3), 3vw, var(--space-4));
   --staff-note-size: 2.2rem;
   --staff-note-do: 75%;
   --staff-note-re: 64%;
@@ -612,7 +614,20 @@ a {
 
 .exercise-layout {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-3);
+}
+
+.exercise-shell .app-topbar {
+  margin-bottom: var(--space-3);
+}
+
+.exercise-shell .page-hero {
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+}
+
+.exercise-shell .page-eyebrow {
+  padding: var(--space-1) var(--space-3);
 }
 
 .exercise-meta {
@@ -620,6 +635,7 @@ a {
   flex-wrap: wrap;
   gap: var(--space-2);
   justify-content: flex-end;
+  width: 100%;
 }
 
 .answer-grid {
@@ -650,6 +666,18 @@ a {
   text-align: center;
 }
 
+.exercise-shell .question-card {
+  justify-items: center;
+  align-content: center;
+  gap: var(--space-2);
+  padding: var(--exercise-card-padding);
+}
+
+.exercise-shell .question-card__title {
+  font-size: var(--font-size-lg);
+  text-align: center;
+}
+
 .staff-preview {
   display: grid;
   place-items: center;
@@ -662,11 +690,18 @@ a {
   margin: var(--space-0);
 }
 
+.exercise-shell .staff-note {
+  justify-self: center;
+  width: min(100%, var(--exercise-staff-width));
+  gap: var(--space-0);
+}
+
 .staff-note-svg {
   display: block;
   width: 100%;
+  aspect-ratio: 16 / 9;
   height: auto;
-  min-height: var(--staff-height);
+  min-height: var(--space-0);
 }
 
 .staff-note-svg__clef {
@@ -979,15 +1014,6 @@ a {
 
   .exercise-shell .exercise-feedback .feedback-card__title {
     font-size: var(--font-size-lg);
-  }
-
-  .exercise-shell .staff-note {
-    gap: var(--space-1);
-  }
-
-  .exercise-shell .staff-note-svg {
-    max-height: calc(var(--staff-height) - var(--space-6) - var(--space-1));
-    min-height: calc(var(--staff-height) - var(--space-7) - var(--space-1));
   }
 
   .exercise-shell .app-topbar .app-button {
