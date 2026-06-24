@@ -6,8 +6,6 @@ import { SettingsButton } from "../components/ui/SettingsButton";
 import {
   ANSWER_LABELS,
   CLEF_LABELS,
-  READING_ZONE_LABELS,
-  READING_ZONES,
   getNotesForClef,
   type AnswerLabel,
   type Clef,
@@ -15,12 +13,9 @@ import {
 } from "../domain/notes";
 import { countTotalCorrect, countTotalErrors, countTotalViews, type NoteProgress } from "../domain/progress";
 import { useProgress } from "../hooks/useProgress";
-import { useSettings } from "../hooks/useSettings";
 
 export function HomePage() {
   const { progress, activeClef, resetStoredProgress } = useProgress();
-  const { settings, updateReadingZone } = useSettings();
-  const activeReadingZone = settings.readingZones[activeClef];
   const totalViews = countTotalViews(progress, activeClef);
   const totalCorrect = countTotalCorrect(progress, activeClef);
   const totalErrors = countTotalErrors(progress, activeClef);
@@ -43,24 +38,6 @@ export function HomePage() {
       </header>
 
       <div className="home-layout">
-        <section className="reading-zone-control" aria-labelledby="reading-zone-title">
-          <h2 className="reading-zone-control__title" id="reading-zone-title">
-            Zone de lecture
-          </h2>
-          <div className="reading-zone-control__buttons" role="group" aria-label="Choisir la zone de lecture">
-            {READING_ZONES.map((readingZone) => (
-              <AppButton
-                key={readingZone}
-                tone={activeReadingZone === readingZone ? "plum" : "cream"}
-                onClick={() => updateReadingZone(activeClef, readingZone)}
-                aria-label={`Zone de lecture ${READING_ZONE_LABELS[readingZone]}`}
-              >
-                {READING_ZONE_LABELS[readingZone]}
-              </AppButton>
-            ))}
-          </div>
-        </section>
-
         <section className="home-actions" aria-label="Actions d'accueil provisoires">
           <HomeActionCard
             title="Entraînement"

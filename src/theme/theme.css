@@ -234,6 +234,47 @@ a {
   height: 1.35rem;
 }
 
+.settings-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+.settings-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--touch-target);
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-medium) solid color-mix(in srgb, var(--color-lavender) 58%, var(--color-plum));
+  border-radius: var(--radius-button);
+  background: var(--color-cream);
+  color: var(--color-text);
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+  font-weight: var(--font-weight-strong);
+  line-height: var(--line-height-tight);
+  text-align: center;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease,
+    border-color 160ms ease;
+}
+
+.settings-tab:active {
+  transform: translateY(calc(var(--space-1) / 2));
+  box-shadow: var(--shadow-button);
+}
+
+.settings-tab--active {
+  border-color: var(--color-plum);
+  background: var(--color-plum);
+  color: var(--color-cream);
+  box-shadow: var(--shadow-button);
+}
+
 .page-hero {
   display: grid;
   gap: var(--space-3);
@@ -285,29 +326,6 @@ a {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--space-4);
-}
-
-.reading-zone-control {
-  display: grid;
-  gap: var(--space-2);
-}
-
-.reading-zone-control__title {
-  margin: var(--space-0);
-  color: var(--color-text);
-  font-size: var(--font-size-lg);
-  line-height: var(--line-height-tight);
-}
-
-.reading-zone-control__buttons {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-2);
-}
-
-.reading-zone-control__buttons .app-button {
-  min-height: var(--touch-target);
-  padding: var(--space-2) var(--space-3);
 }
 
 .theme-clef-grid {
@@ -441,6 +459,89 @@ a {
   color: var(--color-text-soft);
   font-size: var(--font-size-sm);
   line-height: var(--line-height-base);
+}
+
+.reading-zone-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+  gap: var(--space-3);
+}
+
+.reading-zone-choice-card {
+  display: grid;
+  gap: var(--space-3);
+  min-height: 12rem;
+  padding: var(--space-4);
+  border: var(--border-thin) solid color-mix(in srgb, var(--color-lavender) 58%, var(--color-plum));
+  border-radius: var(--radius-card);
+  background: color-mix(in srgb, var(--color-surface) 84%, var(--color-cream));
+  color: var(--color-text);
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.reading-zone-choice-card:active {
+  transform: translateY(calc(var(--space-1) / 2));
+  box-shadow: var(--shadow-soft);
+}
+
+.reading-zone-choice-card--active {
+  border-color: var(--color-plum);
+  background: color-mix(in srgb, var(--color-lavender) 44%, var(--color-cream));
+}
+
+.reading-zone-choice-card__content {
+  display: grid;
+  gap: var(--space-1);
+  min-width: var(--space-0);
+}
+
+.reading-zone-choice-card__title,
+.reading-zone-choice-card__text {
+  margin: var(--space-0);
+}
+
+.reading-zone-choice-card__title {
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-strong);
+  line-height: var(--line-height-tight);
+}
+
+.reading-zone-choice-card__text {
+  color: var(--color-text-soft);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-base);
+}
+
+.reading-zone-diagram {
+  display: block;
+  width: 100%;
+  max-width: 12rem;
+  justify-self: center;
+  color: var(--color-plum);
+  overflow: visible;
+}
+
+.reading-zone-diagram__highlight {
+  fill: color-mix(in srgb, var(--color-vanilla) 58%, var(--color-cream));
+}
+
+.reading-zone-diagram__line {
+  stroke: var(--color-staff-line);
+  stroke-linecap: round;
+  stroke-width: var(--stroke-staff);
+}
+
+.reading-zone-diagram__note {
+  fill: currentColor;
+  filter: drop-shadow(var(--space-1) var(--space-1) var(--space-1) color-mix(in srgb, var(--color-plum) 18%, var(--color-transparent)));
 }
 
 .style-section {
