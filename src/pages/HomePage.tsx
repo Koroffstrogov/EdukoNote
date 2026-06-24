@@ -40,7 +40,6 @@ export function HomePage() {
 
       <header className="page-hero">
         <p className="page-eyebrow">{CLEF_LABELS[activeClef]}</p>
-        <h1 className="page-title">À toi de jouer</h1>
       </header>
 
       <div className="home-layout">
