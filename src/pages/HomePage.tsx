@@ -68,6 +68,13 @@ export function HomePage() {
             href="/exercise?mode=speed"
             tone="rose"
           />
+          <HomeActionCard
+            title="Symboles"
+            text="Lire les signes"
+            icon="?"
+            href="/symbols"
+            tone="lavender"
+          />
         </section>
 
         <section className="home-summary" aria-label="Résumé de progression">

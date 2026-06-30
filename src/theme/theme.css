@@ -1029,6 +1029,87 @@ a {
   text-align: center;
 }
 
+.music-symbol-display {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  margin: var(--space-0);
+  color: var(--color-plum);
+}
+
+.music-symbol-display__svg {
+  display: block;
+  width: 100%;
+  max-width: 16rem;
+  aspect-ratio: 9 / 7;
+  overflow: visible;
+  filter: drop-shadow(var(--space-1) var(--space-1) var(--space-1) color-mix(in srgb, var(--color-plum) 12%, var(--color-transparent)));
+}
+
+.symbol-question-card .music-symbol-display__svg {
+  max-width: 18rem;
+}
+
+.music-symbol-display__clef {
+  color: currentColor;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.music-symbol-display__staff-line {
+  stroke: var(--color-staff-line);
+  stroke-linecap: round;
+  stroke-width: var(--stroke-staff);
+}
+
+.music-symbol-display__staff-line--soft {
+  opacity: 0.72;
+}
+
+.music-symbol-display__stroke {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: calc(var(--stroke-staff) * 1.7);
+}
+
+.music-symbol-display__stroke--strong {
+  stroke-width: calc(var(--stroke-staff) * 2.1);
+}
+
+.music-symbol-display__fill {
+  fill: currentColor;
+}
+
+.music-symbol-display__note-head {
+  stroke-width: calc(var(--stroke-staff) * 2);
+}
+
+.music-symbol-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(10rem, 100%), 1fr));
+  gap: var(--space-3);
+}
+
+.music-symbol-preview-card {
+  justify-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+}
+
+.music-symbol-preview-card .music-symbol-display__svg {
+  max-width: 8.5rem;
+}
+
+.music-symbol-preview-card__label {
+  margin: var(--space-0);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-strong);
+  text-align: center;
+}
+
 .staff-preview__lines {
   position: absolute;
   inset: var(--space-5) var(--space-2);

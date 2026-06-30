@@ -1,10 +1,12 @@
 import { StaffPreview } from "../components/music/StaffPreview";
+import { MusicSymbolDisplay } from "../components/music/MusicSymbolDisplay";
 import { AppButton } from "../components/ui/AppButton";
 import { AppCard } from "../components/ui/AppCard";
 import { FeedbackCard } from "../components/ui/FeedbackCard";
 import { HomeActionCard } from "../components/ui/HomeActionCard";
 import { ProgressChip } from "../components/ui/ProgressChip";
 import { CLEF_LABELS, type Clef } from "../domain/notes";
+import { MUSIC_SYMBOL_DEFINITIONS } from "../domain/musicSymbols";
 import { CLEF_PALETTES, PALETTE_LABELS, colorTokens } from "../theme/tokens";
 
 const clefThemePreviews: Clef[] = ["treble", "bass", "tenor"];
@@ -122,6 +124,20 @@ export function StyleGuidePage() {
             <HomeActionCard title="Entraînement" text="Jouer maintenant" icon="♪" tone="rose" featured />
             <HomeActionCard title="Défi 10 notes" text="10 notes" icon="10" tone="lavender" />
             <HomeActionCard title="Révision des erreurs" text="Reprendre" icon="↺" tone="vanilla" />
+          </div>
+        </section>
+
+        <section className="style-section" aria-labelledby="music-symbols-title">
+          <h2 className="style-section__title" id="music-symbols-title">
+            Symboles musicaux
+          </h2>
+          <div className="music-symbol-preview-grid">
+            {MUSIC_SYMBOL_DEFINITIONS.map((symbol) => (
+              <AppCard tone="sky" className="music-symbol-preview-card" key={symbol.id}>
+                <MusicSymbolDisplay symbol={symbol} />
+                <p className="music-symbol-preview-card__label">{symbol.label}</p>
+              </AppCard>
+            ))}
           </div>
         </section>
 
