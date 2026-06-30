@@ -6,9 +6,10 @@ export type HomeActionCardProps = {
   icon: string;
   href?: string;
   tone?: Extract<ColorTokenId, "rose" | "lavender" | "vanilla">;
+  featured?: boolean;
 };
 
-export function HomeActionCard({ title, text, icon, href, tone = "rose" }: HomeActionCardProps) {
+export function HomeActionCard({ title, text, icon, href, tone = "rose", featured = false }: HomeActionCardProps) {
   const content = (
     <>
       <span className="home-action-card__icon" aria-hidden="true">
@@ -20,7 +21,7 @@ export function HomeActionCard({ title, text, icon, href, tone = "rose" }: HomeA
       </span>
     </>
   );
-  const classes = `home-action-card home-action-card--${tone}`;
+  const classes = `home-action-card home-action-card--${tone}${featured ? " home-action-card--featured" : ""}`;
 
   if (href) {
     return (

@@ -41,28 +41,29 @@ export function HomePage() {
         <section className="home-actions" aria-label="Actions d'accueil provisoires">
           <HomeActionCard
             title="Entraînement"
-            text="Jouer maintenant."
+            text="Jouer maintenant"
             icon="♪"
             href="/exercise?mode=training"
             tone="rose"
+            featured
           />
           <HomeActionCard
             title="Défi 10 notes"
-            text="10 notes."
+            text="10 notes"
             icon="10"
             href="/exercise?mode=challenge"
             tone="lavender"
           />
           <HomeActionCard
             title="Révision des erreurs"
-            text="Reprendre les erreurs."
+            text="Reprendre"
             icon="↺"
             href="/exercise?mode=review"
             tone="vanilla"
           />
           <HomeActionCard
             title="Vitesse"
-            text="Série rapide."
+            text="Série rapide"
             icon="⏱"
             href="/exercise?mode=speed"
             tone="rose"
@@ -70,13 +71,25 @@ export function HomePage() {
         </section>
 
         <section className="home-summary" aria-label="Résumé de progression">
-          <AppCard tone="sky">
+          <AppCard tone="sky" className="home-progress-card">
             <h2 className="app-card__title">Progression</h2>
             <p className="app-card__body">
-              {totalViews > 0
-                ? `${totalCorrect} bonnes réponses, ${totalErrors} erreurs, ${totalViews} notes vues.`
-                : "La progression commencera après la première réponse."}
+              {totalViews > 0 ? "Les notes avancent à ton rythme." : "Prête pour commencer."}
             </p>
+            <div className="home-progress-stats" aria-label="Statistiques de progression">
+              <span className="home-progress-stat">
+                <span className="home-progress-stat__value">{totalCorrect}</span>
+                <span className="home-progress-stat__label">Bonnes</span>
+              </span>
+              <span className="home-progress-stat">
+                <span className="home-progress-stat__value">{totalErrors}</span>
+                <span className="home-progress-stat__label">Erreurs</span>
+              </span>
+              <span className="home-progress-stat">
+                <span className="home-progress-stat__value">{totalViews}</span>
+                <span className="home-progress-stat__label">Vues</span>
+              </span>
+            </div>
             <div className="chip-row">
               {progressByLabel.map(({ label, noteProgress }) => (
                 <ProgressChip

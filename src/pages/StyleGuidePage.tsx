@@ -119,9 +119,9 @@ export function StyleGuidePage() {
             Cartes d’accueil
           </h2>
           <div className="home-actions">
-            <HomeActionCard title="Entraînement" text="Démarrer avec quelques notes." icon="♪" tone="rose" />
-            <HomeActionCard title="Défi 10 notes" text="Un défi court pour rester concentrée." icon="10" tone="lavender" />
-            <HomeActionCard title="Révision des erreurs" text="Reprendre les notes presque trouvées." icon="↺" tone="vanilla" />
+            <HomeActionCard title="Entraînement" text="Jouer maintenant" icon="♪" tone="rose" featured />
+            <HomeActionCard title="Défi 10 notes" text="10 notes" icon="10" tone="lavender" />
+            <HomeActionCard title="Révision des erreurs" text="Reprendre" icon="↺" tone="vanilla" />
           </div>
         </section>
 
@@ -141,7 +141,7 @@ export function StyleGuidePage() {
                   <StaffPreview note="fa4" />
                 </AppCard>
                 <FeedbackCard status="near">C’était Fa</FeedbackCard>
-                <HomeActionCard title="Entraînement" text="Doux et lisible." icon="♪" tone="rose" />
+                <HomeActionCard title="Entraînement" text="Jouer maintenant" icon="♪" tone="rose" featured />
               </div>
             </div>
           </div>

@@ -135,8 +135,9 @@ body {
   margin: var(--space-0);
   min-height: 100dvh;
   background:
-    radial-gradient(circle at top left, color-mix(in srgb, var(--color-rose) 32%, var(--color-transparent)), var(--color-transparent) 34rem),
-    linear-gradient(180deg, var(--color-background), color-mix(in srgb, var(--color-background) 78%, var(--color-sky)));
+    radial-gradient(circle at top left, color-mix(in srgb, var(--color-rose) 18%, var(--color-transparent)), var(--color-transparent) 31rem),
+    radial-gradient(circle at top right, color-mix(in srgb, var(--color-lavender) 16%, var(--color-transparent)), var(--color-transparent) 26rem),
+    linear-gradient(180deg, var(--color-background), color-mix(in srgb, var(--color-background) 90%, var(--color-sky)));
   color: var(--color-text);
   font-family: var(--font-family-base);
   font-size: var(--font-size-md);
@@ -213,11 +214,13 @@ a {
   place-items: center;
   width: var(--touch-target);
   height: var(--touch-target);
-  border: var(--border-medium) solid color-mix(in srgb, var(--color-lavender) 64%, var(--color-plum));
+  border: var(--border-thin) solid color-mix(in srgb, var(--color-lavender) 48%, var(--color-plum));
   border-radius: var(--radius-circle);
-  background: var(--color-cream);
+  background:
+    radial-gradient(circle at 34% 24%, color-mix(in srgb, var(--color-cream) 92%, var(--color-transparent)), var(--color-transparent) 1.5rem),
+    color-mix(in srgb, var(--color-cream) 84%, var(--color-surface));
   color: var(--color-plum);
-  box-shadow: var(--shadow-soft);
+  box-shadow: 0 0.65rem 1.25rem color-mix(in srgb, var(--color-plum) 12%, var(--color-transparent));
   text-decoration: none;
   transition:
     transform 160ms ease,
@@ -230,8 +233,8 @@ a {
 }
 
 .settings-button__icon {
-  width: 1.35rem;
-  height: 1.35rem;
+  width: 1.55rem;
+  height: 1.55rem;
 }
 
 .settings-tabs {
@@ -319,7 +322,7 @@ a {
 .palette-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
-  gap: var(--space-4);
+  gap: var(--space-3);
 }
 
 .home-summary {
@@ -642,8 +645,10 @@ a {
   padding: var(--space-5);
   border: var(--border-thin) solid var(--card-border);
   border-radius: var(--radius-card);
-  background: var(--card-bg);
-  box-shadow: var(--shadow-card);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--card-bg) 72%, var(--color-cream)), var(--card-bg)),
+    var(--card-bg);
+  box-shadow: 0 0.85rem 1.8rem color-mix(in srgb, var(--color-plum) 11%, var(--color-transparent));
 }
 
 .app-card--rose {
@@ -732,10 +737,13 @@ a {
   padding: var(--space-2) var(--space-4);
   border: var(--border-thin) solid var(--chip-border);
   border-radius: var(--radius-pill);
-  background: var(--chip-bg);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--chip-bg) 68%, var(--color-cream)), var(--chip-bg)),
+    var(--chip-bg);
   color: var(--color-text);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-strong);
+  box-shadow: 0 0.35rem 0.7rem color-mix(in srgb, var(--color-plum) 8%, var(--color-transparent));
   white-space: nowrap;
 }
 
@@ -755,24 +763,48 @@ a {
 }
 
 .home-action-card {
-  --home-card-bg: color-mix(in srgb, var(--color-sky) 42%, var(--color-cream));
-  --home-card-border: color-mix(in srgb, var(--color-sky) 68%, var(--color-plum));
+  --home-card-accent: var(--color-sky);
+  --home-card-bg: color-mix(in srgb, var(--home-card-accent) 18%, var(--color-cream));
+  --home-card-border: color-mix(in srgb, var(--home-card-accent) 42%, var(--color-plum));
+  --home-card-glow: color-mix(in srgb, var(--home-card-accent) 34%, var(--color-transparent));
 
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   gap: var(--space-3);
   align-items: center;
-  min-height: 7.5rem;
-  padding: var(--space-5);
+  position: relative;
+  isolation: isolate;
+  min-height: 7rem;
+  overflow: hidden;
+  padding: var(--space-4);
   border: var(--border-thin) solid var(--home-card-border);
   border-radius: var(--radius-card);
-  background: var(--home-card-bg);
-  box-shadow: var(--shadow-card);
+  background:
+    radial-gradient(circle at 16% 12%, var(--home-card-glow), var(--color-transparent) 7rem),
+    linear-gradient(145deg, color-mix(in srgb, var(--color-cream) 86%, var(--home-card-accent)), var(--home-card-bg));
+  box-shadow: 0 0.85rem 1.65rem color-mix(in srgb, var(--color-plum) 10%, var(--color-transparent));
   color: var(--color-text);
   text-decoration: none;
   transition:
     transform 160ms ease,
-    box-shadow 160ms ease;
+    box-shadow 160ms ease,
+    border-color 160ms ease;
+}
+
+.home-action-card::before {
+  content: "";
+  position: absolute;
+  inset: var(--space-3) auto var(--space-3) var(--space-0);
+  z-index: -1;
+  width: var(--space-1);
+  border-radius: 0 var(--radius-pill) var(--radius-pill) 0;
+  background: var(--home-card-accent);
+  opacity: 0.78;
+}
+
+.home-action-card:hover {
+  transform: translateY(calc(var(--space-1) * -1));
+  box-shadow: 0 1rem 2rem color-mix(in srgb, var(--color-plum) 12%, var(--color-transparent));
 }
 
 .home-action-card:active {
@@ -781,18 +813,30 @@ a {
 }
 
 .home-action-card--rose {
-  --home-card-bg: color-mix(in srgb, var(--color-rose) 45%, var(--color-cream));
-  --home-card-border: color-mix(in srgb, var(--color-rose) 70%, var(--color-plum));
+  --home-card-accent: var(--color-rose);
 }
 
 .home-action-card--lavender {
-  --home-card-bg: color-mix(in srgb, var(--color-lavender) 45%, var(--color-cream));
-  --home-card-border: color-mix(in srgb, var(--color-lavender) 70%, var(--color-plum));
+  --home-card-accent: var(--color-lavender);
 }
 
 .home-action-card--vanilla {
-  --home-card-bg: color-mix(in srgb, var(--color-vanilla) 58%, var(--color-cream));
-  --home-card-border: color-mix(in srgb, var(--color-vanilla) 70%, var(--color-plum));
+  --home-card-accent: var(--color-vanilla);
+}
+
+.home-action-card--featured {
+  grid-column: 1 / -1;
+  min-height: 8.2rem;
+  padding: var(--space-5);
+  border-color: color-mix(in srgb, var(--home-card-accent) 58%, var(--color-plum));
+  background:
+    radial-gradient(circle at 18% 12%, color-mix(in srgb, var(--home-card-accent) 42%, var(--color-transparent)), var(--color-transparent) 9rem),
+    linear-gradient(135deg, color-mix(in srgb, var(--color-cream) 78%, var(--home-card-accent)), color-mix(in srgb, var(--color-cream) 92%, var(--color-lavender)));
+  box-shadow: 0 1.15rem 2.4rem color-mix(in srgb, var(--color-plum) 14%, var(--color-transparent));
+}
+
+.home-action-card--featured::before {
+  width: var(--space-2);
 }
 
 .home-action-card__icon {
@@ -801,15 +845,65 @@ a {
   width: var(--touch-target-lg);
   height: var(--touch-target-lg);
   border-radius: var(--radius-circle);
-  background: var(--color-cream);
-  box-shadow: var(--shadow-soft);
+  border: var(--border-thin) solid color-mix(in srgb, var(--home-card-accent) 54%, var(--color-plum));
+  background:
+    radial-gradient(circle at 34% 24%, color-mix(in srgb, var(--color-cream) 82%, var(--color-transparent)), var(--color-transparent) 1.6rem),
+    color-mix(in srgb, var(--home-card-accent) 42%, var(--color-cream));
+  box-shadow: 0 0.55rem 1rem color-mix(in srgb, var(--color-plum) 10%, var(--color-transparent));
   font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-strong);
+}
+
+.home-action-card--featured .home-action-card__icon {
+  width: 4.2rem;
+  height: 4.2rem;
+  font-size: var(--font-size-2xl);
 }
 
 .home-action-card__content {
   display: grid;
   gap: var(--space-1);
   min-width: var(--space-0);
+}
+
+.home-progress-card {
+  --card-bg: color-mix(in srgb, var(--color-cream) 88%, var(--color-surface));
+  --card-border: color-mix(in srgb, var(--color-lavender) 36%, var(--color-plum));
+
+  gap: var(--space-4);
+}
+
+.home-progress-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.home-progress-stat {
+  display: grid;
+  gap: var(--space-1);
+  min-height: 4.4rem;
+  padding: var(--space-3);
+  border: var(--border-thin) solid color-mix(in srgb, var(--color-lavender) 38%, var(--color-plum));
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--color-cream) 88%, var(--color-surface)), color-mix(in srgb, var(--color-surface) 74%, var(--color-cream))),
+    var(--color-surface);
+  box-shadow: 0 0.45rem 0.9rem color-mix(in srgb, var(--color-plum) 7%, var(--color-transparent));
+}
+
+.home-progress-stat__value {
+  color: var(--color-text);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-strong);
+  line-height: var(--line-height-tight);
+}
+
+.home-progress-stat__label {
+  color: var(--color-text-soft);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
 }
 
 .exercise-layout {
