@@ -28,26 +28,26 @@ export type MusicSymbolDefinition = {
   unlockAfterCorrect: number;
   renderType: "svg";
   distractorGroup: MusicSymbolDistractorGroup;
-  shortExplanation?: string;
+  shortExplanation: string;
 };
 
 export const MUSIC_SYMBOL_DEFINITIONS: MusicSymbolDefinition[] = [
-  createMusicSymbol("staff", "Portée", "score-reading", 1, 0, "score-reading"),
-  createMusicSymbol("treble-clef", "Clé de sol", "score-reading", 1, 0, "clefs"),
-  createMusicSymbol("bass-clef", "Clé de fa", "score-reading", 1, 0, "clefs"),
-  createMusicSymbol("c-clef", "Clé d’ut", "score-reading", 2, 2, "clefs"),
-  createMusicSymbol("bar-line", "Barre de mesure", "score-reading", 1, 0, "bar-lines"),
-  createMusicSymbol("double-bar-line", "Double barre", "score-reading", 2, 2, "bar-lines"),
-  createMusicSymbol("whole-note", "Ronde", "durations", 2, 4, "notes"),
-  createMusicSymbol("half-note", "Blanche", "durations", 2, 2, "notes"),
-  createMusicSymbol("quarter-note", "Noire", "durations", 1, 0, "notes"),
-  createMusicSymbol("eighth-note", "Croche", "durations", 1, 0, "notes"),
-  createMusicSymbol("beamed-eighth-notes", "Deux croches", "durations", 2, 4, "notes"),
-  createMusicSymbol("augmentation-dot", "Point de prolongation", "durations", 3, 4, "durations"),
-  createMusicSymbol("quarter-rest", "Soupir", "rests", 3, 6, "rests"),
-  createMusicSymbol("sharp", "Dièse", "accidentals", 4, 9, "accidentals"),
-  createMusicSymbol("flat", "Bémol", "accidentals", 4, 9, "accidentals"),
-  createMusicSymbol("natural", "Bécarre", "accidentals", 4, 9, "accidentals"),
+  createMusicSymbol("staff", "Portée", "score-reading", 1, 0, "score-reading", "Ses cinq lignes servent de repère pour écrire la musique."),
+  createMusicSymbol("treble-clef", "Clé de sol", "score-reading", 1, 0, "clefs", "Elle place le sol sur la deuxième ligne de la portée."),
+  createMusicSymbol("bass-clef", "Clé de fa", "score-reading", 1, 0, "clefs", "Elle place le fa entre ses deux points, sur la quatrième ligne."),
+  createMusicSymbol("c-clef", "Clé d’ut", "score-reading", 2, 2, "clefs", "Son centre indique la ligne sur laquelle se trouve le do."),
+  createMusicSymbol("bar-line", "Barre de mesure", "score-reading", 1, 0, "bar-lines", "Cette ligne verticale sépare deux mesures."),
+  createMusicSymbol("double-bar-line", "Double barre", "score-reading", 2, 2, "bar-lines", "Elle marque une séparation importante ou la fin d’une section."),
+  createMusicSymbol("whole-note", "Ronde", "durations", 2, 4, "notes", "Dans une mesure à quatre temps, elle dure quatre temps."),
+  createMusicSymbol("half-note", "Blanche", "durations", 2, 2, "notes", "Dans une mesure à quatre temps, elle dure deux temps."),
+  createMusicSymbol("quarter-note", "Noire", "durations", 1, 0, "notes", "Dans une mesure à quatre temps, elle dure un temps."),
+  createMusicSymbol("eighth-note", "Croche", "durations", 1, 0, "notes", "Dans une mesure à quatre temps, elle dure un demi-temps."),
+  createMusicSymbol("beamed-eighth-notes", "Deux croches", "durations", 2, 4, "notes", "Deux croches reliées remplissent ensemble un temps."),
+  createMusicSymbol("augmentation-dot", "Point de prolongation", "durations", 3, 4, "durations", "Il ajoute à la note la moitié de sa durée."),
+  createMusicSymbol("quarter-rest", "Soupir", "rests", 3, 6, "rests", "Dans une mesure à quatre temps, il représente un temps de silence."),
+  createMusicSymbol("sharp", "Dièse", "accidentals", 4, 9, "accidentals", "Il élève la note d’un demi-ton."),
+  createMusicSymbol("flat", "Bémol", "accidentals", 4, 9, "accidentals", "Il abaisse la note d’un demi-ton."),
+  createMusicSymbol("natural", "Bécarre", "accidentals", 4, 9, "accidentals", "Il annule un dièse ou un bémol précédent."),
 ];
 
 export const INITIAL_SYMBOL_IDS: MusicSymbolId[] = [
@@ -80,6 +80,7 @@ function createMusicSymbol(
   difficulty: 1 | 2 | 3 | 4,
   unlockAfterCorrect: number,
   distractorGroup: MusicSymbolDistractorGroup,
+  shortExplanation: string,
 ): MusicSymbolDefinition {
   return {
     id,
@@ -89,5 +90,6 @@ function createMusicSymbol(
     unlockAfterCorrect,
     renderType: "svg",
     distractorGroup,
+    shortExplanation,
   };
 }

@@ -29,6 +29,12 @@ describe("musicSymbols", () => {
     expect(new Set(labels).size).toBe(labels.length);
   });
 
+  it("provides a useful explanation for every symbol", () => {
+    expect(
+      MUSIC_SYMBOL_DEFINITIONS.every((symbol) => symbol.shortExplanation.trim().length >= 20),
+    ).toBe(true);
+  });
+
   it("starts training with the selected simple symbols", () => {
     expect(INITIAL_SYMBOL_IDS).toEqual([
       "staff",

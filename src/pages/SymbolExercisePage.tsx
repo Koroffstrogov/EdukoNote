@@ -152,6 +152,7 @@ export function SymbolExercisePage() {
               <AppButton tone="plum" onClick={handleNextQuestion}>
                 {mode === "challenge" && questionNumber >= CHALLENGE_LENGTH ? "Voir le score" : "Symbole suivant"}
               </AppButton>
+              <p className="symbol-explanation">{question.symbol.shortExplanation}</p>
               {!isCorrect ? <p className="exercise-hint">Tu avais choisi {selectedAnswerLabel}.</p> : null}
             </div>
           ) : (

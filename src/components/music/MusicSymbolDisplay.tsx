@@ -80,14 +80,14 @@ function SymbolShape({ symbolId }: { symbolId: MusicSymbolId }) {
   }
 
   if (symbolId === "whole-note") {
-    return <NoteHead cx={90} cy={70} isFilled={false} />;
+    return <NoteHead cx={90} cy={70} isFilled={false} size="whole" />;
   }
 
   if (symbolId === "half-note") {
     return (
       <>
         <NoteHead cx={78} cy={82} isFilled={false} />
-        <line className="music-symbol-display__stroke music-symbol-display__stroke--strong" x1={91} y1={80} x2={91} y2={26} />
+        <Stem x={90} y1={79} y2={27} />
       </>
     );
   }
@@ -96,7 +96,7 @@ function SymbolShape({ symbolId }: { symbolId: MusicSymbolId }) {
     return (
       <>
         <NoteHead cx={78} cy={82} isFilled />
-        <line className="music-symbol-display__stroke music-symbol-display__stroke--strong" x1={91} y1={80} x2={91} y2={26} />
+        <Stem x={90} y1={79} y2={27} />
       </>
     );
   }
@@ -105,8 +105,11 @@ function SymbolShape({ symbolId }: { symbolId: MusicSymbolId }) {
     return (
       <>
         <NoteHead cx={76} cy={84} isFilled />
-        <line className="music-symbol-display__stroke music-symbol-display__stroke--strong" x1={89} y1={82} x2={89} y2={28} />
-        <path className="music-symbol-display__stroke music-symbol-display__stroke--strong" d="M89 28 C116 34 120 51 101 62" />
+        <Stem x={88} y1={81} y2={27} />
+        <path
+          className="music-symbol-display__fill"
+          d="M88 27 C108 29 121 39 120 51 C119 59 111 66 100 70 C107 61 108 53 104 47 C101 42 96 39 88 38 Z"
+        />
       </>
     );
   }
@@ -116,9 +119,9 @@ function SymbolShape({ symbolId }: { symbolId: MusicSymbolId }) {
       <>
         <NoteHead cx={65} cy={88} isFilled />
         <NoteHead cx={115} cy={80} isFilled />
-        <line className="music-symbol-display__stroke music-symbol-display__stroke--strong" x1={78} y1={86} x2={78} y2={34} />
-        <line className="music-symbol-display__stroke music-symbol-display__stroke--strong" x1={128} y1={78} x2={128} y2={26} />
-        <path className="music-symbol-display__fill" d="M78 32 L128 24 L128 36 L78 44 Z" />
+        <Stem x={77} y1={85} y2={34} />
+        <Stem x={127} y1={77} y2={26} />
+        <path className="music-symbol-display__fill" d="M77 32 L127 24 L127 36 L77 44 Z" />
       </>
     );
   }
@@ -126,18 +129,25 @@ function SymbolShape({ symbolId }: { symbolId: MusicSymbolId }) {
   if (symbolId === "augmentation-dot") {
     return (
       <>
-        <NoteHead cx={78} cy={70} isFilled={false} />
-        <circle className="music-symbol-display__fill" cx={113} cy={70} r={6} />
+        <NoteHead cx={76} cy={70} isFilled />
+        <Stem x={88} y1={67} y2={25} />
+        <circle className="music-symbol-display__fill" cx={108} cy={70} r={4.5} />
       </>
     );
   }
 
   if (symbolId === "quarter-rest") {
     return (
-      <path
-        className="music-symbol-display__stroke music-symbol-display__stroke--strong"
-        d="M86 26 C104 40 96 52 78 62 C97 70 101 85 82 98 C98 100 101 117 83 119"
-      />
+      <>
+        <path
+          className="music-symbol-display__stroke music-symbol-display__rest-stroke"
+          d="M73 24 L101 48 L85 62 L103 77 L87 91"
+        />
+        <path
+          className="music-symbol-display__stroke music-symbol-display__rest-stroke"
+          d="M87 91 C105 91 108 104 101 113 C97 118 90 121 82 120 C91 113 92 104 86 99 C83 96 80 94 76 93"
+        />
+      </>
     );
   }
 
@@ -165,8 +175,8 @@ function SymbolShape({ symbolId }: { symbolId: MusicSymbolId }) {
     <>
       <line className="music-symbol-display__stroke music-symbol-display__stroke--strong" x1={72} y1={34} x2={72} y2={104} />
       <line className="music-symbol-display__stroke music-symbol-display__stroke--strong" x1={108} y1={28} x2={108} y2={98} />
-      <path className="music-symbol-display__fill" d="M72 43 L108 32 L108 48 L72 59 Z" />
-      <path className="music-symbol-display__fill" d="M72 86 L108 75 L108 91 L72 102 Z" />
+      <line className="music-symbol-display__stroke music-symbol-display__stroke--strong" x1={72} y1={52} x2={108} y2={42} />
+      <line className="music-symbol-display__stroke music-symbol-display__stroke--strong" x1={72} y1={90} x2={108} y2={80} />
     </>
   );
 }
@@ -183,14 +193,31 @@ function StaffLines({ x1, x2, isSoft = false }: { x1: number; x2: number; isSoft
   );
 }
 
-function NoteHead({ cx, cy, isFilled }: { cx: number; cy: number; isFilled: boolean }) {
+function Stem({ x, y1, y2 }: { x: number; y1: number; y2: number }) {
+  return <line className="music-symbol-display__stroke music-symbol-display__stem" x1={x} y1={y1} x2={x} y2={y2} />;
+}
+
+function NoteHead({
+  cx,
+  cy,
+  isFilled,
+  size = "regular",
+}: {
+  cx: number;
+  cy: number;
+  isFilled: boolean;
+  size?: "regular" | "whole";
+}) {
+  const radiusX = size === "whole" ? 18 : 16;
+  const radiusY = size === "whole" ? 10 : 9;
+
   return (
     <ellipse
       className={isFilled ? "music-symbol-display__fill" : "music-symbol-display__stroke music-symbol-display__note-head"}
       cx={cx}
       cy={cy}
-      rx={19}
-      ry={12}
+      rx={radiusX}
+      ry={radiusY}
       transform={`rotate(-14 ${cx} ${cy})`}
     />
   );

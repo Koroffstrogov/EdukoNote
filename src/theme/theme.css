@@ -906,6 +906,52 @@ a {
   line-height: var(--line-height-tight);
 }
 
+.speed-result-card {
+  justify-items: center;
+  gap: var(--space-4);
+  overflow: hidden;
+  position: relative;
+  text-align: center;
+}
+
+.speed-result-card::before {
+  content: "";
+  position: absolute;
+  inset: var(--space-4);
+  border: var(--border-thin) solid color-mix(in srgb, var(--color-vanilla) 58%, var(--color-plum));
+  border-radius: calc(var(--radius-card) - var(--space-2));
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.speed-result-card__badge {
+  display: grid;
+  place-items: center;
+  width: 5.4rem;
+  height: 5.4rem;
+  border: var(--border-medium) solid color-mix(in srgb, var(--color-vanilla) 72%, var(--color-plum));
+  border-radius: var(--radius-circle);
+  background:
+    radial-gradient(circle at 34% 24%, color-mix(in srgb, var(--color-cream) 78%, var(--color-transparent)), var(--color-transparent) 2.8rem),
+    color-mix(in srgb, var(--color-vanilla) 70%, var(--color-cream));
+  box-shadow: 0 0.75rem 1.35rem color-mix(in srgb, var(--color-plum) 14%, var(--color-transparent));
+  color: var(--color-text);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-strong);
+  line-height: var(--line-height-tight);
+}
+
+.speed-result-card__score {
+  margin: var(--space-0);
+  padding: var(--space-2) var(--space-4);
+  border: var(--border-thin) solid color-mix(in srgb, var(--color-lavender) 52%, var(--color-plum));
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--color-cream) 74%, var(--color-lavender));
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-strong);
+}
+
 .exercise-layout {
   display: grid;
   gap: var(--space-3);
@@ -957,6 +1003,18 @@ a {
   margin: var(--space-0);
   color: var(--color-text-soft);
   font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+.symbol-explanation {
+  margin: var(--space-0);
+  padding: var(--space-3) var(--space-4);
+  border: var(--border-thin) solid color-mix(in srgb, var(--color-lavender) 48%, var(--color-plum));
+  border-radius: var(--radius-card);
+  background: color-mix(in srgb, var(--color-cream) 76%, var(--color-lavender));
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-body);
   text-align: center;
 }
 
@@ -1076,6 +1134,15 @@ a {
 
 .music-symbol-display__stroke--strong {
   stroke-width: calc(var(--stroke-staff) * 2.1);
+}
+
+.music-symbol-display__stem {
+  stroke-linecap: butt;
+  stroke-width: calc(var(--stroke-staff) * 2);
+}
+
+.music-symbol-display__rest-stroke {
+  stroke-width: calc(var(--stroke-staff) * 3);
 }
 
 .music-symbol-display__fill {

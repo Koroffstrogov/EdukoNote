@@ -12,6 +12,8 @@ import {
 } from "./notes";
 import { countTotalCorrect, type ProgressState } from "./progress";
 
+export const NOTE_CHALLENGE_LENGTH = 10;
+
 export type QuizMode = "training" | "challenge" | "review" | "speed";
 
 export type QuizQuestion = {
