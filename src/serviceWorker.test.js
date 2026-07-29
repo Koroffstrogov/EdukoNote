@@ -8,7 +8,7 @@ describe("service worker cache routing", () => {
   it("keeps cache-first for immutable hashed assets", async () => {
     const runtime = createServiceWorkerRuntime({
       initialCaches: {
-        "edukonote-shell-v4": ["/assets/index-hash.js"],
+        "edukonote-shell-v5": ["/assets/index-hash.js"],
       },
     });
     const response = await runtime.dispatchFetch("https://edukonote.test/assets/index-hash.js");
@@ -42,7 +42,7 @@ describe("service worker cache routing", () => {
 
     expect(runtime.skipWaitingCalls).toBe(0);
     expect(runtime.cacheNames()).toContain("edukonote-shell-v3");
-    expect(runtime.cacheNames()).not.toContain("edukonote-shell-v4-staging");
+    expect(runtime.cacheNames()).not.toContain("edukonote-shell-v5-staging");
   });
 
   it("promotes a complete staged shell before deleting the previous cache", async () => {
@@ -57,18 +57,21 @@ describe("service worker cache routing", () => {
 
     expect(runtime.skipWaitingCalls).toBe(1);
     expect(runtime.cacheNames()).toContain("edukonote-shell-v3");
-    expect(runtime.cacheNames()).toContain("edukonote-shell-v4-staging");
+    expect(runtime.cacheNames()).toContain("edukonote-shell-v5-staging");
 
     await runtime.dispatchActivate();
 
     expect(runtime.clientsClaimCalls).toBe(1);
-    expect(runtime.cacheNames()).toContain("edukonote-shell-v4");
+    expect(runtime.cacheNames()).toContain("edukonote-shell-v5");
     expect(runtime.cacheNames()).toContain("unrelated-cache");
     expect(runtime.cacheNames()).not.toContain("edukonote-shell-v3");
-    expect(runtime.cacheNames()).not.toContain("edukonote-shell-v4-staging");
-    expect(runtime.cachedUrls("edukonote-shell-v4")).toContain("https://edukonote.test/");
-    expect(runtime.cachedUrls("edukonote-shell-v4")).toContain(
+    expect(runtime.cacheNames()).not.toContain("edukonote-shell-v5-staging");
+    expect(runtime.cachedUrls("edukonote-shell-v5")).toContain("https://edukonote.test/");
+    expect(runtime.cachedUrls("edukonote-shell-v5")).toContain(
       "https://edukonote.test/assets/index-hash.js",
+    );
+    expect(runtime.cachedUrls("edukonote-shell-v5")).toContain(
+      "https://edukonote.test/fonts/eduko-music-symbols.woff",
     );
   });
 
@@ -76,7 +79,7 @@ describe("service worker cache routing", () => {
     const runtime = createServiceWorkerRuntime({
       initialCaches: {
         "edukonote-shell-v3": ["/", "/assets/index-previous.js"],
-        "edukonote-shell-v4-staging": ["/assets/index-hash.js"],
+        "edukonote-shell-v5-staging": ["/assets/index-hash.js"],
       },
     });
 
@@ -86,7 +89,7 @@ describe("service worker cache routing", () => {
 
     expect(runtime.clientsClaimCalls).toBe(0);
     expect(runtime.cacheNames()).toContain("edukonote-shell-v3");
-    expect(runtime.cacheNames()).not.toContain("edukonote-shell-v4");
+    expect(runtime.cacheNames()).not.toContain("edukonote-shell-v5");
   });
 });
 

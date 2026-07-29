@@ -1,3 +1,11 @@
+@font-face {
+  font-family: "Eduko Music Symbols";
+  src: url("/fonts/eduko-music-symbols.woff") format("woff");
+  font-display: block;
+  font-style: normal;
+  font-weight: 400;
+}
+
 :root,
 [data-palette="prune-2026"] {
   --theme-background: #FFF8F1;
@@ -1132,7 +1140,6 @@ a {
 .music-symbol-display__staff-line {
   stroke: var(--color-staff-line);
   stroke-linecap: round;
-  stroke-width: var(--stroke-staff);
 }
 
 .music-symbol-display__staff-line--soft {
@@ -1144,28 +1151,26 @@ a {
   stroke: currentColor;
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-width: calc(var(--stroke-staff) * 1.7);
-}
-
-.music-symbol-display__stroke--strong {
-  stroke-width: calc(var(--stroke-staff) * 2.1);
 }
 
 .music-symbol-display__stem {
   stroke-linecap: butt;
-  stroke-width: calc(var(--stroke-staff) * 2);
-}
-
-.music-symbol-display__rest-stroke {
-  stroke-width: calc(var(--stroke-staff) * 3);
 }
 
 .music-symbol-display__fill {
   fill: currentColor;
 }
 
-.music-symbol-display__note-head {
-  stroke-width: calc(var(--stroke-staff) * 2);
+.music-symbol-display__beam {
+  shape-rendering: geometricPrecision;
+}
+
+.smufl-glyph {
+  fill: currentColor;
+  font-family: "Eduko Music Symbols";
+  font-style: normal;
+  font-weight: 400;
+  text-rendering: geometricPrecision;
 }
 
 .music-symbol-preview-grid {

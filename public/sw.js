@@ -1,10 +1,11 @@
 const CACHE_PREFIX = "edukonote-shell-";
-const CACHE_NAME = `${CACHE_PREFIX}v4`;
+const CACHE_NAME = `${CACHE_PREFIX}v5`;
 const STAGING_CACHE_NAME = `${CACHE_NAME}-staging`;
 const APP_SHELL_URLS = [
   "/",
   "/index.html",
   "/manifest.webmanifest",
+  "/fonts/eduko-music-symbols.woff",
   "/icons/icon-192.png",
   "/icons/icon-512.png",
   "/icons/apple-touch-icon.png",
