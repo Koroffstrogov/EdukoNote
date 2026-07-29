@@ -3,6 +3,7 @@ import { AppCard } from "../components/ui/AppCard";
 import { HomeActionCard } from "../components/ui/HomeActionCard";
 import { ProgressChip } from "../components/ui/ProgressChip";
 import { SettingsButton } from "../components/ui/SettingsButton";
+import { ResetProgressControl } from "../components/ui/ResetProgressControl";
 import {
   ANSWER_LABELS,
   CLEF_LABELS,
@@ -108,9 +109,10 @@ export function HomePage() {
             </div>
             {totalViews > 0 ? (
               <div className="button-row">
-                <AppButton tone="cream" onClick={resetStoredProgress}>
-                  Réinitialiser
-                </AppButton>
+                <ResetProgressControl
+                  confirmationMessage={`Effacer toute la progression en ${CLEF_LABELS[activeClef]} ? Cette action est définitive.`}
+                  onConfirm={resetStoredProgress}
+                />
               </div>
             ) : null}
           </AppCard>
@@ -125,7 +127,7 @@ function summarizeProgressByLabel(
   clef: Clef,
 ): Array<{ label: AnswerLabel; noteProgress: NoteProgress }> {
   return ANSWER_LABELS.map((label) => {
-    const noteProgress = getNotesForClef(clef).filter((note) => note.answerLabel === label).reduce(
+    const noteProgress = getNotesForClef(clef).filter((note) => note.answerLabel === label).reduce<NoteProgress>(
       (summary, note) => {
         const currentProgress = notesProgress[note.id] ?? emptyNoteProgress;
 
@@ -133,6 +135,7 @@ function summarizeProgressByLabel(
           views: summary.views + currentProgress.views,
           correct: summary.correct + currentProgress.correct,
           errors: summary.errors + currentProgress.errors,
+          needsReview: summary.needsReview || currentProgress.needsReview,
           lastPracticedAt: null,
         };
       },
@@ -140,6 +143,7 @@ function summarizeProgressByLabel(
         views: 0,
         correct: 0,
         errors: 0,
+        needsReview: false,
         lastPracticedAt: null,
       } satisfies NoteProgress,
     );
@@ -152,11 +156,12 @@ const emptyNoteProgress: NoteProgress = {
   views: 0,
   correct: 0,
   errors: 0,
+  needsReview: false,
   lastPracticedAt: null,
 };
 
 function getProgressStatus(noteProgress: NoteProgress): "complete" | "current" | "missed" {
-  if (noteProgress.errors > noteProgress.correct) {
+  if (noteProgress.needsReview) {
     return "missed";
   }
 

@@ -30,6 +30,27 @@ describe("symbolQuiz", () => {
     expect(clefChoices).toEqual(expect.arrayContaining(["Clé de sol", "Clé de fa", "Clé d’ut"]));
   });
 
+  it("uses duration-related distractors for isolated duration and rest symbols", () => {
+    const dotChoices = createSymbolChoices(getSymbolById("augmentation-dot"), () => 0);
+    const restChoices = createSymbolChoices(getSymbolById("quarter-rest"), () => 0);
+
+    expect(dotChoices).toEqual(
+      expect.arrayContaining(["Point de prolongation", "Ronde", "Blanche", "Noire"]),
+    );
+    expect(restChoices).toEqual(
+      expect.arrayContaining(["Soupir", "Noire", "Croche", "Point de prolongation"]),
+    );
+    expect(dotChoices).not.toEqual(expect.arrayContaining(["Portée", "Clé de sol"]));
+    expect(restChoices).not.toEqual(expect.arrayContaining(["Portée", "Clé de sol"]));
+  });
+
+  it("completes accidental choices with a visually related symbol", () => {
+    const sharpChoices = createSymbolChoices(getSymbolById("sharp"), () => 0);
+
+    expect(sharpChoices).toEqual(expect.arrayContaining(["Dièse", "Bécarre", "Bémol", "Double barre"]));
+    expect(sharpChoices).not.toContain("Portée");
+  });
+
   it("avoids recent symbols when possible", () => {
     const progress = recordRecentSymbol(
       recordRecentSymbol(recordRecentSymbol(createEmptySymbolProgressState(), "staff"), "treble-clef"),
@@ -95,6 +116,14 @@ describe("symbolQuiz", () => {
     const reviewPool = getSymbolQuestionPool("review", progress).map((symbol) => symbol.id);
 
     expect(reviewPool).toEqual(["staff"]);
+  });
+
+  it("removes a corrected symbol from the review pool", () => {
+    const incorrect = recordSymbolAnswer(createEmptySymbolProgressState(), "staff", false);
+    const corrected = recordSymbolAnswer(incorrect, "staff", true);
+
+    expect(getSymbolQuestionPool("review", corrected)).toEqual([]);
+    expect(corrected.symbols.staff?.errors).toBe(1);
   });
 
   it("generates a question with four unique choices at most", () => {

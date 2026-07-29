@@ -19,9 +19,10 @@ const STAFF_METRICS = {
 export type StaffNoteProps = {
   note: NoteDefinition;
   showLabel?: boolean;
+  accessibleLabel?: string;
 };
 
-export function StaffNote({ note, showLabel = false }: StaffNoteProps) {
+export function StaffNote({ note, showLabel = false, accessibleLabel }: StaffNoteProps) {
   const titleId = useId();
   const staffLineEndX = STAFF_METRICS.staffLeftX + STAFF_METRICS.staffWidth;
   const clefLayout = getClefLayout(note, STAFF_METRICS);
@@ -35,9 +36,16 @@ export function StaffNote({ note, showLabel = false }: StaffNoteProps) {
   const ledgerEndX = noteCenterX + STAFF_METRICS.ledgerHalfWidth;
 
   return (
-    <figure className="staff-note" aria-labelledby={titleId}>
-      <svg className="staff-note-svg" viewBox={`0 0 ${STAFF_VIEWBOX.width} ${STAFF_VIEWBOX.height}`} role="img">
-        <title id={titleId}>Portée en {getClefTitle(note.clef)} avec la note {note.label}</title>
+    <figure className="staff-note">
+      <svg
+        className="staff-note-svg"
+        viewBox={`0 0 ${STAFF_VIEWBOX.width} ${STAFF_VIEWBOX.height}`}
+        role="img"
+        aria-labelledby={titleId}
+      >
+        <title id={titleId}>
+          {accessibleLabel ?? `Portée en ${getClefTitle(note.clef)} avec la note ${note.label}`}
+        </title>
         {STAFF_LINE_Y.map((lineY) => (
           <line className="staff-note-svg__line" key={lineY} x1={STAFF_METRICS.staffLeftX} y1={lineY} x2={staffLineEndX} y2={lineY} />
         ))}

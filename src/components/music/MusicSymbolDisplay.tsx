@@ -7,21 +7,27 @@ import { TrebleClef } from "./TrebleClef";
 export type MusicSymbolDisplayProps = {
   symbol: MusicSymbolDefinition | MusicSymbolId;
   className?: string;
+  accessibleLabel?: string;
 };
 
 const VIEWBOX_WIDTH = 180;
 const VIEWBOX_HEIGHT = 140;
 const STAFF_LINES = [42, 54, 66, 78, 90] as const;
 
-export function MusicSymbolDisplay({ symbol, className = "" }: MusicSymbolDisplayProps) {
+export function MusicSymbolDisplay({ symbol, className = "", accessibleLabel }: MusicSymbolDisplayProps) {
   const symbolDefinition = typeof symbol === "string" ? getSymbolById(symbol) : symbol;
   const titleId = useId();
   const classes = ["music-symbol-display", className].filter(Boolean).join(" ");
 
   return (
-    <figure className={classes} aria-labelledby={titleId}>
-      <svg className="music-symbol-display__svg" viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`} role="img">
-        <title id={titleId}>{symbolDefinition.label}</title>
+    <figure className={classes}>
+      <svg
+        className="music-symbol-display__svg"
+        viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`}
+        role="img"
+        aria-labelledby={titleId}
+      >
+        <title id={titleId}>{accessibleLabel ?? symbolDefinition.label}</title>
         <SymbolShape symbolId={symbolDefinition.id} />
       </svg>
     </figure>

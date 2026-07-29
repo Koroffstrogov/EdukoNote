@@ -140,7 +140,10 @@ export function SymbolExercisePage() {
             </div>
           ) : null}
           <h2 className="question-card__title">Quel est ce symbole ?</h2>
-          <MusicSymbolDisplay symbol={question.symbol} />
+          <MusicSymbolDisplay
+            symbol={question.symbol}
+            accessibleLabel={`Symbole musical à identifier. ${question.symbol.visualDescription}`}
+          />
         </AppCard>
 
         <section className="exercise-action-panel" aria-live="polite">

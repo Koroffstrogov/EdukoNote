@@ -2,10 +2,12 @@ import { AppButton } from "../components/ui/AppButton";
 import { AppCard } from "../components/ui/AppCard";
 import { HomeActionCard } from "../components/ui/HomeActionCard";
 import { ProgressChip } from "../components/ui/ProgressChip";
+import { ResetProgressControl } from "../components/ui/ResetProgressControl";
 import {
   countTotalSymbolCorrect,
   countTotalSymbolErrors,
   countTotalSymbolViews,
+  countSymbolsToReview,
 } from "../domain/symbolProgress";
 import { useSymbolProgress } from "../hooks/useSymbolProgress";
 
@@ -14,6 +16,7 @@ export function SymbolsPage() {
   const totalViews = countTotalSymbolViews(progress);
   const totalCorrect = countTotalSymbolCorrect(progress);
   const totalErrors = countTotalSymbolErrors(progress);
+  const symbolsToReview = countSymbolsToReview(progress);
 
   return (
     <main className="app-shell">
@@ -82,13 +85,17 @@ export function SymbolsPage() {
             </div>
             <div className="chip-row">
               <ProgressChip label={`Réussis ${totalCorrect}`} status={totalCorrect > 0 ? "complete" : "current"} />
-              <ProgressChip label={`À revoir ${totalErrors}`} status={totalErrors > 0 ? "missed" : "current"} />
+              <ProgressChip
+                label={`À revoir ${symbolsToReview}`}
+                status={symbolsToReview > 0 ? "missed" : "current"}
+              />
             </div>
             {totalViews > 0 ? (
               <div className="button-row">
-                <AppButton tone="cream" onClick={resetStoredProgress}>
-                  Réinitialiser
-                </AppButton>
+                <ResetProgressControl
+                  confirmationMessage="Effacer toute la progression des symboles ? Cette action est définitive."
+                  onConfirm={resetStoredProgress}
+                />
               </div>
             ) : null}
           </AppCard>

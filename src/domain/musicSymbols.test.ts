@@ -35,6 +35,16 @@ describe("musicSymbols", () => {
     ).toBe(true);
   });
 
+  it("provides a visual description that does not reveal the symbol label", () => {
+    expect(
+      MUSIC_SYMBOL_DEFINITIONS.every(
+        (symbol) =>
+          symbol.visualDescription.trim().length >= 20 &&
+          !containsCompleteLabel(symbol.visualDescription, symbol.label),
+      ),
+    ).toBe(true);
+  });
+
   it("starts training with the selected simple symbols", () => {
     expect(INITIAL_SYMBOL_IDS).toEqual([
       "staff",
@@ -66,3 +76,9 @@ describe("musicSymbols", () => {
     expect(isMusicSymbolId("unknown")).toBe(false);
   });
 });
+
+function containsCompleteLabel(description: string, label: string): boolean {
+  const escapedLabel = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  return new RegExp(`(^|\\P{L})${escapedLabel}(\\P{L}|$)`, "iu").test(description);
+}

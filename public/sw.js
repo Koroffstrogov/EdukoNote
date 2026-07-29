@@ -1,4 +1,4 @@
-const CACHE_NAME = "edukonote-shell-v2";
+const CACHE_NAME = "edukonote-shell-v3";
 const APP_SHELL_URLS = [
   "/",
   "/index.html",
@@ -50,7 +50,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  if (isStaticAsset(requestUrl)) {
+  if (isImmutableAsset(requestUrl)) {
     event.respondWith(cacheFirst(event.request));
     return;
   }
@@ -159,6 +159,6 @@ function extractSameOriginAssetUrls(html) {
   return urls;
 }
 
-function isStaticAsset(url) {
-  return url.pathname.startsWith("/assets/") || url.pathname.startsWith("/icons/") || url.pathname === "/manifest.webmanifest";
+function isImmutableAsset(url) {
+  return url.pathname.startsWith("/assets/");
 }

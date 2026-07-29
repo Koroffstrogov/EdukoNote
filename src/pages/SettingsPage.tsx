@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { BassClef } from "../components/music/BassClef";
 import { CClef } from "../components/music/CClef";
 import { TrebleClef } from "../components/music/TrebleClef";
@@ -16,6 +16,8 @@ import { useSettings } from "../hooks/useSettings";
 
 type SettingsTab = "clef" | "reading-zone";
 
+const SETTINGS_TABS: SettingsTab[] = ["clef", "reading-zone"];
+
 const CLEF_CONTEXT: Record<Clef, string> = {
   treble: "Pour les notes plus hautes.",
   bass: "Pour les notes plus basses.",
@@ -30,12 +32,37 @@ const READING_ZONE_CONTEXT: Record<ReadingZone, string> = {
 
 export function SettingsPage() {
   const [activeTab, setActiveTab] = useState<SettingsTab>("clef");
+  const clefTabRef = useRef<HTMLButtonElement>(null);
+  const readingZoneTabRef = useRef<HTMLButtonElement>(null);
   const { activeClef, switchActiveClef } = useProgress();
   const { settings, updateReadingZone } = useSettings();
   const activeReadingZone = settings.readingZones[activeClef];
 
   function chooseClef(clef: Clef) {
     switchActiveClef(clef);
+  }
+
+  function selectTabFromKeyboard(event: ReactKeyboardEvent<HTMLButtonElement>, currentTab: SettingsTab) {
+    const currentIndex = SETTINGS_TABS.indexOf(currentTab);
+    let nextTab: SettingsTab | undefined;
+
+    if (event.key === "ArrowRight") {
+      nextTab = SETTINGS_TABS[(currentIndex + 1) % SETTINGS_TABS.length];
+    } else if (event.key === "ArrowLeft") {
+      nextTab = SETTINGS_TABS[(currentIndex - 1 + SETTINGS_TABS.length) % SETTINGS_TABS.length];
+    } else if (event.key === "Home") {
+      nextTab = SETTINGS_TABS[0];
+    } else if (event.key === "End") {
+      nextTab = SETTINGS_TABS[SETTINGS_TABS.length - 1];
+    }
+
+    if (!nextTab) {
+      return;
+    }
+
+    event.preventDefault();
+    setActiveTab(nextTab);
+    (nextTab === "clef" ? clefTabRef : readingZoneTabRef).current?.focus();
   }
 
   return (
@@ -61,22 +88,28 @@ export function SettingsPage() {
         <button
           className={`settings-tab${activeTab === "clef" ? " settings-tab--active" : ""}`}
           type="button"
+          ref={clefTabRef}
           id="settings-clef-tab"
           role="tab"
           aria-selected={activeTab === "clef"}
           aria-controls="settings-clef-panel"
+          tabIndex={activeTab === "clef" ? 0 : -1}
           onClick={() => setActiveTab("clef")}
+          onKeyDown={(event) => selectTabFromKeyboard(event, "clef")}
         >
           Clé à travailler
         </button>
         <button
           className={`settings-tab${activeTab === "reading-zone" ? " settings-tab--active" : ""}`}
           type="button"
+          ref={readingZoneTabRef}
           id="settings-reading-zone-tab"
           role="tab"
           aria-selected={activeTab === "reading-zone"}
           aria-controls="settings-reading-zone-panel"
+          tabIndex={activeTab === "reading-zone" ? 0 : -1}
           onClick={() => setActiveTab("reading-zone")}
+          onKeyDown={(event) => selectTabFromKeyboard(event, "reading-zone")}
         >
           Zone de lecture
         </button>

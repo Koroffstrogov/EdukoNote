@@ -566,6 +566,21 @@ a {
   gap: var(--space-3);
 }
 
+.reset-confirmation {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: var(--border-medium) solid var(--color-border-soft);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+
+.reset-confirmation__text {
+  margin: var(--space-0);
+  color: var(--color-text);
+  font-weight: var(--font-weight-medium);
+}
+
 .app-button {
   --button-bg: var(--color-lavender);
   --button-fg: var(--color-plum);

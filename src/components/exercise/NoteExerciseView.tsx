@@ -73,7 +73,7 @@ export function NoteExerciseView({
             </div>
           ) : null}
           <h2 className="question-card__title">Quelle est cette note ?</h2>
-          <StaffNote note={question.note} />
+          <StaffNote note={question.note} accessibleLabel={getQuestionNoteAccessibleLabel(question.note)} />
         </AppCard>
 
         <section className="exercise-action-panel" aria-live="polite">
@@ -137,4 +137,27 @@ function formatSpeedTime(timeLeftMs: number): string {
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
   });
+}
+
+function getQuestionNoteAccessibleLabel(note: QuizQuestion["note"]): string {
+  return `Note à identifier en ${CLEF_LABELS[note.clef].toLocaleLowerCase("fr-FR")}, ${describeStaffPosition(note.stepIndex)}.`;
+}
+
+function describeStaffPosition(stepIndex: number): string {
+  if (stepIndex >= 0 && stepIndex <= 8) {
+    if (stepIndex % 2 === 0) {
+      return `sur la ligne ${stepIndex / 2 + 1} en partant du bas`;
+    }
+
+    return `dans l’interligne ${(stepIndex + 1) / 2} en partant du bas`;
+  }
+
+  const distance = stepIndex < 0 ? Math.abs(stepIndex) : stepIndex - 8;
+  const direction = stepIndex < 0 ? "sous" : "au-dessus de";
+
+  if (distance % 2 === 0) {
+    return `sur la ligne supplémentaire ${distance / 2} ${direction} la portée`;
+  }
+
+  return `dans l’espace ${Math.ceil(distance / 2)} ${direction} la portée`;
 }

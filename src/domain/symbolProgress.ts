@@ -12,6 +12,7 @@ export type SymbolProgress = {
   views: number;
   correct: number;
   errors: number;
+  needsReview: boolean;
   lastSeenAt: string | null;
 };
 
@@ -26,6 +27,7 @@ export function createEmptySymbolProgress(): SymbolProgress {
     views: 0,
     correct: 0,
     errors: 0,
+    needsReview: false,
     lastSeenAt: null,
   };
 }
@@ -79,6 +81,7 @@ export function recordSymbolAnswer(
         views: current.views + 1,
         correct: current.correct + (isCorrect ? 1 : 0),
         errors: current.errors + (isCorrect ? 0 : 1),
+        needsReview: !isCorrect,
         lastSeenAt: seenAt,
       },
     },
@@ -108,8 +111,12 @@ export function countTotalSymbolErrors(progress: SymbolProgressState): number {
   return MUSIC_SYMBOL_DEFINITIONS.reduce((total, symbol) => total + getStoredSymbolProgress(progress, symbol.id).errors, 0);
 }
 
+export function countSymbolsToReview(progress: SymbolProgressState): number {
+  return getSymbolReviewPool(progress).length;
+}
+
 export function getSymbolReviewPool(progress: SymbolProgressState): MusicSymbolDefinition[] {
-  return MUSIC_SYMBOL_DEFINITIONS.filter((symbol) => getStoredSymbolProgress(progress, symbol.id).errors > 0).sort(
+  return MUSIC_SYMBOL_DEFINITIONS.filter((symbol) => getStoredSymbolProgress(progress, symbol.id).needsReview).sort(
     (first, second) => {
       const firstProgress = getStoredSymbolProgress(progress, first.id);
       const secondProgress = getStoredSymbolProgress(progress, second.id);
@@ -129,11 +136,13 @@ function normalizeSymbols(
 ): Partial<Record<MusicSymbolId, SymbolProgress>> {
   return MUSIC_SYMBOL_DEFINITIONS.reduce((accumulator, symbol) => {
     const symbolProgress = candidateSymbols[symbol.id];
+    const errors = asCount(symbolProgress?.errors);
 
     accumulator[symbol.id] = {
       views: asCount(symbolProgress?.views),
       correct: asCount(symbolProgress?.correct),
-      errors: asCount(symbolProgress?.errors),
+      errors,
+      needsReview: asNeedsReview(symbolProgress?.needsReview, errors),
       lastSeenAt: typeof symbolProgress?.lastSeenAt === "string" ? symbolProgress.lastSeenAt : null,
     };
 
@@ -143,6 +152,10 @@ function normalizeSymbols(
 
 function asCount(value: unknown): number {
   return typeof value === "number" && Number.isFinite(value) && value > 0 ? Math.floor(value) : 0;
+}
+
+function asNeedsReview(value: unknown, historicalErrors: number): boolean {
+  return typeof value === "boolean" ? value : historicalErrors > 0;
 }
 
 function getStoredSymbolProgress(progress: SymbolProgressState, symbolId: MusicSymbolId): SymbolProgress {

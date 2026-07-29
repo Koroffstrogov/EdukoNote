@@ -192,4 +192,12 @@ describe("quiz", () => {
     expect(trebleReviewNotes[0]).toBe("re4");
     expect(tenorReviewNotes).toEqual(["tenor-do4"]);
   });
+
+  it("removes a corrected note from review without erasing its error history", () => {
+    const incorrect = recordAnswer(createEmptyProgress(), "treble", "mi4", false);
+    const corrected = recordAnswer(incorrect, "treble", "mi4", true);
+
+    expect(getReviewNotes("treble", corrected)).toEqual([]);
+    expect(corrected.clefs.treble.notes.mi4?.errors).toBe(1);
+  });
 });

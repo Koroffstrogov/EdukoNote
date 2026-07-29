@@ -4,6 +4,7 @@ import {
   countTotalSymbolCorrect,
   countTotalSymbolErrors,
   countTotalSymbolViews,
+  countSymbolsToReview,
   createEmptySymbolProgressState,
   getSymbolReviewPool,
   normalizeSymbolProgress,
@@ -60,6 +61,7 @@ describe("symbolProgress", () => {
     expect(progress.symbols.staff?.views).toBe(2);
     expect(progress.symbols.staff?.correct).toBe(1);
     expect(progress.symbols.staff?.errors).toBe(0);
+    expect(progress.symbols.staff?.needsReview).toBe(false);
     expect(progress.symbols.staff?.lastSeenAt).toBe("2026-06-30T12:00:00.000Z");
     expect((progress.symbols as Record<string, unknown>).unknown).toBeUndefined();
     expect(progress.recentHistory).toEqual(["staff", "sharp"]);
@@ -77,6 +79,7 @@ describe("symbolProgress", () => {
     expect(secondAnswer.symbols.staff?.views).toBe(2);
     expect(secondAnswer.symbols.staff?.correct).toBe(1);
     expect(secondAnswer.symbols.staff?.errors).toBe(1);
+    expect(secondAnswer.symbols.staff?.needsReview).toBe(true);
     expect(secondAnswer.symbols.staff?.lastSeenAt).toBe("2026-06-30T12:05:00.000Z");
     expect(countTotalSymbolViews(secondAnswer)).toBe(2);
     expect(countTotalSymbolCorrect(secondAnswer)).toBe(1);
@@ -100,6 +103,21 @@ describe("symbolProgress", () => {
     );
 
     expect(getSymbolReviewPool(progress).map((symbol) => symbol.id)).toEqual(["staff", "sharp"]);
+    expect(countSymbolsToReview(progress)).toBe(2);
+  });
+
+  it("clears the review state after a correct answer and preserves historical errors", () => {
+    const incorrect = recordSymbolAnswer(createEmptySymbolProgressState(), "staff", false);
+    const corrected = recordSymbolAnswer(incorrect, "staff", true);
+
+    expect(corrected.symbols.staff).toMatchObject({
+      views: 2,
+      correct: 1,
+      errors: 1,
+      needsReview: false,
+    });
+    expect(getSymbolReviewPool(corrected)).toEqual([]);
+    expect(countTotalSymbolErrors(corrected)).toBe(1);
   });
 
   it("resets only symbol progress and uses a separate storage key", () => {

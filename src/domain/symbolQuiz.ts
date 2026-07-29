@@ -24,6 +24,25 @@ export type SymbolChallengeAnswer = {
   isCorrect: boolean;
 };
 
+const SYMBOL_DISTRACTOR_PRIORITY: Record<MusicSymbolId, MusicSymbolId[]> = {
+  staff: ["bar-line", "double-bar-line", "treble-clef"],
+  "treble-clef": ["bass-clef", "c-clef", "staff"],
+  "bass-clef": ["c-clef", "treble-clef", "flat"],
+  "c-clef": ["treble-clef", "bass-clef", "bar-line"],
+  "bar-line": ["double-bar-line", "staff", "c-clef"],
+  "double-bar-line": ["bar-line", "staff", "c-clef"],
+  "whole-note": ["half-note", "quarter-note", "augmentation-dot"],
+  "half-note": ["quarter-note", "whole-note", "eighth-note"],
+  "quarter-note": ["half-note", "eighth-note", "whole-note"],
+  "eighth-note": ["beamed-eighth-notes", "quarter-note", "half-note"],
+  "beamed-eighth-notes": ["eighth-note", "quarter-note", "half-note"],
+  "augmentation-dot": ["whole-note", "half-note", "quarter-note"],
+  "quarter-rest": ["quarter-note", "eighth-note", "augmentation-dot"],
+  sharp: ["natural", "flat", "double-bar-line"],
+  flat: ["natural", "sharp", "bass-clef"],
+  natural: ["sharp", "flat", "double-bar-line"],
+};
+
 export function getUnlockedTrainingSymbols(progress: SymbolProgressState): MusicSymbolDefinition[] {
   const totalCorrect = countTotalSymbolCorrect(progress);
   const initialSymbolIds = new Set(INITIAL_SYMBOL_IDS);
@@ -75,13 +94,23 @@ export function createSymbolChoices(
   correctSymbol: MusicSymbolDefinition,
   random: () => number = Math.random,
 ): string[] {
+  const prioritizedDistractors = SYMBOL_DISTRACTOR_PRIORITY[correctSymbol.id].map(
+    (symbolId) => getSymbolById(symbolId).label,
+  );
   const groupedDistractors = MUSIC_SYMBOL_DEFINITIONS.filter(
     (symbol) => symbol.id !== correctSymbol.id && symbol.distractorGroup === correctSymbol.distractorGroup,
+  ).map((symbol) => symbol.label);
+  const familyDistractors = MUSIC_SYMBOL_DEFINITIONS.filter(
+    (symbol) => symbol.id !== correctSymbol.id && symbol.family === correctSymbol.family,
   ).map((symbol) => symbol.label);
   const fallbackDistractors = MUSIC_SYMBOL_DEFINITIONS.filter((symbol) => symbol.id !== correctSymbol.id).map(
     (symbol) => symbol.label,
   );
-  const distractors = fillSymbolDistractors(uniqueLabels(groupedDistractors), fallbackDistractors, correctSymbol.label);
+  const distractors = fillSymbolDistractors(
+    uniqueLabels([...prioritizedDistractors, ...groupedDistractors, ...familyDistractors]),
+    fallbackDistractors,
+    correctSymbol.label,
+  );
 
   return shuffle([correctSymbol.label, ...distractors], random);
 }

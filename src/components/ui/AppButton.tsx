@@ -10,6 +10,7 @@ export type AppButtonProps = {
   href?: string;
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
+  autoFocus?: boolean;
   onClick?: MouseEventHandler<HTMLButtonElement>;
   "aria-label"?: string;
 };
@@ -21,6 +22,7 @@ export function AppButton({
   href,
   type = "button",
   disabled = false,
+  autoFocus = false,
   onClick,
   "aria-label": ariaLabel,
 }: AppButtonProps) {
@@ -35,7 +37,14 @@ export function AppButton({
   }
 
   return (
-    <button className={classes} type={type} disabled={disabled} onClick={onClick} aria-label={ariaLabel}>
+    <button
+      className={classes}
+      type={type}
+      disabled={disabled}
+      autoFocus={autoFocus}
+      onClick={onClick}
+      aria-label={ariaLabel}
+    >
       {children}
     </button>
   );

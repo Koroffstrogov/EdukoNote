@@ -7,6 +7,7 @@ export type NoteProgress = {
   views: number;
   correct: number;
   errors: number;
+  needsReview: boolean;
   lastPracticedAt: string | null;
 };
 
@@ -41,6 +42,7 @@ export function createEmptyNoteProgress(): NoteProgress {
     views: 0,
     correct: 0,
     errors: 0,
+    needsReview: false,
     lastPracticedAt: null,
   };
 }
@@ -116,6 +118,7 @@ export function recordAnswer(
             views: current.views + 1,
             correct: current.correct + (isCorrect ? 1 : 0),
             errors: current.errors + (isCorrect ? 0 : 1),
+            needsReview: !isCorrect,
             lastPracticedAt: practicedAt,
           },
         },
@@ -224,11 +227,13 @@ function normalizeNotes(
 ): Partial<Record<NoteId, NoteProgress>> {
   return getNotesForClef(clef).reduce((accumulator, note) => {
     const noteProgress = readStoredNoteProgress(note.id, candidateNotes, readLegacyIds);
+    const errors = asCount(noteProgress?.errors);
 
     accumulator[note.id] = {
       views: asCount(noteProgress?.views),
       correct: asCount(noteProgress?.correct),
-      errors: asCount(noteProgress?.errors),
+      errors,
+      needsReview: asNeedsReview(noteProgress?.needsReview, errors),
       lastPracticedAt: typeof noteProgress?.lastPracticedAt === "string" ? noteProgress.lastPracticedAt : null,
     };
 
@@ -242,6 +247,10 @@ function isProgressV2(value: unknown): value is ProgressState {
 
 function asCount(value: unknown): number {
   return typeof value === "number" && Number.isFinite(value) && value > 0 ? Math.floor(value) : 0;
+}
+
+function asNeedsReview(value: unknown, historicalErrors: number): boolean {
+  return typeof value === "boolean" ? value : historicalErrors > 0;
 }
 
 function readStoredNoteProgress(

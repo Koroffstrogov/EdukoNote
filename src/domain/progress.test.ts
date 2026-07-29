@@ -77,6 +77,7 @@ describe("progress", () => {
     expect(updatedProgress.clefs.treble.notes.mi4?.views).toBe(2);
     expect(updatedProgress.clefs.treble.notes.mi4?.correct).toBe(1);
     expect(updatedProgress.clefs.treble.notes.mi4?.errors).toBe(1);
+    expect(updatedProgress.clefs.treble.notes.mi4?.needsReview).toBe(true);
     expect(updatedProgress.clefs.treble.notes.mi4?.lastPracticedAt).toBe("2026-06-21T12:05:00.000Z");
     expect(updatedProgress.clefs.bass.notes["bass-mi3"]?.views).toBe(0);
     expect(updatedProgress.clefs.tenor.notes["tenor-mi4"]?.views).toBe(0);
@@ -98,12 +99,26 @@ describe("progress", () => {
     expect(progress.version).toBe(2);
     expect(progress.activeClef).toBe("treble");
     expect(progress.clefs.treble.notes.mi4?.views).toBe(2);
+    expect(progress.clefs.treble.notes.mi4?.needsReview).toBe(true);
     expect(progress.clefs.treble.notes.sol4?.views).toBe(0);
     expect(progress.clefs.treble.notes["bass-mi3"]).toBeUndefined();
     expect(progress.clefs.bass.notes["bass-mi3"]?.views).toBe(0);
     expect(progress.clefs.bass.notes.mi4).toBeUndefined();
     expect(progress.clefs.tenor.notes["tenor-do4"]?.views).toBe(0);
     expect(progress.clefs.tenor.notes.mi4).toBeUndefined();
+  });
+
+  it("keeps historical errors while clearing the review state after a correct answer", () => {
+    const incorrect = recordAnswer(createEmptyProgress(), "treble", "mi4", false);
+    const corrected = recordAnswer(incorrect, "treble", "mi4", true);
+
+    expect(corrected.clefs.treble.notes.mi4).toMatchObject({
+      views: 2,
+      correct: 1,
+      errors: 1,
+      needsReview: false,
+    });
+    expect(countTotalErrors(corrected, "treble")).toBe(1);
   });
 
   it("records bass answers without changing treble scores", () => {

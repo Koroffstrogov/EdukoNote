@@ -42,7 +42,7 @@ export function getUnlockedTrainingNotes(clef: Clef, progress: ProgressState, re
 
 export function getReviewNotes(clef: Clef, progress: ProgressState, readingZone: ReadingZone = "full"): NoteDefinition[] {
   return getNotesForClefAndReadingZone(clef, readingZone)
-    .filter((note) => (progress.clefs[clef].notes[note.id]?.errors ?? 0) > 0)
+    .filter((note) => progress.clefs[clef].notes[note.id]?.needsReview ?? false)
     .sort((first, second) => {
       const firstProgress = progress.clefs[clef].notes[first.id] ?? {
         views: 0,
