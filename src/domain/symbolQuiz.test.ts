@@ -10,7 +10,9 @@ import {
   createSymbolChoices,
   generateNextSymbolQuestion,
   getSymbolQuestionPool,
+  getSymbolsToReview,
   getUnlockedTrainingSymbols,
+  type SymbolChallengeAnswer,
 } from "./symbolQuiz";
 
 describe("symbolQuiz", () => {
@@ -139,5 +141,31 @@ describe("symbolQuiz", () => {
     expect(question.choices.length).toBeLessThanOrEqual(4);
     expect(question.choices).toContain("Noire");
     expect(new Set(question.choices).size).toBe(question.choices.length);
+  });
+
+  it("lists each missed symbol only once in challenge results", () => {
+    const repeatedMiss: SymbolChallengeAnswer = {
+      questionNumber: 1,
+      symbolId: "staff",
+      symbolLabel: "Portée",
+      selectedLabel: "Barre de mesure",
+      isCorrect: false,
+    };
+    const answers: SymbolChallengeAnswer[] = [
+      repeatedMiss,
+      { ...repeatedMiss, questionNumber: 5 },
+      {
+        questionNumber: 6,
+        symbolId: "sharp",
+        symbolLabel: "Dièse",
+        selectedLabel: "Bécarre",
+        isCorrect: false,
+      },
+    ];
+
+    expect(getSymbolsToReview(answers).map((answer) => answer.symbolId)).toEqual([
+      "staff",
+      "sharp",
+    ]);
   });
 });

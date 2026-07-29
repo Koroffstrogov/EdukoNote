@@ -1,4 +1,6 @@
-const CACHE_NAME = "edukonote-shell-v3";
+const CACHE_PREFIX = "edukonote-shell-";
+const CACHE_NAME = `${CACHE_PREFIX}v4`;
+const STAGING_CACHE_NAME = `${CACHE_NAME}-staging`;
 const APP_SHELL_URLS = [
   "/",
   "/index.html",
@@ -12,18 +14,13 @@ const APP_SHELL_URLS = [
 ];
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    cacheAppShell()
-      .catch(() => undefined)
-      .then(() => self.skipWaiting()),
-  );
+  event.waitUntil(stageAppShell().then(() => self.skipWaiting()));
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches
-      .keys()
-      .then((cacheNames) => Promise.all(cacheNames.filter((cacheName) => cacheName !== CACHE_NAME).map((cacheName) => caches.delete(cacheName))))
+    promoteStagedAppShell()
+      .then(() => deleteOldAppShellCaches())
       .then(() => self.clients.claim()),
   );
 });
@@ -58,31 +55,95 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(networkFirst(event.request));
 });
 
-async function cacheAppShell() {
-  const cache = await caches.open(CACHE_NAME);
-  const shellResponse = await fetch("/", { cache: "reload" });
+async function stageAppShell() {
+  await caches.delete(STAGING_CACHE_NAME);
+  const stagingCache = await caches.open(STAGING_CACHE_NAME);
 
-  if (shellResponse.ok) {
-    await cache.put("/", shellResponse.clone());
-
+  try {
+    const shellResponse = await fetchRequired("/");
     const html = await shellResponse.clone().text();
     const assetUrls = extractSameOriginAssetUrls(html);
-    const urlsToCache = Array.from(new Set([...APP_SHELL_URLS.filter((url) => url !== "/"), ...assetUrls]));
-
-    await Promise.all(
-      urlsToCache.map(async (url) => {
-        try {
-          const response = await fetch(url, { cache: "reload" });
-
-          if (response.ok) {
-            await cache.put(url, response);
-          }
-        } catch {
-          undefined;
-        }
-      }),
+    const urlsToCache = Array.from(
+      new Set([...APP_SHELL_URLS.filter((url) => url !== "/"), ...assetUrls]),
     );
+    const responses = await Promise.all(
+      urlsToCache.map(async (url) => ({
+        url,
+        response: await fetchRequired(url),
+      })),
+    );
+
+    await stagingCache.put("/", shellResponse);
+    await Promise.all(
+      responses.map(({ url, response }) => stagingCache.put(url, response)),
+    );
+  } catch (error) {
+    await caches.delete(STAGING_CACHE_NAME);
+    throw error;
   }
+}
+
+async function promoteStagedAppShell() {
+  const stagingCache = await caches.open(STAGING_CACHE_NAME);
+  const stagedRequests = await stagingCache.keys();
+
+  if (stagedRequests.length === 0) {
+    throw new Error("No staged app shell is available");
+  }
+
+  const rootRequest = stagedRequests.find((request) => new URL(request.url).pathname === "/");
+
+  if (!rootRequest) {
+    throw new Error("The staged app shell has no root document");
+  }
+
+  const targetCache = await caches.open(CACHE_NAME);
+  const assetRequests = stagedRequests.filter((request) => request !== rootRequest);
+
+  await copyCacheEntries(stagingCache, targetCache, assetRequests);
+  await copyCacheEntries(stagingCache, targetCache, [rootRequest]);
+
+  const stagedUrls = new Set(stagedRequests.map((request) => request.url));
+  const targetRequests = await targetCache.keys();
+
+  await Promise.all(
+    targetRequests
+      .filter((request) => !stagedUrls.has(request.url))
+      .map((request) => targetCache.delete(request)),
+  );
+  await caches.delete(STAGING_CACHE_NAME);
+}
+
+async function copyCacheEntries(sourceCache, targetCache, requests) {
+  for (const request of requests) {
+    const response = await sourceCache.match(request);
+
+    if (!response) {
+      throw new Error(`Missing staged response for ${request.url}`);
+    }
+
+    await targetCache.put(request, response);
+  }
+}
+
+async function deleteOldAppShellCaches() {
+  const cacheNames = await caches.keys();
+
+  await Promise.all(
+    cacheNames
+      .filter((cacheName) => cacheName.startsWith(CACHE_PREFIX) && cacheName !== CACHE_NAME)
+      .map((cacheName) => caches.delete(cacheName)),
+  );
+}
+
+async function fetchRequired(url) {
+  const response = await fetch(url, { cache: "reload" });
+
+  if (!response.ok) {
+    throw new Error(`Unable to cache ${url}: ${response.status}`);
+  }
+
+  return response;
 }
 
 async function networkFirstNavigation(request) {

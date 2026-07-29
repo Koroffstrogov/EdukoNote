@@ -32,8 +32,14 @@ export function ExercisePage() {
     return <ResultPage answers={session.answers} onRestart={session.restartChallenge} />;
   }
 
-  if (mode === "speed" && session.speedFinished) {
-    return <SpeedResultState score={session.speedScore} onRestart={session.restartSpeed} />;
+  if (mode === "speed" && session.speedFailure) {
+    return (
+      <SpeedResultState
+        score={session.speedScore}
+        failure={session.speedFailure}
+        onRestart={session.restartSpeed}
+      />
+    );
   }
 
   return (

@@ -1,3 +1,5 @@
+import type { AnswerLabel, NoteId } from "./notes";
+
 export const SPEED_INITIAL_TIME_SECONDS = 3;
 export const SPEED_BLOCK_SIZE = 10;
 export const SPEED_DECAY_RATIO = 15 / 16;
@@ -7,6 +9,13 @@ export type SpeedReward = {
   title: string;
   message: string;
   badge: string;
+};
+
+export type SpeedFailure = {
+  reason: "incorrect" | "timeout";
+  noteId: NoteId;
+  correctLabel: AnswerLabel;
+  selectedLabel: AnswerLabel | null;
 };
 
 export function getSpeedTimeLimitSeconds(score: number): number {

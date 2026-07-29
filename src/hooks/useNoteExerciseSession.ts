@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { AnswerLabel, Clef, NoteId, ReadingZone } from "../domain/notes";
 import {
   NOTE_CHALLENGE_LENGTH,
@@ -9,7 +9,7 @@ import {
   type QuizQuestion,
 } from "../domain/quiz";
 import type { ProgressState } from "../domain/progress";
-import { getSpeedTimeLimitSeconds } from "../domain/speed";
+import { getSpeedTimeLimitSeconds, type SpeedFailure } from "../domain/speed";
 
 const SPEED_TIMER_TICK_MS = 100;
 
@@ -35,6 +35,11 @@ export function useNoteExerciseSession({
   );
   const questionIndexRef = useRef(1);
   const answeredRef = useRef(false);
+  const speedDeadlineAtRef = useRef<number | null>(
+    mode === "speed"
+      ? Date.now() + secondsToMs(getSpeedTimeLimitSeconds(0))
+      : null,
+  );
   const [question, setQuestion] = useState<QuizQuestion>(() =>
     generateQuestion(null, mode, recentHistoryRef.current, questionIndexRef.current),
   );
@@ -43,25 +48,40 @@ export function useNoteExerciseSession({
   const [answers, setAnswers] = useState<ChallengeAnswer[]>([]);
   const [challengeFinished, setChallengeFinished] = useState(false);
   const [speedScore, setSpeedScore] = useState(0);
-  const [speedFinished, setSpeedFinished] = useState(false);
+  const [speedFailure, setSpeedFailure] = useState<SpeedFailure | null>(null);
   const [speedTimeLeftMs, setSpeedTimeLeftMs] = useState(() =>
     secondsToMs(getSpeedTimeLimitSeconds(0)),
   );
+  const finishSpeedFailure = useCallback(
+    (reason: SpeedFailure["reason"], selectedLabel: AnswerLabel | null) => {
+      recordNoteAnswer(question.note.id, false);
+      recordRecentNote(question.note.id);
+      setSpeedFailure({
+        reason,
+        noteId: question.note.id,
+        correctLabel: question.note.answerLabel,
+        selectedLabel,
+      });
+    },
+    [question.note, recordNoteAnswer, recordRecentNote],
+  );
 
   useEffect(() => {
-    if (mode !== "speed" || speedFinished) {
+    if (mode !== "speed" || speedFailure) {
       return undefined;
     }
 
     const timeLimitMs = secondsToMs(getSpeedTimeLimitSeconds(speedScore));
     const startedAt = Date.now();
+    const deadlineAt = startedAt + timeLimitMs;
     let isActive = true;
 
     answeredRef.current = false;
+    speedDeadlineAtRef.current = deadlineAt;
     setSpeedTimeLeftMs(timeLimitMs);
 
     const timerId = window.setInterval(() => {
-      const timeLeftMs = Math.max(0, timeLimitMs - (Date.now() - startedAt));
+      const timeLeftMs = Math.max(0, deadlineAt - Date.now());
 
       if (!isActive) {
         return;
@@ -69,9 +89,9 @@ export function useNoteExerciseSession({
 
       setSpeedTimeLeftMs(timeLeftMs);
 
-      if (timeLeftMs <= 0) {
+      if (timeLeftMs <= 0 && !answeredRef.current) {
         answeredRef.current = true;
-        setSpeedFinished(true);
+        finishSpeedFailure("timeout", null);
         window.clearInterval(timerId);
       }
     }, SPEED_TIMER_TICK_MS);
@@ -79,8 +99,12 @@ export function useNoteExerciseSession({
     return () => {
       isActive = false;
       window.clearInterval(timerId);
+
+      if (speedDeadlineAtRef.current === deadlineAt) {
+        speedDeadlineAtRef.current = null;
+      }
     };
-  }, [mode, question.id, speedFinished, speedScore]);
+  }, [finishSpeedFailure, mode, question.id, speedFailure, speedScore]);
 
   function generateQuestion(
     previousQuestion: QuizQuestion | null,
@@ -101,6 +125,16 @@ export function useNoteExerciseSession({
 
   function selectAnswer(answerLabel: AnswerLabel) {
     if (answeredRef.current) {
+      return;
+    }
+
+    if (
+      mode === "speed" &&
+      speedDeadlineAtRef.current !== null &&
+      Date.now() >= speedDeadlineAtRef.current
+    ) {
+      answeredRef.current = true;
+      finishSpeedFailure("timeout", null);
       return;
     }
 
@@ -131,10 +165,15 @@ export function useNoteExerciseSession({
   }
 
   function handleSpeedAnswer(answerLabel: AnswerLabel) {
-    if (answerLabel !== question.note.answerLabel) {
-      setSpeedFinished(true);
+    const isCorrect = answerLabel === question.note.answerLabel;
+
+    if (!isCorrect) {
+      finishSpeedFailure("incorrect", answerLabel);
       return;
     }
+
+    recordNoteAnswer(question.note.id, true);
+    recordRecentNote(question.note.id);
 
     const nextScore = speedScore + 1;
     const nextHistory = appendToRecentHistory(question.note.id);
@@ -182,7 +221,7 @@ export function useNoteExerciseSession({
   function restartSpeed() {
     resetQuestionState("speed");
     setSpeedScore(0);
-    setSpeedFinished(false);
+    setSpeedFailure(null);
     setSpeedTimeLeftMs(secondsToMs(getSpeedTimeLimitSeconds(0)));
   }
 
@@ -205,7 +244,8 @@ export function useNoteExerciseSession({
     answers,
     challengeFinished,
     speedScore,
-    speedFinished,
+    speedFailure,
+    speedFinished: speedFailure !== null,
     speedTimeLeftMs,
     selectAnswer,
     nextQuestion,

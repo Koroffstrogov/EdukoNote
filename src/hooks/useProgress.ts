@@ -11,6 +11,7 @@ import {
   type ProgressState,
 } from "../domain/progress";
 import { getPaletteForClef } from "../theme/tokens";
+import { parseStoredJson, useStorageSync } from "./useStorageSync";
 
 function readStoredProgress(): ProgressState {
   if (typeof window === "undefined") {
@@ -20,10 +21,13 @@ function readStoredProgress(): ProgressState {
   try {
     const rawValue = window.localStorage.getItem(PROGRESS_STORAGE_KEY);
     const rawLegacyValue = window.localStorage.getItem(LEGACY_PROGRESS_STORAGE_KEY);
-    const parsedValue = rawValue ? JSON.parse(rawValue) : null;
-    const parsedLegacyValue = rawLegacyValue ? JSON.parse(rawLegacyValue) : null;
+    const parsedValue = parseStoredJson(rawValue);
+    const parsedLegacyValue = parseStoredJson(rawLegacyValue);
 
-    return normalizeProgress(parsedValue, parsedLegacyValue);
+    return normalizeProgress(
+      parsedValue.ok ? parsedValue.value : null,
+      parsedLegacyValue.ok ? parsedLegacyValue.value : null,
+    );
   } catch {
     return normalizeProgress(null);
   }
@@ -40,6 +44,8 @@ function writeStoredProgress(progress: ProgressState) {
 export function useProgress() {
   const [progress, setProgress] = useState<ProgressState>(() => readStoredProgress());
 
+  useStorageSync(PROGRESS_STORAGE_KEY, normalizeProgress, setProgress);
+
   useEffect(() => {
     if (typeof document !== "undefined") {
       document.documentElement.dataset.palette = getPaletteForClef(progress.activeClef);
@@ -49,13 +55,7 @@ export function useProgress() {
   }, [progress]);
 
   const switchActiveClef = useCallback((clef: Clef) => {
-    setProgress((currentProgress) => {
-      const nextProgress = setActiveClef(currentProgress, clef);
-
-      writeStoredProgress(nextProgress);
-
-      return nextProgress;
-    });
+    setProgress((currentProgress) => setActiveClef(currentProgress, clef));
   }, []);
 
   const recordNoteAnswer = useCallback((noteId: NoteId, isCorrect: boolean) => {

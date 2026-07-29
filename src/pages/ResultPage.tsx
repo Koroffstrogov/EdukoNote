@@ -1,5 +1,5 @@
 import { type AnswerLabel } from "../domain/notes";
-import { type ChallengeAnswer, getNotesToReview } from "../domain/quiz";
+import { NOTE_CHALLENGE_LENGTH, type ChallengeAnswer, getNotesToReview } from "../domain/quiz";
 import { AppButton } from "../components/ui/AppButton";
 import { AppCard } from "../components/ui/AppCard";
 import { ProgressChip } from "../components/ui/ProgressChip";
@@ -29,7 +29,7 @@ export function ResultPage({ answers, onRestart }: ResultPageProps) {
 
       <header className="page-hero">
         <p className="page-eyebrow">Défi terminé</p>
-        <h1 className="page-title">Score {score}/10</h1>
+        <h1 className="page-title">Score {score}/{NOTE_CHALLENGE_LENGTH}</h1>
       </header>
 
       <div className="styleguide-layout">

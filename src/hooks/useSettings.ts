@@ -6,6 +6,7 @@ import {
   setReadingZone,
   type SettingsState,
 } from "../domain/settings";
+import { useStorageSync } from "./useStorageSync";
 
 function readStoredSettings(): SettingsState {
   if (typeof window === "undefined") {
@@ -32,6 +33,8 @@ function writeStoredSettings(settings: SettingsState) {
 
 export function useSettings() {
   const [settings, setSettings] = useState<SettingsState>(() => readStoredSettings());
+
+  useStorageSync(SETTINGS_STORAGE_KEY, normalizeSettings, setSettings);
 
   useEffect(() => {
     writeStoredSettings(settings);

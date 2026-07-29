@@ -8,6 +8,7 @@ import {
   resetSymbolProgress,
   type SymbolProgressState,
 } from "../domain/symbolProgress";
+import { useStorageSync } from "./useStorageSync";
 
 function readStoredSymbolProgress(): SymbolProgressState {
   if (typeof window === "undefined") {
@@ -34,6 +35,8 @@ function writeStoredSymbolProgress(progress: SymbolProgressState) {
 
 export function useSymbolProgress() {
   const [progress, setProgress] = useState<SymbolProgressState>(() => readStoredSymbolProgress());
+
+  useStorageSync(SYMBOL_PROGRESS_STORAGE_KEY, normalizeSymbolProgress, setProgress);
 
   useEffect(() => {
     writeStoredSymbolProgress(progress);

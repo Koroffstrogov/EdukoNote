@@ -9,6 +9,8 @@ import { countTotalSymbolCorrect, getSymbolReviewPool, type SymbolProgressState 
 
 export type SymbolQuizMode = "training" | "challenge" | "review";
 
+export const SYMBOL_CHALLENGE_LENGTH = 10;
+
 export type SymbolQuizQuestion = {
   id: string;
   questionIndex: number;
@@ -116,7 +118,16 @@ export function createSymbolChoices(
 }
 
 export function getSymbolsToReview(answers: SymbolChallengeAnswer[]): SymbolChallengeAnswer[] {
-  return answers.filter((answer) => !answer.isCorrect);
+  const symbolIdsToReview = new Set<MusicSymbolId>();
+
+  return answers.filter((answer) => {
+    if (answer.isCorrect || symbolIdsToReview.has(answer.symbolId)) {
+      return false;
+    }
+
+    symbolIdsToReview.add(answer.symbolId);
+    return true;
+  });
 }
 
 function pickNextSymbol(
