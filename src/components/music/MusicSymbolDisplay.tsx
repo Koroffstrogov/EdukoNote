@@ -46,7 +46,11 @@ export function MusicSymbolDisplay({
   const symbolDefinition =
     typeof symbol === "string" ? getSymbolById(symbol) : symbol;
   const titleId = useId();
-  const classes = ["music-symbol-display", className].filter(Boolean).join(" ");
+  const classes = [
+    "music-symbol-display",
+    `music-symbol-display--${symbolDefinition.id}`,
+    className,
+  ].filter(Boolean).join(" ");
 
   return (
     <figure className={classes}>

@@ -24,7 +24,12 @@ export function FeedbackCard({ status, children }: FeedbackCardProps) {
   const feedback = feedbackCopy[status];
 
   return (
-    <AppCard tone={feedback.tone} className={`feedback-card feedback-card--${status}`}>
+    <AppCard
+      tone={feedback.tone}
+      className={`feedback-card feedback-card--${status}`}
+      role="status"
+      aria-atomic="true"
+    >
       <span className="feedback-card__badge" aria-hidden="true">
         {feedback.icon}
       </span>

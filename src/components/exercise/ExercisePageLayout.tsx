@@ -1,10 +1,12 @@
 import type { ReactNode } from "react";
 import { AppButton } from "../ui/AppButton";
+import { StudioBrand } from "../ui/StudioBrand";
 
 type ExercisePageLayoutProps = {
   eyebrow: ReactNode;
   title?: ReactNode;
   className?: string;
+  navLabel?: string;
   children: ReactNode;
 };
 
@@ -12,19 +14,15 @@ export function ExercisePageLayout({
   eyebrow,
   title,
   className = "",
+  navLabel = "Quitter",
   children,
 }: ExercisePageLayoutProps) {
   return (
-    <main className={["app-shell", className].filter(Boolean).join(" ")}>
+    <main className={["app-shell", "studio-shell", className].filter(Boolean).join(" ")}>
       <nav className="app-topbar" aria-label="Navigation principale">
-        <a className="brand-mark" href="/" aria-label="Accueil EdukoNote">
-          <span className="brand-mark__symbol" aria-hidden="true">
-            ♪
-          </span>
-          EdukoNote
-        </a>
-        <AppButton href="/" tone="cream">
-          Accueil
+        <StudioBrand />
+        <AppButton className="studio-exit-button" href="/" tone="cream">
+          <span aria-hidden="true">←</span> {navLabel}
         </AppButton>
       </nav>
 

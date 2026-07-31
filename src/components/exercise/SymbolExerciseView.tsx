@@ -1,22 +1,28 @@
+import { useEffect, useRef } from "react";
 import { MusicSymbolDisplay } from "../music/MusicSymbolDisplay";
 import { AppButton } from "../ui/AppButton";
 import { AppCard } from "../ui/AppCard";
 import { FeedbackCard } from "../ui/FeedbackCard";
-import { ProgressChip } from "../ui/ProgressChip";
+import { StudioTrack } from "../ui/StudioTrack";
+import type { MusicSymbolFamily } from "../../domain/musicSymbols";
 import {
   SYMBOL_CHALLENGE_LENGTH,
   type SymbolQuizMode,
   type SymbolQuizQuestion,
 } from "../../domain/symbolQuiz";
-import type { ColorTokenId } from "../../theme/tokens";
 import { ExercisePageLayout } from "./ExercisePageLayout";
-
-const answerTones: ColorTokenId[] = ["rose", "lavender", "vanilla", "mint"];
 
 const modeLabels: Record<SymbolQuizMode, string> = {
   training: "Entraînement",
   challenge: "Défi",
   review: "Révision",
+};
+
+const symbolFamilyLabels: Record<MusicSymbolFamily, string> = {
+  "score-reading": "Lire une partition",
+  durations: "Durées",
+  rests: "Silences",
+  accidentals: "Altérations",
 };
 
 type SymbolExerciseViewProps = {
@@ -37,79 +43,90 @@ export function SymbolExerciseView({
   onNextQuestion,
 }: SymbolExerciseViewProps) {
   const isCorrect = selectedAnswerLabel === question.symbol.label;
+  const questionTitleRef = useRef<HTMLHeadingElement>(null);
+  const previousQuestionIdRef = useRef(question.id);
+
+  useEffect(() => {
+    if (previousQuestionIdRef.current !== question.id) {
+      questionTitleRef.current?.focus();
+    }
+
+    previousQuestionIdRef.current = question.id;
+  }, [question.id]);
 
   return (
-    <ExercisePageLayout className="exercise-shell" eyebrow={`Symboles · ${modeLabels[mode]}`}>
+    <ExercisePageLayout
+      className={`exercise-shell studio-exercise studio-exercise--symbols studio-exercise--${mode}`}
+      eyebrow={`Symboles · ${modeLabels[mode]}`}
+    >
       <div className="exercise-layout">
-        <AppCard tone="sky" className="question-card symbol-question-card">
-          {mode === "challenge" ? (
-            <div className="exercise-meta">
-              <ProgressChip
-                label={`${questionNumber}/${SYMBOL_CHALLENGE_LENGTH}`}
-                status="current"
-              />
+        <AppCard tone="cream" className="question-card symbol-question-card studio-score-card">
+          <div className="studio-score-card__header">
+            <div>
+              <p className="studio-overline">Piste 05 · Symboles</p>
+              <p className="studio-symbol-family">{symbolFamilyLabels[question.symbol.family]}</p>
             </div>
-          ) : null}
-          <h2 className="question-card__title">Quel est ce symbole ?</h2>
-          <MusicSymbolDisplay
-            symbol={question.symbol}
-            accessibleLabel={`Symbole musical à identifier. ${question.symbol.visualDescription}`}
-          />
+            {mode === "challenge" ? (
+              <div className="studio-question-progress">
+                <StudioTrack
+                  total={SYMBOL_CHALLENGE_LENGTH}
+                  active={questionNumber}
+                  label={`Question ${questionNumber} sur ${SYMBOL_CHALLENGE_LENGTH}`}
+                />
+                <span aria-hidden="true">{questionNumber}/{SYMBOL_CHALLENGE_LENGTH}</span>
+              </div>
+            ) : null}
+          </div>
+          <h1 className="question-card__title" ref={questionTitleRef} tabIndex={-1}>
+            Nomme ce signe
+          </h1>
+          <div className="studio-notation-window studio-notation-window--symbol">
+            <MusicSymbolDisplay
+              symbol={question.symbol}
+              accessibleLabel={`Symbole musical à identifier. ${question.symbol.visualDescription}`}
+            />
+          </div>
         </AppCard>
 
-        <section className="exercise-action-panel" aria-live="polite">
+        <section className="exercise-action-panel">
           {selectedAnswerLabel ? (
             <div className="exercise-feedback">
               <FeedbackCard status={isCorrect ? "success" : "near"}>
                 {isCorrect ? `C’est ${question.symbol.label}` : `C’était ${question.symbol.label}`}
               </FeedbackCard>
-              <AppButton tone="plum" onClick={onNextQuestion}>
+              <AppButton className="studio-primary-action" tone="plum" autoFocus onClick={onNextQuestion}>
                 {mode === "challenge" && questionNumber >= SYMBOL_CHALLENGE_LENGTH
                   ? "Voir le score"
                   : "Symbole suivant"}
               </AppButton>
-              <p className="symbol-explanation">{question.symbol.shortExplanation}</p>
+              <div className="symbol-explanation">
+                <span>Note du prof</span>
+                <p>{question.symbol.shortExplanation}</p>
+              </div>
               {!isCorrect ? (
                 <p className="exercise-hint">Tu avais choisi {selectedAnswerLabel}.</p>
               ) : null}
             </div>
           ) : (
-            <div className="answer-grid" aria-label="Réponses proposées">
-              {question.choices.map((choice, index) => (
-                <AppButton
-                  key={choice}
-                  tone={getAnswerTone(choice, question.symbol.label, selectedAnswerLabel, index)}
-                  disabled={selectedAnswerLabel !== null}
-                  onClick={() => onAnswer(choice)}
-                >
-                  {choice}
-                </AppButton>
-              ))}
-            </div>
+            <>
+              <p className="studio-answer-label">Choisis le bon nom</p>
+              <div className="answer-grid" aria-label="Réponses proposées">
+                {question.choices.map((choice) => (
+                  <AppButton
+                    key={choice}
+                    className="studio-answer-pad"
+                    tone="cream"
+                    disabled={selectedAnswerLabel !== null}
+                    onClick={() => onAnswer(choice)}
+                  >
+                    {choice}
+                  </AppButton>
+                ))}
+              </div>
+            </>
           )}
         </section>
       </div>
     </ExercisePageLayout>
   );
-}
-
-function getAnswerTone(
-  choice: string,
-  correctAnswer: string,
-  selectedAnswer: string | null,
-  index: number,
-): ColorTokenId {
-  if (!selectedAnswer) {
-    return answerTones[index % answerTones.length];
-  }
-
-  if (choice === correctAnswer) {
-    return "mint";
-  }
-
-  if (choice === selectedAnswer) {
-    return "vanilla";
-  }
-
-  return "cream";
 }

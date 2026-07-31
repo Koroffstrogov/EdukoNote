@@ -1,8 +1,6 @@
 import { type AnswerLabel } from "../domain/notes";
 import { NOTE_CHALLENGE_LENGTH, type ChallengeAnswer, getNotesToReview } from "../domain/quiz";
-import { AppButton } from "../components/ui/AppButton";
-import { AppCard } from "../components/ui/AppCard";
-import { ProgressChip } from "../components/ui/ProgressChip";
+import { ChallengeResultView } from "../components/exercise/ChallengeResultView";
 
 export type ResultPageProps = {
   answers: ChallengeAnswer[];
@@ -14,59 +12,16 @@ export function ResultPage({ answers, onRestart }: ResultPageProps) {
   const notesToReview = uniqueLabelsToReview(answers);
 
   return (
-    <main className="app-shell">
-      <nav className="app-topbar" aria-label="Navigation principale">
-        <a className="brand-mark" href="/" aria-label="Accueil EdukoNote">
-          <span className="brand-mark__symbol" aria-hidden="true">
-            ♪
-          </span>
-          EdukoNote
-        </a>
-        <AppButton href="/" tone="cream">
-          Accueil
-        </AppButton>
-      </nav>
-
-      <header className="page-hero">
-        <p className="page-eyebrow">Défi terminé</p>
-        <h1 className="page-title">Score {score}/{NOTE_CHALLENGE_LENGTH}</h1>
-      </header>
-
-      <div className="styleguide-layout">
-        <AppCard tone={score >= 7 ? "mint" : "vanilla"}>
-          <h2 className="app-card__title">{score >= 7 ? "Bravo !" : "Presque !"}</h2>
-          <p className="app-card__body">
-            {score >= 7 ? "Très belle série de notes." : "Les notes à retravailler sont prêtes."}
-          </p>
-          <div className="button-row">
-            <AppButton tone="plum" onClick={onRestart}>
-              Refaire le défi
-            </AppButton>
-            <AppButton href="/" tone="cream">
-              Retour accueil
-            </AppButton>
-          </div>
-        </AppCard>
-
-        <section className="style-section" aria-labelledby="review-list-title">
-          <h2 className="style-section__title" id="review-list-title">
-            Notes à retravailler
-          </h2>
-          {notesToReview.length > 0 ? (
-            <div className="chip-row">
-              {notesToReview.map((label) => (
-                <ProgressChip key={label} label={label} status="missed" />
-              ))}
-            </div>
-          ) : (
-            <AppCard tone="mint">
-              <h3 className="app-card__title">Bravo !</h3>
-              <p className="app-card__body">Aucune note à retravailler dans ce défi.</p>
-            </AppCard>
-          )}
-        </section>
-      </div>
-    </main>
+    <ChallengeResultView
+      eyebrow="Défi notes terminé"
+      score={score}
+      total={NOTE_CHALLENGE_LENGTH}
+      resultStates={answers.map((answer) => answer.isCorrect)}
+      itemLabel={{ singular: "note trouvée", plural: "notes trouvées" }}
+      reviewTitle="Notes à rejouer"
+      reviewItems={notesToReview}
+      onRestart={onRestart}
+    />
   );
 }
 

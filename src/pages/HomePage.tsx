@@ -1,9 +1,8 @@
-import { AppButton } from "../components/ui/AppButton";
 import { AppCard } from "../components/ui/AppCard";
 import { HomeActionCard } from "../components/ui/HomeActionCard";
-import { ProgressChip } from "../components/ui/ProgressChip";
 import { SettingsButton } from "../components/ui/SettingsButton";
 import { ResetProgressControl } from "../components/ui/ResetProgressControl";
+import { StudioBrand } from "../components/ui/StudioBrand";
 import {
   ANSWER_LABELS,
   CLEF_LABELS,
@@ -12,99 +11,110 @@ import {
   type Clef,
   type NoteId,
 } from "../domain/notes";
-import { countTotalCorrect, countTotalErrors, countTotalViews, type NoteProgress } from "../domain/progress";
+import { countTotalCorrect, countTotalViews, type NoteProgress } from "../domain/progress";
 import { useProgress } from "../hooks/useProgress";
 
 export function HomePage() {
   const { progress, activeClef, resetStoredProgress } = useProgress();
   const totalViews = countTotalViews(progress, activeClef);
   const totalCorrect = countTotalCorrect(progress, activeClef);
-  const totalErrors = countTotalErrors(progress, activeClef);
   const progressByLabel = summarizeProgressByLabel(progress.clefs[activeClef].notes, activeClef);
+  const notesToReview = progressByLabel.filter(({ noteProgress }) => noteProgress.needsReview).length;
 
   return (
-    <main className="app-shell">
+    <main className="app-shell studio-shell studio-home">
       <nav className="app-topbar" aria-label="Navigation principale">
-        <a className="brand-mark" href="/" aria-label="Accueil EdukoNote">
-          <span className="brand-mark__symbol" aria-hidden="true">
-            ♪
-          </span>
-          EdukoNote
-        </a>
+        <StudioBrand />
         <SettingsButton />
       </nav>
 
-      <header className="page-hero">
-        <p className="page-eyebrow">{CLEF_LABELS[activeClef]}</p>
+      <header className="studio-home-hero">
+        <div className="studio-home-hero__copy">
+          <p className="studio-overline">Au programme · {CLEF_LABELS[activeClef]}</p>
+          <h1>On joue ?</h1>
+          <p>Choisis une piste et lance la répétition.</p>
+        </div>
+        <div className="studio-home-poster" aria-hidden="true">
+          <span className="studio-home-poster__number">01</span>
+          <span className="studio-home-poster__note">♪</span>
+        </div>
       </header>
 
-      <div className="home-layout">
-        <section className="home-actions" aria-label="Actions d'accueil provisoires">
+      <div className="home-layout studio-home-layout">
+        <section className="home-actions studio-setlist" aria-labelledby="home-setlist-title">
+          <div className="studio-section-heading studio-setlist__heading">
+            <div>
+              <p className="studio-overline">Ta séance</p>
+              <h2 id="home-setlist-title">Setlist du jour</h2>
+            </div>
+            <span>5 pistes</span>
+          </div>
           <HomeActionCard
             title="Entraînement"
-            text="Jouer maintenant"
-            icon="♪"
+            text="Échauffement libre"
+            icon="01"
             href="/exercise?mode=training"
             tone="rose"
             featured
           />
           <HomeActionCard
             title="Défi 10 notes"
-            text="10 notes"
-            icon="10"
+            text="Le morceau du jour"
+            icon="02"
             href="/exercise?mode=challenge"
             tone="lavender"
           />
           <HomeActionCard
             title="Révision des erreurs"
-            text="Reprendre"
-            icon="↺"
+            text="Rejoue les passages"
+            icon="03"
             href="/exercise?mode=review"
             tone="vanilla"
           />
           <HomeActionCard
             title="Vitesse"
-            text="Série rapide"
-            icon="⏱"
+            text="Tiens le tempo"
+            icon="04"
             href="/exercise?mode=speed"
             tone="rose"
           />
           <HomeActionCard
             title="Symboles"
-            text="Lire les signes"
-            icon="?"
+            text="Le dico musical"
+            icon="05"
             href="/symbols"
             tone="lavender"
           />
         </section>
 
-        <section className="home-summary" aria-label="Résumé de progression">
-          <AppCard tone="sky" className="home-progress-card">
-            <h2 className="app-card__title">Progression</h2>
-            <p className="app-card__body">
-              {totalViews > 0 ? "Les notes avancent à ton rythme." : "Prête pour commencer."}
-            </p>
-            <div className="home-progress-stats" aria-label="Statistiques de progression">
-              <span className="home-progress-stat">
-                <span className="home-progress-stat__value">{totalCorrect}</span>
-                <span className="home-progress-stat__label">Bonnes</span>
-              </span>
-              <span className="home-progress-stat">
-                <span className="home-progress-stat__value">{totalErrors}</span>
-                <span className="home-progress-stat__label">Erreurs</span>
-              </span>
-              <span className="home-progress-stat">
-                <span className="home-progress-stat__value">{totalViews}</span>
-                <span className="home-progress-stat__label">Vues</span>
-              </span>
+        <section className="home-summary" aria-labelledby="home-progress-title">
+          <AppCard tone="cream" className="home-progress-card studio-progress-card">
+            <div className="studio-section-heading">
+              <div>
+                <p className="studio-overline">Tes répétitions</p>
+                <h2 id="home-progress-title">Carnet de musique</h2>
+              </div>
+              <span className="studio-progress-card__edition">Nº 01</span>
             </div>
-            <div className="chip-row">
+            <p className="studio-progress-card__lead">
+              {totalViews > 0 ? "Ta partition se complète à chaque essai." : "Ta première mesure t’attend."}
+            </p>
+            <div className="studio-home-stats" aria-label="Statistiques de progression">
+              <span><strong>{totalCorrect}</strong> trouvées</span>
+              <span><strong>{notesToReview}</strong> à revoir</span>
+              <span><strong>{totalViews}</strong> essais</span>
+            </div>
+            <div className="studio-note-ledger" role="list" aria-label="Maîtrise des notes">
               {progressByLabel.map(({ label, noteProgress }) => (
-                <ProgressChip
+                <span
                   key={label}
-                  label={`${label} ${noteProgress.correct}/${noteProgress.views}`}
-                  status={getProgressStatus(noteProgress)}
-                />
+                  className={`studio-note-token studio-note-token--${getProgressStatus(noteProgress)}`}
+                  role="listitem"
+                  aria-label={`${label}, ${getProgressStatusLabel(noteProgress)}, ${noteProgress.correct} ${noteProgress.correct === 1 ? "réussite" : "réussites"} sur ${noteProgress.views} ${noteProgress.views === 1 ? "essai" : "essais"}`}
+                >
+                  <span>{label}</span>
+                  <span aria-hidden="true">{getProgressMark(noteProgress)}</span>
+                </span>
               ))}
             </div>
             {totalViews > 0 ? (
@@ -170,4 +180,28 @@ function getProgressStatus(noteProgress: NoteProgress): "complete" | "current" |
   }
 
   return "current";
+}
+
+function getProgressMark(noteProgress: NoteProgress): string {
+  if (noteProgress.needsReview) {
+    return "!";
+  }
+
+  if (noteProgress.correct > 0) {
+    return "✓";
+  }
+
+  return "·";
+}
+
+function getProgressStatusLabel(noteProgress: NoteProgress): string {
+  if (noteProgress.needsReview) {
+    return "à revoir";
+  }
+
+  if (noteProgress.correct > 0) {
+    return "acquise";
+  }
+
+  return "à découvrir";
 }
