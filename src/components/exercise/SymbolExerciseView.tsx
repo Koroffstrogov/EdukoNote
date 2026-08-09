@@ -56,14 +56,14 @@ export function SymbolExerciseView({
 
   return (
     <ExercisePageLayout
-      className={`exercise-shell studio-exercise studio-exercise--symbols studio-exercise--${mode}`}
+      className={`exercise-shell studio-exercise aurora-exercise studio-exercise--symbols studio-exercise--${mode}`}
       eyebrow={`Symboles · ${modeLabels[mode]}`}
     >
       <div className="exercise-layout">
         <AppCard tone="cream" className="question-card symbol-question-card studio-score-card">
           <div className="studio-score-card__header">
             <div>
-              <p className="studio-overline">Piste 05 · Symboles</p>
+              <p className="studio-overline">Session Symboles</p>
               <p className="studio-symbol-family">{symbolFamilyLabels[question.symbol.family]}</p>
             </div>
             {mode === "challenge" ? (
@@ -78,7 +78,7 @@ export function SymbolExerciseView({
             ) : null}
           </div>
           <h1 className="question-card__title" ref={questionTitleRef} tabIndex={-1}>
-            Nomme ce signe
+            Quel symbole ?
           </h1>
           <div className="studio-notation-window studio-notation-window--symbol">
             <MusicSymbolDisplay
@@ -100,7 +100,7 @@ export function SymbolExerciseView({
                   : "Symbole suivant"}
               </AppButton>
               <div className="symbol-explanation">
-                <span>Note du prof</span>
+                <span>À retenir</span>
                 <p>{question.symbol.shortExplanation}</p>
               </div>
               {!isCorrect ? (
@@ -109,12 +109,12 @@ export function SymbolExerciseView({
             </div>
           ) : (
             <>
-              <p className="studio-answer-label">Choisis le bon nom</p>
+              <p className="studio-answer-label">Choisis ta réponse</p>
               <div className="answer-grid" aria-label="Réponses proposées">
                 {question.choices.map((choice) => (
                   <AppButton
                     key={choice}
-                    className="studio-answer-pad"
+                    className="studio-answer-pad aurora-answer-pad"
                     tone="cream"
                     disabled={selectedAnswerLabel !== null}
                     onClick={() => onAnswer(choice)}

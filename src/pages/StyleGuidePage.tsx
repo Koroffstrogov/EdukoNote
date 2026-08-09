@@ -5,6 +5,7 @@ import { AppCard } from "../components/ui/AppCard";
 import { FeedbackCard } from "../components/ui/FeedbackCard";
 import { HomeActionCard } from "../components/ui/HomeActionCard";
 import { ProgressChip } from "../components/ui/ProgressChip";
+import { StudioBrand } from "../components/ui/StudioBrand";
 import { CLEF_LABELS, type Clef } from "../domain/notes";
 import { MUSIC_SYMBOL_DEFINITIONS } from "../domain/musicSymbols";
 import { CLEF_PALETTES, PALETTE_LABELS, colorTokens } from "../theme/tokens";
@@ -13,14 +14,9 @@ const clefThemePreviews: Clef[] = ["treble", "bass", "tenor"];
 
 export function StyleGuidePage() {
   return (
-    <main className="app-shell">
+    <main className="app-shell studio-shell aurora-shell aurora-styleguide-page">
       <nav className="app-topbar" aria-label="Navigation principale">
-        <a className="brand-mark" href="/" aria-label="Accueil EdukoNote">
-          <span className="brand-mark__symbol" aria-hidden="true">
-            ♪
-          </span>
-          EdukoNote
-        </a>
+        <StudioBrand />
         <AppButton href="/" tone="cream">
           Accueil
         </AppButton>

@@ -1,19 +1,19 @@
 # Checklist PWA EdukoNote
 
-Cette checklist sert a verifier le lot PWA/iPhone/offline sans modifier la charte graphique.
+Cette checklist sert a verifier le lot PWA/iPhone/offline avec la charte Aurora Session.
 
 ## Manifest
 
 - [ ] `public/manifest.webmanifest` existe.
 - [ ] `name` vaut `EdukoNote`.
 - [ ] `short_name` vaut `EdukoNote`.
-- [ ] `description` vaut `Apprendre les notes de musique pas à pas`.
+- [ ] `description` décrit les sessions courtes et immersives.
 - [ ] `lang` vaut `fr`.
 - [ ] `start_url` vaut `/`.
 - [ ] `display` vaut `standalone`.
 - [ ] `orientation` vaut `portrait`.
-- [ ] `background_color` vaut `#FFF8F1`.
-- [ ] `theme_color` vaut `#FFF8F1`.
+- [ ] `background_color` vaut `#080B1C`.
+- [ ] `theme_color` vaut `#080B1C`.
 
 ## Icones
 
@@ -30,7 +30,8 @@ Cette checklist sert a verifier le lot PWA/iPhone/offline sans modifier la chart
 - [ ] `mobile-web-app-capable` vaut `yes`.
 - [ ] `apple-mobile-web-app-capable` vaut `yes`.
 - [ ] `apple-mobile-web-app-title` vaut `EdukoNote`.
-- [ ] `theme-color` vaut `#FFF8F1`.
+- [ ] `theme-color` vaut `#080B1C`.
+- [ ] `apple-mobile-web-app-status-bar-style` vaut `black-translucent`.
 - [ ] Le manifest est reference.
 
 ## Service worker et hors-ligne

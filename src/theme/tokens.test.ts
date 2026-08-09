@@ -8,10 +8,10 @@ describe("palette tokens", () => {
 
   it("exposes child-facing labels for every palette", () => {
     expect(paletteTokens.map((palette) => PALETTE_LABELS[palette.id])).toEqual([
-      "Prune magique",
-      "Nuage teal",
-      "Menthe pop",
-      "Piano bleu",
+      "Aurore corail",
+      "Aurore turquoise",
+      "Aurore menthe",
+      "Nuit cobalt",
     ]);
   });
 

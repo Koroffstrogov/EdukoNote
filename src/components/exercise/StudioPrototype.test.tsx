@@ -22,16 +22,16 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe("Studio des apprentis prototype", () => {
-  it("presents the home page as a five-track setlist", () => {
+describe("Aurora Session", () => {
+  it("presents the home page as one play action and four session modes", () => {
     render(<HomePage />);
 
-    expect(screen.getByRole("heading", { level: 1, name: "On joue ?" })).toBeTruthy();
-    expect(screen.getByRole("heading", { level: 2, name: "Setlist du jour" })).toBeTruthy();
+    expect(screen.getByRole("heading", { level: 1, name: "Entre dans le rythme" })).toBeTruthy();
+    expect(screen.getByRole("heading", { level: 2, name: "Ta prochaine session" })).toBeTruthy();
     const destinations = [
-      ["Entraînement", "/exercise?mode=training"],
+      ["Lancer l’entraînement", "/exercise?mode=training"],
       ["Défi 10 notes", "/exercise?mode=challenge"],
-      ["Révision des erreurs", "/exercise?mode=review"],
+      ["Révision", "/exercise?mode=review"],
       ["Vitesse", "/exercise?mode=speed"],
       ["Symboles", "/symbols"],
     ] as const;
@@ -66,8 +66,8 @@ describe("Studio des apprentis prototype", () => {
       />,
     );
 
-    expect(screen.getByRole("heading", { level: 1, name: "Lis la note" })).toBeTruthy();
-    const pads = screen.getAllByRole("button").filter((button) => button.classList.contains("studio-answer-pad"));
+    expect(screen.getByRole("heading", { level: 1, name: "Quelle note ?" })).toBeTruthy();
+    const pads = screen.getAllByRole("button").filter((button) => button.classList.contains("aurora-answer-pad"));
 
     expect(pads).toHaveLength(4);
     expect(document.activeElement).not.toBe(pads[0]);
@@ -138,9 +138,9 @@ describe("Studio des apprentis prototype", () => {
       />,
     );
 
-    const nextQuestionPads = screen.getAllByRole("button").filter((button) => button.classList.contains("studio-answer-pad"));
+    const nextQuestionPads = screen.getAllByRole("button").filter((button) => button.classList.contains("aurora-answer-pad"));
     expect(nextQuestionPads).toHaveLength(4);
-    expect(document.activeElement).toBe(screen.getByRole("heading", { level: 1, name: "Lis la note" }));
+    expect(document.activeElement).toBe(screen.getByRole("heading", { level: 1, name: "Quelle note ?" }));
   });
 
   it("shows the symbol family and four answer pads", () => {
@@ -165,9 +165,9 @@ describe("Studio des apprentis prototype", () => {
       />,
     );
 
-    expect(screen.getByRole("heading", { level: 1, name: "Nomme ce signe" })).toBeTruthy();
+    expect(screen.getByRole("heading", { level: 1, name: "Quel symbole ?" })).toBeTruthy();
     expect(screen.getByText("Lire une partition")).toBeTruthy();
-    const pads = screen.getAllByRole("button").filter((button) => button.classList.contains("studio-answer-pad"));
+    const pads = screen.getAllByRole("button").filter((button) => button.classList.contains("aurora-answer-pad"));
     expect(pads).toHaveLength(4);
     fireEvent.click(pads[3]);
     expect(onAnswer).toHaveBeenCalledWith(question.choices[3]);
@@ -204,7 +204,7 @@ describe("Studio des apprentis prototype", () => {
 
     expect(screen.getByRole("heading", { level: 1, name: "Sans faute !" })).toBeTruthy();
     expect(screen.getByText("10 notes trouvées sur 10.")).toBeTruthy();
-    expect(screen.getByText("Set complet")).toBeTruthy();
+    expect(screen.getByText("Tout est maîtrisé")).toBeTruthy();
   });
 
   it("shares the result ticket with the symbol challenge", () => {

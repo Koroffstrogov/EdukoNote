@@ -60,13 +60,13 @@ export function NoteExerciseView({
 
   return (
     <ExercisePageLayout
-      className={`exercise-shell studio-exercise studio-exercise--notes studio-exercise--${mode}`}
+      className={`exercise-shell studio-exercise aurora-exercise studio-exercise--notes studio-exercise--${mode}`}
       eyebrow={`${modeLabels[mode]} · ${CLEF_LABELS[activeClef]} · ${READING_ZONE_LABELS[activeReadingZone]}`}
     >
       <div className="exercise-layout">
         <AppCard tone="cream" className="question-card studio-score-card">
           <div className="studio-score-card__header">
-            <p className="studio-overline">Piste notes · Lecture à vue</p>
+            <p className="studio-overline">Session Notes · Lecture</p>
             {mode === "speed" || mode === "challenge" ? (
               <div className="exercise-meta">
                 {mode === "speed" ? (
@@ -92,7 +92,7 @@ export function NoteExerciseView({
             ) : null}
           </div>
           <h1 className="question-card__title" ref={questionTitleRef} tabIndex={-1}>
-            Lis la note
+            Quelle note ?
           </h1>
           <div className="studio-notation-window">
             <StaffNote note={question.note} accessibleLabel={getQuestionNoteAccessibleLabel(question.note)} />
@@ -116,12 +116,12 @@ export function NoteExerciseView({
             </div>
           ) : (
             <>
-              <p className="studio-answer-label">Choisis la note</p>
+              <p className="studio-answer-label">Choisis ta réponse</p>
               <div className="answer-grid" aria-label="Réponses proposées">
                 {question.choices.map((choice) => (
                   <AppButton
                     key={choice}
-                    className="studio-answer-pad"
+                    className="studio-answer-pad aurora-answer-pad"
                     tone="cream"
                     disabled={selectedAnswerLabel !== null}
                     onClick={() => onAnswer(choice)}

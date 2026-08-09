@@ -3,6 +3,7 @@ import { BassClef } from "../components/music/BassClef";
 import { CClef } from "../components/music/CClef";
 import { TrebleClef } from "../components/music/TrebleClef";
 import { AppButton } from "../components/ui/AppButton";
+import { StudioBrand } from "../components/ui/StudioBrand";
 import {
   CLEF_LABELS,
   CLEFS,
@@ -66,22 +67,18 @@ export function SettingsPage() {
   }
 
   return (
-    <main className="app-shell">
+    <main className="app-shell studio-shell aurora-shell aurora-settings-page">
       <nav className="app-topbar" aria-label="Navigation principale">
-        <a className="brand-mark" href="/" aria-label="Accueil EdukoNote">
-          <span className="brand-mark__symbol" aria-hidden="true">
-            ♪
-          </span>
-          EdukoNote
-        </a>
+        <StudioBrand />
         <AppButton href="/" tone="cream">
           Accueil
         </AppButton>
       </nav>
 
       <header className="page-hero">
-        <p className="page-eyebrow">Réglages</p>
+        <p className="page-eyebrow">Ton espace</p>
         <h1 className="page-title">Paramètres</h1>
+        <p className="page-lead">Ajuste la lecture à ton instrument et à ton niveau.</p>
       </header>
 
       <div className="settings-tabs" role="tablist" aria-label="Réglages">

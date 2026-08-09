@@ -22,7 +22,7 @@ export function HomePage() {
   const notesToReview = progressByLabel.filter(({ noteProgress }) => noteProgress.needsReview).length;
 
   return (
-    <main className="app-shell studio-shell studio-home">
+    <main className="app-shell studio-shell aurora-shell studio-home aurora-home">
       <nav className="app-topbar" aria-label="Navigation principale">
         <StudioBrand />
         <SettingsButton />
@@ -30,60 +30,60 @@ export function HomePage() {
 
       <header className="studio-home-hero">
         <div className="studio-home-hero__copy">
-          <p className="studio-overline">Au programme · {CLEF_LABELS[activeClef]}</p>
-          <h1>On joue ?</h1>
-          <p>Choisis une piste et lance la répétition.</p>
+          <p className="studio-overline">Session active · {CLEF_LABELS[activeClef]}</p>
+          <h1>Entre dans le rythme</h1>
+          <p>Lis les notes, reconnais les signes et avance à ton tempo.</p>
+          <a className="aurora-play-cta" href="/exercise?mode=training" aria-label="Lancer l’entraînement">
+            <span>
+              <strong>Jouer</strong>
+              <small>Entraînement libre</small>
+            </span>
+            <span className="aurora-play-cta__icon" aria-hidden="true">▶</span>
+          </a>
         </div>
         <div className="studio-home-poster" aria-hidden="true">
-          <span className="studio-home-poster__number">01</span>
+          <span className="studio-home-poster__number">Aurora</span>
           <span className="studio-home-poster__note">♪</span>
         </div>
       </header>
 
       <div className="home-layout studio-home-layout">
-        <section className="home-actions studio-setlist" aria-labelledby="home-setlist-title">
+        <section className="home-actions studio-setlist" aria-labelledby="home-sessions-title">
           <div className="studio-section-heading studio-setlist__heading">
             <div>
-              <p className="studio-overline">Ta séance</p>
-              <h2 id="home-setlist-title">Setlist du jour</h2>
+              <p className="studio-overline">Choisis ton mode</p>
+              <h2 id="home-sessions-title">Ta prochaine session</h2>
             </div>
-            <span>5 pistes</span>
+            <span>4 options</span>
           </div>
           <HomeActionCard
-            title="Entraînement"
-            text="Échauffement libre"
-            icon="01"
-            href="/exercise?mode=training"
+            title="Défi 10 notes"
+            text="Teste ta lecture"
+            icon="10"
+            href="/exercise?mode=challenge"
             tone="rose"
             featured
           />
           <HomeActionCard
-            title="Défi 10 notes"
-            text="Le morceau du jour"
-            icon="02"
-            href="/exercise?mode=challenge"
-            tone="lavender"
-          />
-          <HomeActionCard
-            title="Révision des erreurs"
-            text="Rejoue les passages"
-            icon="03"
+            title="Révision"
+            text="Retrouve tes erreurs"
+            icon="↺"
             href="/exercise?mode=review"
-            tone="vanilla"
+            tone="lavender"
           />
           <HomeActionCard
             title="Vitesse"
-            text="Tiens le tempo"
-            icon="04"
+            text="Suis le tempo"
+            icon="↗"
             href="/exercise?mode=speed"
-            tone="rose"
+            tone="lavender"
           />
           <HomeActionCard
             title="Symboles"
-            text="Le dico musical"
-            icon="05"
+            text="Explore les signes"
+            icon="♯"
             href="/symbols"
-            tone="lavender"
+            tone="vanilla"
           />
         </section>
 
@@ -91,13 +91,13 @@ export function HomePage() {
           <AppCard tone="cream" className="home-progress-card studio-progress-card">
             <div className="studio-section-heading">
               <div>
-                <p className="studio-overline">Tes répétitions</p>
-                <h2 id="home-progress-title">Carnet de musique</h2>
+                <p className="studio-overline">Ton signal</p>
+                <h2 id="home-progress-title">Ta progression</h2>
               </div>
-              <span className="studio-progress-card__edition">Nº 01</span>
+              <span className="studio-progress-card__edition">Live</span>
             </div>
             <p className="studio-progress-card__lead">
-              {totalViews > 0 ? "Ta partition se complète à chaque essai." : "Ta première mesure t’attend."}
+              {totalViews > 0 ? "Chaque réponse renforce ton signal." : "Ta première session t’attend."}
             </p>
             <div className="studio-home-stats" aria-label="Statistiques de progression">
               <span><strong>{totalCorrect}</strong> trouvées</span>

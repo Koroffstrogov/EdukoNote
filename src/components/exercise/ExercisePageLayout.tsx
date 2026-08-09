@@ -18,7 +18,7 @@ export function ExercisePageLayout({
   children,
 }: ExercisePageLayoutProps) {
   return (
-    <main className={["app-shell", "studio-shell", className].filter(Boolean).join(" ")}>
+    <main className={["app-shell", "studio-shell", "aurora-shell", className].filter(Boolean).join(" ")}>
       <nav className="app-topbar" aria-label="Navigation principale">
         <StudioBrand />
         <AppButton className="studio-exit-button" href="/" tone="cream">

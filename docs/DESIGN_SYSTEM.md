@@ -1,22 +1,22 @@
 # Design system EdukoNote
 
-Ce document verrouille le socle graphique du projet avant toute logique de jeu.
+Ce document décrit le socle graphique Aurora Session.
 
 ## Intention
 
-EdukoNote doit rester ludique, doux, colore, rassurant et musical. L'interface vise une enfant de 7 ans : elle peut etre joyeuse et tactile, mais ne doit pas paraitre bebe.
+EdukoNote doit évoquer une application de création musicale contemporaine : immersive, claire et attirante pour les 7-12 ans, sans reprendre les codes de l'école ni tomber dans un univers enfantin. Aurora Session associe une nuit indigo calme, des lueurs corail et cyan, et des surfaces de notation très lisibles.
 
 ## Palette obligatoire
 
 | Nom | Hex | Usage |
 | --- | --- | --- |
-| Rose poudré | `#F7A8C4` | accents doux, actions secondaires, feedback visuel leger |
-| Lavande | `#C9B6FF` | surfaces calmes, boutons de reponse |
-| Jaune vanille | `#FFE58F` | encouragement, attention positive, note courante |
-| Menthe douce | `#BDECCB` | succes, validation, progression acquise |
-| Bleu ciel | `#A9D8FF` | zones question, respiration visuelle |
-| Prune | `#6C4BAF` | titres, textes importants, portee, ancrages |
-| Creme | `#FFF8F1` | fond principal et surfaces neutres |
+| Corail aurore | `#FF8A70` | action principale, réponse active, énergie |
+| Bleu crépuscule | `#708AC7` | orbites, sélections secondaires, profondeur |
+| Abricot doux | `#F2B08F` | lumière chaude, micro-accents |
+| Menthe signal | `#66D1B5` | succès, validation, progression acquise |
+| Nuit claire | `#171C35` | panneaux et cartes |
+| Indigo profond | `#0E1329` | surfaces sombres et ancrages |
+| Ivoire lunaire | `#F8EEE4` | texte principal et surfaces claires |
 
 Les valeurs hexadecimales sont autorisees uniquement dans :
 
@@ -25,11 +25,13 @@ Les valeurs hexadecimales sont autorisees uniquement dans :
 
 ## Regles graphiques strictes
 
-- Le fond principal est creme.
-- Le prune porte les titres, textes importants, notes de musique et elements d'ancrage.
+- Le fond principal est une nuit indigo enrichie de halos statiques et discrets.
+- Les titres sont ivoire ; le corail est réservé aux actions ou états importants.
+- Les fenêtres de notation restent claires, presque opaques et sans lueur sur les glyphes.
+- Les portées et symboles utilisent la géométrie SMuFL existante et conservent un fort contraste.
 - Les boutons sont grands, tactiles et faciles a viser sur iPhone.
-- Les coins sont tres arrondis.
-- Les ombres sont douces et jamais agressives.
+- Les coins sont souples mais architecturaux, sans effet jouet.
+- Les ombres sont diffuses ; aucun effet lumineux ne doit gêner la lecture musicale.
 - L'interface est mobile first et compatible iPhone.
 - Les corrections restent positives : `Bravo !` et `Presque !`.
 - Aucune couleur n'est codee directement dans les composants.
@@ -84,8 +86,9 @@ La route `/styleguide` doit toujours afficher :
 - [ ] `npm run check:design` fonctionne.
 - [ ] Aucune couleur directe n'existe dans `src/` hors fichiers theme autorises.
 - [ ] Les ecrans visibles utilisent les composants UI du design system.
-- [ ] Le fond principal est creme.
-- [ ] Les titres et elements importants sont prune.
+- [ ] Le fond principal et le chrome PWA utilisent la nuit Aurora.
+- [ ] Les titres sont ivoire et les actions principales corail.
+- [ ] La notation reste sombre sur une surface claire et sans déformation.
 - [ ] Les boutons sont grands et tactiles sur iPhone.
 - [ ] Les coins et ombres correspondent a la charte.
 - [ ] La page `/styleguide` permet une verification visuelle complete.

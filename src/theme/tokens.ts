@@ -3,44 +3,44 @@ import type { Clef } from "../domain/notes";
 export const colorTokens = [
   {
     id: "rose",
-    name: "Rose poudré",
-    hex: "#F7A8C4",
+    name: "Corail aurore",
+    hex: "#FF8A70",
     cssVariable: "--color-rose",
   },
   {
     id: "lavender",
-    name: "Lavande",
-    hex: "#C9B6FF",
+    name: "Bleu crépuscule",
+    hex: "#708AC7",
     cssVariable: "--color-lavender",
   },
   {
     id: "vanilla",
-    name: "Jaune vanille",
-    hex: "#FFE58F",
+    name: "Abricot doux",
+    hex: "#F2B08F",
     cssVariable: "--color-vanilla",
   },
   {
     id: "mint",
-    name: "Menthe douce",
-    hex: "#BDECCB",
+    name: "Menthe signal",
+    hex: "#66D1B5",
     cssVariable: "--color-mint",
   },
   {
     id: "sky",
-    name: "Bleu ciel",
-    hex: "#A9D8FF",
+    name: "Nuit claire",
+    hex: "#171C35",
     cssVariable: "--color-sky",
   },
   {
     id: "plum",
-    name: "Prune",
-    hex: "#6C4BAF",
+    name: "Indigo profond",
+    hex: "#0E1329",
     cssVariable: "--color-plum",
   },
   {
     id: "cream",
-    name: "Crème",
-    hex: "#FFF8F1",
+    name: "Ivoire lunaire",
+    hex: "#F8EEE4",
     cssVariable: "--color-cream",
   },
 ] as const;
@@ -50,19 +50,19 @@ export type ColorTokenId = (typeof colorTokens)[number]["id"];
 export const paletteTokens = [
   {
     id: "prune-2026",
-    name: "Prune magique",
+    name: "Aurore corail",
   },
   {
     id: "cloud-teal",
-    name: "Nuage teal",
+    name: "Aurore turquoise",
   },
   {
     id: "jelly-mint",
-    name: "Menthe pop",
+    name: "Aurore menthe",
   },
   {
     id: "blue-piano",
-    name: "Piano bleu",
+    name: "Nuit cobalt",
   },
 ] as const;
 

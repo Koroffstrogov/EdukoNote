@@ -30,7 +30,7 @@ export function ChallengeResultView({
 
   return (
     <ExercisePageLayout
-      className="studio-result-shell"
+      className="studio-result-shell aurora-result-shell"
       eyebrow={eyebrow}
       navLabel="Accueil"
     >
@@ -57,7 +57,7 @@ export function ChallengeResultView({
               Rejouer la série
             </AppButton>
             <AppButton className="studio-secondary-action" href="/" tone="cream">
-              Retour aux morceaux
+              Retour à l’accueil
             </AppButton>
           </div>
         </section>
@@ -65,7 +65,7 @@ export function ChallengeResultView({
         <section className="studio-review-sheet" aria-labelledby="challenge-review-title">
           <div className="studio-section-heading">
             <div>
-              <p className="studio-overline">Carnet de répétition</p>
+              <p className="studio-overline">À revoir</p>
               <h2 id="challenge-review-title">{reviewTitle}</h2>
             </div>
             <span className="studio-review-count">{reviewItems.length.toString().padStart(2, "0")}</span>
@@ -83,7 +83,7 @@ export function ChallengeResultView({
               ))}
             </ol>
           ) : (
-            <p className="studio-complete-stamp">Set complet</p>
+            <p className="studio-complete-stamp">Tout est maîtrisé</p>
           )}
         </section>
       </div>

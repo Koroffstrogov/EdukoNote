@@ -1,14 +1,14 @@
 {
   "name": "EdukoNote",
   "short_name": "EdukoNote",
-  "description": "Apprendre les notes de musique pas à pas",
+  "description": "Reconnaître les notes et symboles musicaux dans des sessions courtes et immersives",
   "lang": "fr",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#FFF8F1",
-  "theme_color": "#FFF8F1",
+  "background_color": "#080B1C",
+  "theme_color": "#080B1C",
   "icons": [
     {
       "src": "/icons/icon-192.png",
