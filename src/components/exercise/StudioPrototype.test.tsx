@@ -39,6 +39,17 @@ describe("Aurora Session", () => {
     destinations.forEach(([name, href]) => {
       expect(screen.getByRole("link", { name: new RegExp(name) }).getAttribute("href")).toBe(href);
     });
+
+    const decorativeIconNames = Array.from(
+      document.querySelectorAll<SVGElement>(".aurora-home [data-aurora-icon]"),
+    )
+      .map((icon) => icon.dataset.auroraIcon)
+      .filter((name) => !["arrow", "complete", "review-needed", "undiscovered"].includes(name ?? ""));
+
+    expect(decorativeIconNames).toEqual(["play", "note", "challenge", "review", "speed", "symbols"]);
+    expect(document.querySelectorAll('.aurora-home [data-aurora-icon="arrow"]')).toHaveLength(4);
+    expect(document.querySelectorAll('.aurora-home [data-aurora-icon="undiscovered"]')).toHaveLength(7);
+    expect(screen.queryByText("♪")).toBeNull();
   });
 
   it("keeps four neutral pads on the note exercise", () => {

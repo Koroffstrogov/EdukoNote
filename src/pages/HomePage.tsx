@@ -1,4 +1,5 @@
 import { AppCard } from "../components/ui/AppCard";
+import { AuroraMenuIcon, type AuroraMenuIconName } from "../components/ui/AuroraMenuIcon";
 import { HomeActionCard } from "../components/ui/HomeActionCard";
 import { SettingsButton } from "../components/ui/SettingsButton";
 import { ResetProgressControl } from "../components/ui/ResetProgressControl";
@@ -38,12 +39,16 @@ export function HomePage() {
               <strong>Jouer</strong>
               <small>Entraînement libre</small>
             </span>
-            <span className="aurora-play-cta__icon" aria-hidden="true">▶</span>
+            <span className="aurora-play-cta__icon" aria-hidden="true">
+              <AuroraMenuIcon name="play" />
+            </span>
           </a>
         </div>
         <div className="studio-home-poster" aria-hidden="true">
           <span className="studio-home-poster__number">Aurora</span>
-          <span className="studio-home-poster__note">♪</span>
+          <span className="studio-home-poster__note">
+            <AuroraMenuIcon name="note" />
+          </span>
         </div>
       </header>
 
@@ -59,7 +64,7 @@ export function HomePage() {
           <HomeActionCard
             title="Défi 10 notes"
             text="Teste ta lecture"
-            icon="10"
+            icon={<AuroraMenuIcon name="challenge" />}
             href="/exercise?mode=challenge"
             tone="rose"
             featured
@@ -67,21 +72,21 @@ export function HomePage() {
           <HomeActionCard
             title="Révision"
             text="Retrouve tes erreurs"
-            icon="↺"
+            icon={<AuroraMenuIcon name="review" />}
             href="/exercise?mode=review"
             tone="lavender"
           />
           <HomeActionCard
             title="Vitesse"
             text="Suis le tempo"
-            icon="↗"
+            icon={<AuroraMenuIcon name="speed" />}
             href="/exercise?mode=speed"
             tone="lavender"
           />
           <HomeActionCard
             title="Symboles"
             text="Explore les signes"
-            icon="♯"
+            icon={<AuroraMenuIcon name="symbols" />}
             href="/symbols"
             tone="vanilla"
           />
@@ -113,7 +118,9 @@ export function HomePage() {
                   aria-label={`${label}, ${getProgressStatusLabel(noteProgress)}, ${noteProgress.correct} ${noteProgress.correct === 1 ? "réussite" : "réussites"} sur ${noteProgress.views} ${noteProgress.views === 1 ? "essai" : "essais"}`}
                 >
                   <span>{label}</span>
-                  <span aria-hidden="true">{getProgressMark(noteProgress)}</span>
+                  <span aria-hidden="true">
+                    <AuroraMenuIcon name={getProgressIconName(noteProgress)} />
+                  </span>
                 </span>
               ))}
             </div>
@@ -182,16 +189,16 @@ function getProgressStatus(noteProgress: NoteProgress): "complete" | "current" |
   return "current";
 }
 
-function getProgressMark(noteProgress: NoteProgress): string {
+function getProgressIconName(noteProgress: NoteProgress): AuroraMenuIconName {
   if (noteProgress.needsReview) {
-    return "!";
+    return "review-needed";
   }
 
   if (noteProgress.correct > 0) {
-    return "✓";
+    return "complete";
   }
 
-  return "·";
+  return "undiscovered";
 }
 
 function getProgressStatusLabel(noteProgress: NoteProgress): string {

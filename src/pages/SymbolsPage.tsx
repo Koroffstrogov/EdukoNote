@@ -1,5 +1,6 @@
 import { AppButton } from "../components/ui/AppButton";
 import { AppCard } from "../components/ui/AppCard";
+import { AuroraMenuIcon } from "../components/ui/AuroraMenuIcon";
 import { HomeActionCard } from "../components/ui/HomeActionCard";
 import { ProgressChip } from "../components/ui/ProgressChip";
 import { ResetProgressControl } from "../components/ui/ResetProgressControl";
@@ -39,7 +40,7 @@ export function SymbolsPage() {
           <HomeActionCard
             title="Entraînement"
             text="Explore librement"
-            icon="♪"
+            icon={<AuroraMenuIcon name="note" />}
             href="/symbols/exercise?mode=training"
             tone="rose"
             featured
@@ -47,14 +48,14 @@ export function SymbolsPage() {
           <HomeActionCard
             title="Défi 10 symboles"
             text="Teste tes repères"
-            icon="10"
+            icon={<AuroraMenuIcon name="challenge" />}
             href="/symbols/exercise?mode=challenge"
             tone="lavender"
           />
           <HomeActionCard
             title="Révision"
             text="Retrouve tes erreurs"
-            icon="↺"
+            icon={<AuroraMenuIcon name="review" />}
             href="/symbols/exercise?mode=review"
             tone="vanilla"
           />

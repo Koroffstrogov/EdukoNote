@@ -2,6 +2,7 @@ import { StaffPreview } from "../components/music/StaffPreview";
 import { MusicSymbolDisplay } from "../components/music/MusicSymbolDisplay";
 import { AppButton } from "../components/ui/AppButton";
 import { AppCard } from "../components/ui/AppCard";
+import { AuroraMenuIcon } from "../components/ui/AuroraMenuIcon";
 import { FeedbackCard } from "../components/ui/FeedbackCard";
 import { HomeActionCard } from "../components/ui/HomeActionCard";
 import { ProgressChip } from "../components/ui/ProgressChip";
@@ -117,9 +118,25 @@ export function StyleGuidePage() {
             Cartes d’accueil
           </h2>
           <div className="home-actions">
-            <HomeActionCard title="Entraînement" text="Jouer maintenant" icon="♪" tone="rose" featured />
-            <HomeActionCard title="Défi 10 notes" text="10 notes" icon="10" tone="lavender" />
-            <HomeActionCard title="Révision des erreurs" text="Reprendre" icon="↺" tone="vanilla" />
+            <HomeActionCard
+              title="Entraînement"
+              text="Jouer maintenant"
+              icon={<AuroraMenuIcon name="note" />}
+              tone="rose"
+              featured
+            />
+            <HomeActionCard
+              title="Défi 10 notes"
+              text="10 notes"
+              icon={<AuroraMenuIcon name="challenge" />}
+              tone="lavender"
+            />
+            <HomeActionCard
+              title="Révision des erreurs"
+              text="Reprendre"
+              icon={<AuroraMenuIcon name="review" />}
+              tone="vanilla"
+            />
           </div>
         </section>
 
@@ -153,7 +170,13 @@ export function StyleGuidePage() {
                   <StaffPreview note="fa4" />
                 </AppCard>
                 <FeedbackCard status="near">C’était Fa</FeedbackCard>
-                <HomeActionCard title="Entraînement" text="Jouer maintenant" icon="♪" tone="rose" featured />
+                <HomeActionCard
+                  title="Entraînement"
+                  text="Jouer maintenant"
+                  icon={<AuroraMenuIcon name="note" />}
+                  tone="rose"
+                  featured
+                />
               </div>
             </div>
           </div>

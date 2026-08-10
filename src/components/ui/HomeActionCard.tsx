@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { ColorTokenId } from "../../theme/tokens";
+import { AuroraMenuIcon } from "./AuroraMenuIcon";
 
 export type HomeActionCardProps = {
   title: string;
@@ -22,7 +23,7 @@ export function HomeActionCard({ title, text, icon, href, tone = "rose", feature
       </span>
       {href ? (
         <span className="home-action-card__arrow" aria-hidden="true">
-          →
+          <AuroraMenuIcon name="arrow" />
         </span>
       ) : null}
     </>
