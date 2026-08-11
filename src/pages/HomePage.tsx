@@ -1,27 +1,42 @@
-import { AppCard } from "../components/ui/AppCard";
-import { AuroraMenuIcon, type AuroraMenuIconName } from "../components/ui/AuroraMenuIcon";
+import { MobileHomeLauncher } from "../components/home/MobileHomeLauncher";
+import { NoteProgressPanel } from "../components/progress/NoteProgressPanel";
+import { AuroraMenuIcon } from "../components/ui/AuroraMenuIcon";
 import { HomeActionCard } from "../components/ui/HomeActionCard";
 import { SettingsButton } from "../components/ui/SettingsButton";
-import { ResetProgressControl } from "../components/ui/ResetProgressControl";
 import { StudioBrand } from "../components/ui/StudioBrand";
-import {
-  ANSWER_LABELS,
-  CLEF_LABELS,
-  getNotesForClef,
-  type AnswerLabel,
-  type Clef,
-  type NoteId,
-} from "../domain/notes";
-import { countTotalCorrect, countTotalViews, type NoteProgress } from "../domain/progress";
+import { CLEF_LABELS, type Clef } from "../domain/notes";
+import type { ProgressState } from "../domain/progress";
+import { countAnswerLabelsToReview } from "../domain/progressSummary";
+import { useMediaQuery } from "../hooks/useMediaQuery";
 import { useProgress } from "../hooks/useProgress";
+
+export const HOME_MOBILE_MEDIA_QUERY = "(max-width: 47.99rem)";
 
 export function HomePage() {
   const { progress, activeClef, resetStoredProgress } = useProgress();
-  const totalViews = countTotalViews(progress, activeClef);
-  const totalCorrect = countTotalCorrect(progress, activeClef);
-  const progressByLabel = summarizeProgressByLabel(progress.clefs[activeClef].notes, activeClef);
-  const notesToReview = progressByLabel.filter(({ noteProgress }) => noteProgress.needsReview).length;
+  const isMobileHome = useMediaQuery(HOME_MOBILE_MEDIA_QUERY);
+  const notesToReview = countAnswerLabelsToReview(progress, activeClef);
 
+  if (isMobileHome) {
+    return <MobileHomeLauncher activeClef={activeClef} notesToReview={notesToReview} />;
+  }
+
+  return (
+    <DesktopHomeDashboard
+      progress={progress}
+      activeClef={activeClef}
+      onResetProgress={resetStoredProgress}
+    />
+  );
+}
+
+type DesktopHomeDashboardProps = {
+  progress: ProgressState;
+  activeClef: Clef;
+  onResetProgress: () => void;
+};
+
+function DesktopHomeDashboard({ progress, activeClef, onResetProgress }: DesktopHomeDashboardProps) {
   return (
     <main className="app-shell studio-shell aurora-shell studio-home aurora-home">
       <nav className="app-topbar" aria-label="Navigation principale">
@@ -93,122 +108,15 @@ export function HomePage() {
         </section>
 
         <section className="home-summary" aria-labelledby="home-progress-title">
-          <AppCard tone="cream" className="home-progress-card studio-progress-card">
-            <div className="studio-section-heading">
-              <div>
-                <p className="studio-overline">Ton signal</p>
-                <h2 id="home-progress-title">Ta progression</h2>
-              </div>
-              <span className="studio-progress-card__edition">Live</span>
-            </div>
-            <p className="studio-progress-card__lead">
-              {totalViews > 0 ? "Chaque réponse renforce ton signal." : "Ta première session t’attend."}
-            </p>
-            <div className="studio-home-stats" aria-label="Statistiques de progression">
-              <span><strong>{totalCorrect}</strong> trouvées</span>
-              <span><strong>{notesToReview}</strong> à revoir</span>
-              <span><strong>{totalViews}</strong> essais</span>
-            </div>
-            <div className="studio-note-ledger" role="list" aria-label="Maîtrise des notes">
-              {progressByLabel.map(({ label, noteProgress }) => (
-                <span
-                  key={label}
-                  className={`studio-note-token studio-note-token--${getProgressStatus(noteProgress)}`}
-                  role="listitem"
-                  aria-label={`${label}, ${getProgressStatusLabel(noteProgress)}, ${noteProgress.correct} ${noteProgress.correct === 1 ? "réussite" : "réussites"} sur ${noteProgress.views} ${noteProgress.views === 1 ? "essai" : "essais"}`}
-                >
-                  <span>{label}</span>
-                  <span aria-hidden="true">
-                    <AuroraMenuIcon name={getProgressIconName(noteProgress)} />
-                  </span>
-                </span>
-              ))}
-            </div>
-            {totalViews > 0 ? (
-              <div className="button-row">
-                <ResetProgressControl
-                  confirmationMessage={`Effacer toute la progression en ${CLEF_LABELS[activeClef]} ? Cette action est définitive.`}
-                  onConfirm={resetStoredProgress}
-                />
-              </div>
-            ) : null}
-          </AppCard>
+          <NoteProgressPanel
+            progress={progress}
+            activeClef={activeClef}
+            headingId="home-progress-title"
+            edition="Live"
+            onReset={onResetProgress}
+          />
         </section>
       </div>
     </main>
   );
-}
-
-function summarizeProgressByLabel(
-  notesProgress: Partial<Record<NoteId, NoteProgress>>,
-  clef: Clef,
-): Array<{ label: AnswerLabel; noteProgress: NoteProgress }> {
-  return ANSWER_LABELS.map((label) => {
-    const noteProgress = getNotesForClef(clef).filter((note) => note.answerLabel === label).reduce<NoteProgress>(
-      (summary, note) => {
-        const currentProgress = notesProgress[note.id] ?? emptyNoteProgress;
-
-        return {
-          views: summary.views + currentProgress.views,
-          correct: summary.correct + currentProgress.correct,
-          errors: summary.errors + currentProgress.errors,
-          needsReview: summary.needsReview || currentProgress.needsReview,
-          lastPracticedAt: null,
-        };
-      },
-      {
-        views: 0,
-        correct: 0,
-        errors: 0,
-        needsReview: false,
-        lastPracticedAt: null,
-      } satisfies NoteProgress,
-    );
-
-    return { label, noteProgress };
-  });
-}
-
-const emptyNoteProgress: NoteProgress = {
-  views: 0,
-  correct: 0,
-  errors: 0,
-  needsReview: false,
-  lastPracticedAt: null,
-};
-
-function getProgressStatus(noteProgress: NoteProgress): "complete" | "current" | "missed" {
-  if (noteProgress.needsReview) {
-    return "missed";
-  }
-
-  if (noteProgress.correct > 0) {
-    return "complete";
-  }
-
-  return "current";
-}
-
-function getProgressIconName(noteProgress: NoteProgress): AuroraMenuIconName {
-  if (noteProgress.needsReview) {
-    return "review-needed";
-  }
-
-  if (noteProgress.correct > 0) {
-    return "complete";
-  }
-
-  return "undiscovered";
-}
-
-function getProgressStatusLabel(noteProgress: NoteProgress): string {
-  if (noteProgress.needsReview) {
-    return "à revoir";
-  }
-
-  if (noteProgress.correct > 0) {
-    return "acquise";
-  }
-
-  return "à découvrir";
 }

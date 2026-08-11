@@ -2,6 +2,7 @@ import { useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "reac
 import { BassClef } from "../components/music/BassClef";
 import { CClef } from "../components/music/CClef";
 import { TrebleClef } from "../components/music/TrebleClef";
+import { NoteProgressPanel } from "../components/progress/NoteProgressPanel";
 import { AppButton } from "../components/ui/AppButton";
 import { StudioBrand } from "../components/ui/StudioBrand";
 import {
@@ -15,9 +16,9 @@ import {
 import { useProgress } from "../hooks/useProgress";
 import { useSettings } from "../hooks/useSettings";
 
-type SettingsTab = "clef" | "reading-zone";
+type SettingsTab = "clef" | "reading-zone" | "progress";
 
-const SETTINGS_TABS: SettingsTab[] = ["clef", "reading-zone"];
+const SETTINGS_TABS: SettingsTab[] = ["clef", "reading-zone", "progress"];
 
 const CLEF_CONTEXT: Record<Clef, string> = {
   treble: "Pour les notes plus hautes.",
@@ -35,7 +36,8 @@ export function SettingsPage() {
   const [activeTab, setActiveTab] = useState<SettingsTab>("clef");
   const clefTabRef = useRef<HTMLButtonElement>(null);
   const readingZoneTabRef = useRef<HTMLButtonElement>(null);
-  const { activeClef, switchActiveClef } = useProgress();
+  const progressTabRef = useRef<HTMLButtonElement>(null);
+  const { progress, activeClef, switchActiveClef, resetStoredProgress } = useProgress();
   const { settings, updateReadingZone } = useSettings();
   const activeReadingZone = settings.readingZones[activeClef];
 
@@ -63,7 +65,13 @@ export function SettingsPage() {
 
     event.preventDefault();
     setActiveTab(nextTab);
-    (nextTab === "clef" ? clefTabRef : readingZoneTabRef).current?.focus();
+    const nextTabRef = nextTab === "clef"
+      ? clefTabRef
+      : nextTab === "reading-zone"
+        ? readingZoneTabRef
+        : progressTabRef;
+
+    nextTabRef.current?.focus();
   }
 
   return (
@@ -78,7 +86,7 @@ export function SettingsPage() {
       <header className="page-hero">
         <p className="page-eyebrow">Ton espace</p>
         <h1 className="page-title">Paramètres</h1>
-        <p className="page-lead">Ajuste la lecture à ton instrument et à ton niveau.</p>
+        <p className="page-lead">Ajuste la lecture à ton instrument, ton niveau et ta progression.</p>
       </header>
 
       <div className="settings-tabs" role="tablist" aria-label="Réglages">
@@ -109,6 +117,20 @@ export function SettingsPage() {
           onKeyDown={(event) => selectTabFromKeyboard(event, "reading-zone")}
         >
           Zone de lecture
+        </button>
+        <button
+          className={`settings-tab${activeTab === "progress" ? " settings-tab--active" : ""}`}
+          type="button"
+          ref={progressTabRef}
+          id="settings-progress-tab"
+          role="tab"
+          aria-selected={activeTab === "progress"}
+          aria-controls="settings-progress-panel"
+          tabIndex={activeTab === "progress" ? 0 : -1}
+          onClick={() => setActiveTab("progress")}
+          onKeyDown={(event) => selectTabFromKeyboard(event, "progress")}
+        >
+          Progression
         </button>
       </div>
 
@@ -144,7 +166,7 @@ export function SettingsPage() {
             })}
           </div>
         </section>
-      ) : (
+      ) : activeTab === "reading-zone" ? (
         <section
           className="style-section"
           id="settings-reading-zone-panel"
@@ -179,6 +201,23 @@ export function SettingsPage() {
               );
             })}
           </div>
+        </section>
+      ) : (
+        <section
+          className="settings-progress-section"
+          id="settings-progress-panel"
+          role="tabpanel"
+          aria-labelledby="settings-progress-tab"
+        >
+          <NoteProgressPanel
+            progress={progress}
+            activeClef={activeClef}
+            headingId="settings-progress-title"
+            eyebrow="Notes"
+            title="Ta progression"
+            className="settings-progress-card"
+            onReset={resetStoredProgress}
+          />
         </section>
       )}
     </main>
