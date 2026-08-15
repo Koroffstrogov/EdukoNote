@@ -4,6 +4,7 @@ export type AuroraMenuIconName =
   | "challenge"
   | "review"
   | "speed"
+  | "piano"
   | "symbols"
   | "arrow"
   | "complete"
@@ -68,6 +69,14 @@ function getIconPaths(name: AuroraMenuIconName) {
           <path d="M16 6.2v3M7.4 10.1l2.1 2.1M24.6 10.1l-2.1 2.1" />
           <path d="m16 20 6.6-5.1" />
           <circle className="aurora-menu-icon__fill" cx="16" cy="20" r="2" />
+        </>
+      );
+    case "piano":
+      return (
+        <>
+          <rect x="4" y="7" width="24" height="18" rx="2.5" />
+          <path d="M9 7v18M14 7v18M19 7v18M24 7v18" />
+          <path className="aurora-menu-icon__fill" d="M7.3 7h3.4v10H7.3zM17.3 7h3.4v10h-3.4zM22.3 7h3.4v10h-3.4z" />
         </>
       );
     case "symbols":

@@ -3,6 +3,7 @@ import { BassClef } from "../components/music/BassClef";
 import { CClef } from "../components/music/CClef";
 import { TrebleClef } from "../components/music/TrebleClef";
 import { NoteProgressPanel } from "../components/progress/NoteProgressPanel";
+import { PianoProgressPanel } from "../components/progress/PianoProgressPanel";
 import { AppButton } from "../components/ui/AppButton";
 import { StudioBrand } from "../components/ui/StudioBrand";
 import {
@@ -14,6 +15,7 @@ import {
   type ReadingZone,
 } from "../domain/notes";
 import { useProgress } from "../hooks/useProgress";
+import { usePianoProgress } from "../hooks/usePianoProgress";
 import { useSettings } from "../hooks/useSettings";
 
 type SettingsTab = "clef" | "reading-zone" | "progress";
@@ -38,6 +40,7 @@ export function SettingsPage() {
   const readingZoneTabRef = useRef<HTMLButtonElement>(null);
   const progressTabRef = useRef<HTMLButtonElement>(null);
   const { progress, activeClef, switchActiveClef, resetStoredProgress } = useProgress();
+  const { pianoProgress, resetStoredPianoProgress } = usePianoProgress();
   const { settings, updateReadingZone } = useSettings();
   const activeReadingZone = settings.readingZones[activeClef];
 
@@ -217,6 +220,11 @@ export function SettingsPage() {
             title="Ta progression"
             className="settings-progress-card"
             onReset={resetStoredProgress}
+          />
+          <PianoProgressPanel
+            progress={pianoProgress}
+            activeClef={activeClef}
+            onReset={() => resetStoredPianoProgress(activeClef)}
           />
         </section>
       )}

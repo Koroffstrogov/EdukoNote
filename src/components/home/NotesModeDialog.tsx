@@ -115,6 +115,12 @@ export function NotesModeDialog({
             title="Vitesse"
             text="Suis le tempo"
           />
+          <ModeLink
+            href="/exercise?mode=piano"
+            icon="piano"
+            title="Piano"
+            text="Trouve la bonne touche"
+          />
         </nav>
       </div>
     </dialog>
@@ -128,7 +134,7 @@ function ModeLink({
   text,
 }: {
   href: string;
-  icon: "note" | "review" | "speed";
+  icon: "note" | "review" | "speed" | "piano";
   title: string;
   text: string;
 }) {

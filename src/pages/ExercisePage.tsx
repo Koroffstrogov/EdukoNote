@@ -6,9 +6,19 @@ import { useNoteExerciseSession } from "../hooks/useNoteExerciseSession";
 import { useProgress } from "../hooks/useProgress";
 import { useSettings } from "../hooks/useSettings";
 import { ResultPage } from "./ResultPage";
+import { PianoExercisePage } from "./PianoExercisePage";
 
 export function ExercisePage() {
   const mode = useMemo(() => readModeFromUrl(), []);
+
+  if (mode === "piano") {
+    return <PianoExercisePage />;
+  }
+
+  return <NoteExercisePage mode={mode} />;
+}
+
+function NoteExercisePage({ mode }: { mode: QuizMode }) {
   const { progress, activeClef, recordNoteAnswer, recordRecentNote } = useProgress();
   const { settings } = useSettings();
   const activeReadingZone = settings.readingZones[activeClef];
@@ -58,8 +68,12 @@ export function ExercisePage() {
   );
 }
 
-function readModeFromUrl(): QuizMode {
+function readModeFromUrl(): QuizMode | "piano" {
   const mode = new URLSearchParams(window.location.search).get("mode");
+
+  if (mode === "piano") {
+    return mode;
+  }
 
   if (mode === "challenge" || mode === "review" || mode === "speed") {
     return mode;

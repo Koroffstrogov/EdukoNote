@@ -2,6 +2,8 @@ import { useId } from "react";
 import { STAFF_LINE_Y, STAFF_VIEWBOX, type NoteDefinition } from "../../domain/notes";
 import { BassClef } from "./BassClef";
 import { CClef } from "./CClef";
+import { SmuflGlyph } from "./SmuflGlyph";
+import { getCenteredSmuflGlyphOrigin, type SmuflGlyphName } from "./smuflGlyphs";
 import { TrebleClef } from "./TrebleClef";
 
 const STAFF_METRICS = {
@@ -18,11 +20,12 @@ const STAFF_METRICS = {
 
 export type StaffNoteProps = {
   note: NoteDefinition;
+  accidental?: "sharp" | "flat" | null;
   showLabel?: boolean;
   accessibleLabel?: string;
 };
 
-export function StaffNote({ note, showLabel = false, accessibleLabel }: StaffNoteProps) {
+export function StaffNote({ note, accidental = null, showLabel = false, accessibleLabel }: StaffNoteProps) {
   const titleId = useId();
   const staffLineEndX = STAFF_METRICS.staffLeftX + STAFF_METRICS.staffWidth;
   const clefLayout = getClefLayout(note, STAFF_METRICS);
@@ -34,6 +37,7 @@ export function StaffNote({ note, showLabel = false, accessibleLabel }: StaffNot
   const stemEndY = stemUp ? note.svgY - 60 : note.svgY + 60;
   const ledgerStartX = noteCenterX - STAFF_METRICS.ledgerHalfWidth;
   const ledgerEndX = noteCenterX + STAFF_METRICS.ledgerHalfWidth;
+  const accidentalLayout = accidental ? getAccidentalLayout(accidental, noteCenterX, note.svgY) : null;
 
   return (
     <figure className="staff-note">
@@ -44,7 +48,7 @@ export function StaffNote({ note, showLabel = false, accessibleLabel }: StaffNot
         aria-labelledby={titleId}
       >
         <title id={titleId}>
-          {accessibleLabel ?? `Portée en ${getClefTitle(note.clef)} avec la note ${note.label}`}
+          {accessibleLabel ?? `Portée en ${getClefTitle(note.clef)} avec la note ${note.label}${getAccidentalTitle(accidental)}`}
         </title>
         {STAFF_LINE_Y.map((lineY) => (
           <line className="staff-note-svg__line" key={lineY} x1={STAFF_METRICS.staffLeftX} y1={lineY} x2={staffLineEndX} y2={lineY} />
@@ -59,6 +63,15 @@ export function StaffNote({ note, showLabel = false, accessibleLabel }: StaffNot
         {note.ledgerLines.map((lineY) => (
           <line className="staff-note-svg__ledger" key={lineY} x1={ledgerStartX} y1={lineY} x2={ledgerEndX} y2={lineY} />
         ))}
+        {accidentalLayout ? (
+          <SmuflGlyph
+            className="staff-note-svg__accidental"
+            name={accidentalLayout.name}
+            x={accidentalLayout.x}
+            y={accidentalLayout.y}
+            fontSize={accidentalLayout.fontSize}
+          />
+        ) : null}
         <line className="staff-note-svg__stem" x1={stemX} y1={note.svgY} x2={stemX} y2={stemEndY} />
         <ellipse
           className="staff-note-svg__head"
@@ -72,6 +85,26 @@ export function StaffNote({ note, showLabel = false, accessibleLabel }: StaffNot
       {showLabel ? <figcaption className="staff-note__label">{note.label}</figcaption> : null}
     </figure>
   );
+}
+
+function getAccidentalLayout(accidental: Exclude<StaffNoteProps["accidental"], null | undefined>, noteX: number, noteY: number) {
+  const name: SmuflGlyphName = accidental === "sharp" ? "accidentalSharp" : "accidentalFlat";
+  const fontSize = accidental === "sharp" ? 58 : 64;
+  const origin = getCenteredSmuflGlyphOrigin(name, fontSize, noteX - 31, noteY);
+
+  return { name, fontSize, ...origin };
+}
+
+function getAccidentalTitle(accidental: StaffNoteProps["accidental"]): string {
+  if (accidental === "sharp") {
+    return " dièse";
+  }
+
+  if (accidental === "flat") {
+    return " bémol";
+  }
+
+  return "";
 }
 
 function getClefLayout(note: NoteDefinition, metrics: typeof STAFF_METRICS) {

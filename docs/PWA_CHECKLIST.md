@@ -11,7 +11,7 @@ Cette checklist sert a verifier le lot PWA/iPhone/offline avec la charte Aurora 
 - [ ] `lang` vaut `fr`.
 - [ ] `start_url` vaut `/`.
 - [ ] `display` vaut `standalone`.
-- [ ] `orientation` vaut `portrait`.
+- [ ] `orientation` vaut `any` afin d'autoriser le mode Piano en paysage.
 - [ ] `background_color` vaut `#080B1C`.
 - [ ] `theme_color` vaut `#080B1C`.
 
@@ -63,6 +63,8 @@ Cette checklist sert a verifier le lot PWA/iPhone/offline avec la charte Aurora 
 - [ ] Verifier que les boutons de reponse ne sont pas coupes.
 - [ ] Repondre a une question.
 - [ ] Verifier que le feedback et `Note suivante` restent accessibles.
+- [ ] Ouvrir `/exercise?mode=piano` en portrait et verifier l'invitation a tourner l'appareil.
+- [ ] Passer en `568 x 320` paysage et verifier que les douze touches sont visibles et jouables.
 
 ## Test iPhone
 

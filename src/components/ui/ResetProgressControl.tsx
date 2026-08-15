@@ -4,16 +4,17 @@ import { AppButton } from "./AppButton";
 export type ResetProgressControlProps = {
   confirmationMessage: string;
   onConfirm: () => void;
+  triggerLabel?: string;
 };
 
-export function ResetProgressControl({ confirmationMessage, onConfirm }: ResetProgressControlProps) {
+export function ResetProgressControl({ confirmationMessage, onConfirm, triggerLabel = "Réinitialiser" }: ResetProgressControlProps) {
   const [isConfirming, setIsConfirming] = useState(false);
   const confirmationTitleId = useId();
 
   if (!isConfirming) {
     return (
       <AppButton tone="cream" onClick={() => setIsConfirming(true)}>
-        Réinitialiser
+        {triggerLabel}
       </AppButton>
     );
   }

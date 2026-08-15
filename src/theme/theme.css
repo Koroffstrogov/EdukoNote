@@ -2599,6 +2599,531 @@ a {
   }
 }
 
+/* Piano chromatique — landscape-first practice surface. */
+.piano-exercise,
+.piano-orientation-prompt {
+  width: 100%;
+  min-height: 100dvh;
+  padding:
+    max(0.6rem, env(safe-area-inset-top))
+    max(0.8rem, env(safe-area-inset-right))
+    max(0.6rem, env(safe-area-inset-bottom))
+    max(0.8rem, env(safe-area-inset-left));
+}
+
+.piano-exercise {
+  display: grid;
+  grid-template-rows: auto minmax(5.8rem, 0.82fr) minmax(8.8rem, 1.18fr);
+  gap: clamp(0.4rem, 1.4vh, 0.85rem);
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.piano-exercise__topbar,
+.piano-orientation-prompt__topbar {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.piano-exercise__topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.piano-exercise__exit,
+.piano-sound-toggle {
+  min-height: 2.7rem;
+}
+
+.piano-sound-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.75rem;
+  border: var(--border-thin) solid var(--aurora-panel-line);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--aurora-panel) 84%, transparent);
+  color: var(--aurora-cream);
+  font: inherit;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.piano-sound-toggle svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.piano-sound-toggle:focus-visible,
+.piano-key:focus-visible {
+  outline: 0.2rem solid var(--aurora-cyan);
+  outline-offset: 0.16rem;
+}
+
+.piano-exercise__question {
+  display: grid;
+  grid-template-columns: minmax(7rem, 0.72fr) minmax(14rem, 1.35fr) minmax(9rem, 0.93fr);
+  align-items: stretch;
+  gap: clamp(0.5rem, 1.6vw, 1.2rem);
+  min-width: 0;
+  min-height: 0;
+}
+
+.piano-exercise__prompt,
+.piano-exercise__feedback {
+  display: grid;
+  align-content: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.piano-exercise__prompt p,
+.piano-exercise__prompt h1,
+.piano-exercise__feedback p {
+  margin: 0;
+}
+
+.piano-exercise__prompt h1 {
+  max-width: 9ch;
+  color: var(--aurora-cream);
+  font-size: clamp(1.4rem, 3.3vw, 2.75rem);
+  line-height: 0.96;
+  letter-spacing: -0.045em;
+}
+
+.piano-exercise__notation {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: var(--border-thin) solid color-mix(in srgb, var(--aurora-blue) 35%, #D9DCE6);
+  border-radius: clamp(0.85rem, 2vw, 1.3rem);
+  background: var(--aurora-paper);
+  box-shadow: 0 0.8rem 2.4rem color-mix(in srgb, var(--aurora-night-deep) 42%, transparent);
+}
+
+.piano-exercise__notation .staff-note {
+  width: min(100%, 25rem);
+}
+
+.piano-exercise__notation .staff-note-svg {
+  max-height: 100%;
+}
+
+.piano-exercise .staff-note-svg__clef,
+.piano-exercise .staff-note-svg__head,
+.piano-exercise .staff-note-svg__accidental {
+  color: var(--aurora-ink);
+  fill: var(--aurora-ink);
+}
+
+.piano-exercise .staff-note-svg__line {
+  stroke: var(--aurora-staff);
+}
+
+.piano-exercise .staff-note-svg__ledger,
+.piano-exercise .staff-note-svg__stem {
+  stroke: var(--aurora-ink);
+}
+
+.piano-exercise .staff-note-svg__head {
+  filter: none;
+}
+
+.piano-exercise__feedback {
+  color: var(--aurora-muted);
+  font-size: var(--font-size-sm);
+}
+
+.piano-exercise__feedback .feedback-card {
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-2);
+  padding: clamp(0.45rem, 1.4vw, 0.8rem);
+}
+
+.piano-exercise__feedback .feedback-card__title {
+  font-size: 0.95rem;
+}
+
+.piano-exercise__feedback .feedback-card__message {
+  font-size: var(--font-size-xs);
+}
+
+.aurora-shell.piano-exercise .piano-exercise__feedback .feedback-card,
+.aurora-shell.piano-exercise .piano-exercise__feedback .feedback-card__title,
+.aurora-shell.piano-exercise .piano-exercise__feedback .feedback-card__message {
+  color: var(--aurora-ink);
+}
+
+.piano-exercise__next {
+  width: 100%;
+}
+
+.piano-keyboard {
+  --piano-black-key-width: clamp(2.75rem, 7.1%, 3.6rem);
+  position: relative;
+  z-index: 2;
+  justify-self: center;
+  width: min(100%, 76rem);
+  min-width: 0;
+  min-height: 0;
+  overflow: visible;
+  border: 0.28rem solid color-mix(in srgb, var(--aurora-panel-strong) 82%, var(--aurora-night-deep));
+  border-radius: clamp(0.75rem, 1.6vw, 1.25rem);
+  background: var(--aurora-panel-strong);
+  box-shadow:
+    0 1.2rem 3rem color-mix(in srgb, var(--aurora-night-deep) 68%, transparent),
+    0 0 2.5rem color-mix(in srgb, var(--aurora-blue) 13%, transparent);
+}
+
+.piano-keyboard__white-keys {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  height: 100%;
+}
+
+.piano-keyboard__black-keys {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  pointer-events: none;
+}
+
+.piano-key {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-width: 0;
+  min-height: var(--touch-target);
+  padding: 0.45rem 0.18rem;
+  border: 0;
+  font: inherit;
+  font-weight: 780;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 90ms ease, background-color 150ms ease, box-shadow 150ms ease;
+}
+
+.piano-key--white {
+  border-right: var(--border-thin) solid color-mix(in srgb, var(--aurora-ink) 28%, transparent);
+  background: linear-gradient(180deg, #FFFFFF, var(--aurora-paper) 78%, #E9E7E4);
+  color: var(--aurora-ink);
+}
+
+.piano-key--white:first-child {
+  border-radius: 0.75rem 0 0 0.75rem;
+}
+
+.piano-key--white:last-child {
+  border-right: 0;
+  border-radius: 0 0.75rem 0.75rem 0;
+}
+
+.piano-key--black {
+  position: absolute;
+  top: 0;
+  left: calc((var(--piano-key-boundary) * (100% / 7)) - (var(--piano-black-key-width) / 2));
+  width: var(--piano-black-key-width);
+  height: 61%;
+  pointer-events: auto;
+  border: var(--border-thin) solid color-mix(in srgb, var(--aurora-cream) 16%, transparent);
+  border-radius: 0 0 0.6rem 0.6rem;
+  background: linear-gradient(180deg, #24283D, #090B17 76%, #1B2037);
+  color: var(--aurora-cream);
+  box-shadow: 0 0.55rem 0.7rem color-mix(in srgb, var(--aurora-night-deep) 70%, transparent);
+}
+
+.piano-key:not(:disabled):active {
+  transform: translateY(0.16rem);
+}
+
+.piano-key:disabled {
+  opacity: 1;
+  cursor: default;
+}
+
+.piano-key--correct,
+.piano-key--black.piano-key--correct {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--aurora-mint) 72%, #FFFFFF), var(--aurora-mint));
+  color: var(--aurora-ink);
+  box-shadow: inset 0 0 0 0.16rem color-mix(in srgb, var(--aurora-mint) 58%, var(--aurora-ink));
+}
+
+.piano-key--incorrect,
+.piano-key--black.piano-key--incorrect {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--aurora-coral) 74%, #FFFFFF), var(--aurora-coral));
+  color: var(--aurora-ink);
+  box-shadow: inset 0 0 0 0.16rem color-mix(in srgb, var(--aurora-coral) 62%, var(--aurora-ink));
+}
+
+.piano-key__label {
+  max-width: 100%;
+  opacity: 0;
+  font-size: clamp(0.58rem, 1.5vw, 0.9rem);
+  line-height: 1.05;
+  text-align: center;
+  transform: translateY(0.2rem);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.piano-keyboard--revealed .piano-key__label {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.piano-key--black .piano-key__label {
+  padding-bottom: 0.15rem;
+  font-size: clamp(0.48rem, 1.15vw, 0.72rem);
+}
+
+.piano-orientation-prompt {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.piano-orientation-prompt__content {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: var(--space-3);
+  width: min(100%, 31rem);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.piano-orientation-prompt__content h1,
+.piano-orientation-prompt__content p {
+  margin: 0;
+}
+
+.piano-orientation-prompt__content h1 {
+  color: var(--aurora-cream);
+  font-size: clamp(2rem, 10vw, 3.4rem);
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+}
+
+.piano-orientation-prompt__content > p:last-child {
+  max-width: 29rem;
+  color: var(--aurora-muted);
+}
+
+.piano-orientation-prompt__icon {
+  width: min(42vw, 10rem);
+  overflow: visible;
+  fill: none;
+  stroke: var(--aurora-coral);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 5;
+  filter: drop-shadow(0 0 1.2rem color-mix(in srgb, var(--aurora-coral) 28%, transparent));
+}
+
+.settings-progress-section {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.aurora-settings-page .piano-progress-card {
+  display: grid;
+  gap: var(--space-4);
+  width: min(100%, 48rem);
+  margin: 0 auto;
+  border-color: var(--aurora-panel-line);
+  background: color-mix(in srgb, var(--aurora-panel) 88%, transparent);
+  color: var(--aurora-cream);
+}
+
+.piano-progress-card__heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.piano-progress-card__heading h2,
+.piano-progress-card__heading p {
+  margin: 0;
+}
+
+.piano-progress-card__heading > span {
+  color: var(--aurora-apricot);
+  font-size: var(--font-size-xs);
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+.piano-progress-card__stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.piano-progress-card__stats > span {
+  display: grid;
+  gap: 0.1rem;
+  padding: var(--space-3);
+  border: var(--border-thin) solid var(--aurora-panel-line);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--aurora-panel-strong) 82%, transparent);
+}
+
+.piano-progress-card__stats strong {
+  color: var(--aurora-cream);
+  font-size: 1.45rem;
+}
+
+.piano-progress-card__stats small {
+  color: var(--aurora-muted);
+}
+
+.piano-progress-card__spellings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.piano-progress-chip {
+  min-width: 2.8rem;
+  padding: 0.45rem 0.65rem;
+  border: var(--border-thin) solid var(--aurora-panel-line);
+  border-radius: var(--radius-pill);
+  color: var(--aurora-muted);
+  font-size: var(--font-size-xs);
+  font-weight: 750;
+  text-align: center;
+}
+
+.piano-progress-chip--complete {
+  border-color: color-mix(in srgb, var(--aurora-mint) 62%, var(--aurora-panel-line));
+  background: color-mix(in srgb, var(--aurora-mint) 12%, transparent);
+  color: var(--aurora-mint);
+}
+
+.piano-progress-chip--review {
+  border-color: color-mix(in srgb, var(--aurora-coral) 68%, var(--aurora-panel-line));
+  background: color-mix(in srgb, var(--aurora-coral) 12%, transparent);
+  color: var(--aurora-coral);
+}
+
+.notes-mode-dialog__sheet {
+  max-height: inherit;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .piano-orientation-prompt__icon {
+    animation: piano-rotate-cue 2.8s ease-in-out infinite;
+  }
+
+  .aurora-home .studio-setlist > .home-action-card:nth-of-type(5) {
+    animation-delay: 690ms;
+  }
+}
+
+@keyframes piano-rotate-cue {
+  0%, 18%, 82%, 100% {
+    transform: rotate(0deg);
+  }
+
+  42%, 58% {
+    transform: rotate(90deg);
+  }
+}
+
+@media (orientation: landscape) and (max-height: 25rem) {
+  .piano-exercise {
+    grid-template-rows: auto minmax(5.4rem, 0.72fr) minmax(8.4rem, 1.28fr);
+    padding-top: max(0.35rem, env(safe-area-inset-top));
+    padding-bottom: max(0.35rem, env(safe-area-inset-bottom));
+  }
+
+  .piano-exercise .studio-brand__sign {
+    width: 2.2rem;
+    height: 2.2rem;
+  }
+
+  .piano-exercise .studio-brand__tagline,
+  .piano-sound-toggle span {
+    display: none;
+  }
+
+  .piano-exercise__exit,
+  .piano-sound-toggle {
+    min-height: 2.35rem;
+  }
+
+  .piano-exercise__prompt h1 {
+    font-size: clamp(1.25rem, 3.1vw, 1.8rem);
+  }
+
+  .piano-exercise__feedback {
+    gap: 0.3rem;
+  }
+
+  .piano-exercise__feedback > p {
+    font-size: 0.72rem;
+  }
+
+  .piano-exercise__feedback .feedback-card__badge,
+  .piano-exercise__feedback .feedback-card__title {
+    display: none;
+  }
+
+  .piano-exercise__feedback .feedback-card {
+    display: block;
+  }
+
+  .piano-exercise__next {
+    min-height: 2.45rem;
+    padding: 0.35rem 0.7rem;
+  }
+}
+
+@media (max-width: 42rem) and (orientation: landscape) {
+  .piano-exercise__question {
+    grid-template-columns: minmax(6.6rem, 0.72fr) minmax(12rem, 1.3fr) minmax(7.8rem, 0.85fr);
+  }
+
+  .piano-exercise__prompt .studio-overline {
+    font-size: 0.58rem;
+  }
+
+  .piano-exercise__exit {
+    padding-inline: 0.65rem;
+  }
+}
+
+@media (max-width: 34rem) {
+  .piano-progress-card__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .piano-orientation-prompt__icon,
+  .piano-key,
+  .piano-key__label {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 /* Mobile home launcher — faithful portrait composition from the Aurora reference. */
 .mobile-home-launcher {
   width: min(100%, 32.5rem);

@@ -23,7 +23,7 @@ afterEach(() => {
 });
 
 describe("Aurora Session", () => {
-  it("presents the home page as one play action and four session modes", () => {
+  it("presents the home page as one play action and five session modes", () => {
     render(<HomePage />);
 
     expect(screen.getByRole("heading", { level: 1, name: "Entre dans le rythme" })).toBeTruthy();
@@ -34,6 +34,7 @@ describe("Aurora Session", () => {
       ["Révision", "/exercise?mode=review"],
       ["Vitesse", "/exercise?mode=speed"],
       ["Symboles", "/symbols"],
+      ["Piano", "/exercise?mode=piano"],
     ] as const;
 
     destinations.forEach(([name, href]) => {
@@ -46,8 +47,8 @@ describe("Aurora Session", () => {
       .map((icon) => icon.dataset.auroraIcon)
       .filter((name) => !["arrow", "complete", "review-needed", "undiscovered"].includes(name ?? ""));
 
-    expect(decorativeIconNames).toEqual(["play", "note", "challenge", "review", "speed", "symbols"]);
-    expect(document.querySelectorAll('.aurora-home [data-aurora-icon="arrow"]')).toHaveLength(4);
+    expect(decorativeIconNames).toEqual(["play", "note", "challenge", "review", "speed", "symbols", "piano"]);
+    expect(document.querySelectorAll('.aurora-home [data-aurora-icon="arrow"]')).toHaveLength(5);
     expect(document.querySelectorAll('.aurora-home [data-aurora-icon="undiscovered"]')).toHaveLength(7);
     expect(screen.queryByText("♪")).toBeNull();
   });
