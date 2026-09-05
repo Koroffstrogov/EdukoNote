@@ -41,6 +41,10 @@ export type PianoSpellingId =
 
 export type PianoAccidental = "sharp" | "flat" | null;
 
+export type FreePianoOctave = 4 | 5;
+
+export type FreePianoKeyId = `${PianoKeyId}-${FreePianoOctave}`;
+
 export type PianoKeyDefinition = {
   id: PianoKeyId;
   label: string;
@@ -66,6 +70,20 @@ export type PianoQuestion = {
   id: string;
   questionIndex: number;
   notation: PianoNoteDefinition;
+};
+
+export type FreePianoKeyDefinition = {
+  id: FreePianoKeyId;
+  pitchClassId: PianoKeyId;
+  octave: FreePianoOctave;
+  label: string;
+  accessibleLabel: string;
+  color: PianoKeyDefinition["color"];
+  midi: number;
+  frequency: number;
+  shortcut: string;
+  keyboardCode: string;
+  blackKeyBoundary: number | null;
 };
 
 export const PIANO_KEY_IDS: PianoKeyId[] = [
@@ -97,6 +115,65 @@ export const PIANO_KEYS: PianoKeyDefinition[] = [
   createKey("a-sharp", "La♯ / Si♭", "La dièse ou Si bémol", 10, "black"),
   createKey("b", "Si", "Si", 11, "white"),
 ];
+
+const FREE_PIANO_SHORTCUTS = [
+  { shortcut: "A", keyboardCode: "KeyQ" },
+  { shortcut: "Z", keyboardCode: "KeyW" },
+  { shortcut: "E", keyboardCode: "KeyE" },
+  { shortcut: "R", keyboardCode: "KeyR" },
+  { shortcut: "T", keyboardCode: "KeyT" },
+  { shortcut: "Y", keyboardCode: "KeyY" },
+  { shortcut: "U", keyboardCode: "KeyU" },
+  { shortcut: "I", keyboardCode: "KeyI" },
+  { shortcut: "O", keyboardCode: "KeyO" },
+  { shortcut: "P", keyboardCode: "KeyP" },
+  { shortcut: "^", keyboardCode: "BracketLeft" },
+  { shortcut: "$", keyboardCode: "BracketRight" },
+  { shortcut: "Q", keyboardCode: "KeyA" },
+  { shortcut: "S", keyboardCode: "KeyS" },
+  { shortcut: "D", keyboardCode: "KeyD" },
+  { shortcut: "F", keyboardCode: "KeyF" },
+  { shortcut: "G", keyboardCode: "KeyG" },
+  { shortcut: "H", keyboardCode: "KeyH" },
+  { shortcut: "J", keyboardCode: "KeyJ" },
+  { shortcut: "K", keyboardCode: "KeyK" },
+  { shortcut: "L", keyboardCode: "KeyL" },
+  { shortcut: "M", keyboardCode: "Semicolon" },
+  { shortcut: "Ù", keyboardCode: "Quote" },
+  { shortcut: "*", keyboardCode: "Backslash" },
+] as const;
+
+const BLACK_KEY_BOUNDARIES = new Map<number, number>([
+  [1, 1],
+  [3, 2],
+  [6, 4],
+  [8, 5],
+  [10, 6],
+]);
+
+export const FREE_PIANO_KEYS: FreePianoKeyDefinition[] = ([4, 5] as const).flatMap(
+  (octave, octaveIndex) => PIANO_KEYS.map((key) => {
+    const keyIndex = octaveIndex * PIANO_KEYS.length + key.semitone;
+    const shortcut = FREE_PIANO_SHORTCUTS[keyIndex];
+    const midi = 60 + keyIndex;
+    const localBoundary = BLACK_KEY_BOUNDARIES.get(key.semitone);
+    const label = addOctaveToPianoLabel(key.label, octave);
+
+    return {
+      id: `${key.id}-${octave}` as FreePianoKeyId,
+      pitchClassId: key.id,
+      octave,
+      label,
+      accessibleLabel: `${addOctaveToPianoLabel(key.accessibleLabel, octave)}, raccourci ${shortcut.shortcut}`,
+      color: key.color,
+      midi,
+      frequency: getPianoFrequencyFromMidi(midi),
+      shortcut: shortcut.shortcut,
+      keyboardCode: shortcut.keyboardCode,
+      blackKeyBoundary: localBoundary === undefined ? null : octaveIndex * 7 + localBoundary,
+    };
+  }),
+);
 
 export const PIANO_SPELLINGS: PianoSpellingDefinition[] = [
   createSpelling("do", "Do", "c", "Do", null),
@@ -197,7 +274,25 @@ export function getPianoKeyMidi(clef: Clef, keyId: PianoKeyId): number {
 export function getPianoKeyFrequency(clef: Clef, keyId: PianoKeyId): number {
   const midi = getPianoKeyMidi(clef, keyId);
 
+  return getPianoFrequencyFromMidi(midi);
+}
+
+export function getPianoFrequencyFromMidi(midi: number): number {
   return 440 * 2 ** ((midi - 69) / 12);
+}
+
+export function getFreePianoKey(keyId: FreePianoKeyId): FreePianoKeyDefinition {
+  const key = FREE_PIANO_KEYS.find((candidate) => candidate.id === keyId);
+
+  if (!key) {
+    throw new Error(`Unknown free piano key: ${keyId}`);
+  }
+
+  return key;
+}
+
+export function getFreePianoKeyByKeyboardCode(code: string): FreePianoKeyDefinition | null {
+  return FREE_PIANO_KEYS.find((candidate) => candidate.keyboardCode === code) ?? null;
 }
 
 export function generateNextPianoQuestion(
@@ -242,4 +337,11 @@ function createSpelling(
   accidental: PianoAccidental,
 ): PianoSpellingDefinition {
   return { id, label, keyId, naturalLabel, accidental };
+}
+
+function addOctaveToPianoLabel(label: string, octave: FreePianoOctave): string {
+  return label
+    .split(/ (\/|ou) /u)
+    .map((part) => part === "/" || part === "ou" ? part : `${part}${octave}`)
+    .join(" ");
 }

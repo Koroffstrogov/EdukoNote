@@ -116,10 +116,10 @@ export function NotesModeDialog({
             text="Suis le tempo"
           />
           <ModeLink
-            href="/exercise?mode=piano"
+            href="/piano"
             icon="piano"
             title="Piano"
-            text="Trouve la bonne touche"
+            text="Jeu libre ou exercice"
           />
         </nav>
       </div>

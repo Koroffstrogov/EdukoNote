@@ -107,9 +107,9 @@ function DesktopHomeDashboard({ progress, activeClef, onResetProgress }: Desktop
           />
           <HomeActionCard
             title="Piano"
-            text="Joue la bonne touche"
+            text="Joue ou trouve la touche"
             icon={<AuroraMenuIcon name="piano" />}
-            href="/exercise?mode=piano"
+            href="/piano"
             tone="lavender"
           />
         </section>

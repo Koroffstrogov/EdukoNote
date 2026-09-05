@@ -6,3 +6,4 @@ dist
 .vite-preview-server.log
 .vite-preview-server.err.log
 *.local
+.playwright-mcp

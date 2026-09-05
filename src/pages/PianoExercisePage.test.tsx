@@ -26,7 +26,7 @@ describe("Piano exercise route", () => {
 
     expect(screen.getByRole("heading", { level: 1, name: "Tourne ton appareil" })).toBeTruthy();
     expect(screen.queryByTestId("piano-keyboard")).toBeNull();
-    expect(screen.getByRole("link", { name: "Quitter" }).getAttribute("href")).toBe("/");
+    expect(screen.getByRole("link", { name: "Quitter" }).getAttribute("href")).toBe("/piano");
   });
 
   it("routes to the playable landscape view and survives missing Web Audio", () => {

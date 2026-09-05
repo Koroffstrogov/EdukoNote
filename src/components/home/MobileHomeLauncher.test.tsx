@@ -60,7 +60,7 @@ describe("mobile Aurora home launcher", () => {
     expect(within(dialog).getByRole("link", { name: /Vitesse/ }).getAttribute("href"))
       .toBe("/exercise?mode=speed");
     expect(within(dialog).getByRole("link", { name: /Piano/ }).getAttribute("href"))
-      .toBe("/exercise?mode=piano");
+      .toBe("/piano");
 
     const closeButton = within(dialog).getByRole("button", { name: "Fermer les modes Notes" });
     expect(document.activeElement).toBe(closeButton);

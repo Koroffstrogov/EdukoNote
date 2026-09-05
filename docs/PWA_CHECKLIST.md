@@ -77,6 +77,20 @@ Cette checklist sert a verifier le lot PWA/iPhone/offline avec la charte Aurora 
 7. Couper le reseau.
 8. Relancer l'app et verifier que l'ecran d'accueil se recharge.
 
+## Piano en jeu libre sur iPhone
+
+La matrice automatisee et ses limites sont detaillees dans [PIANO_IPHONE_QA.md](PIANO_IPHONE_QA.md).
+
+- [ ] Sur iPhone 7, 13 mini, 14 et 16 Pro physiques : tester Safari puis la PWA installee.
+- [ ] En paysage dans les deux sens : aucune touche sous l'encoche, les barres Safari ou l'indicateur d'accueil.
+- [ ] En portrait : invite de rotation et retour vers `/piano` fonctionnels.
+- [ ] Jouer Do–Do–Sol–Sol–La–La–Sol, puis un accord Do–Mi–Sol avec trois doigts.
+- [ ] Glisser un doigt vers une touche noire sans interrompre les deux autres notes.
+- [ ] En « Grandes touches », les deux groupes Do4–Si4 / Do5–Si5 sont accessibles.
+- [ ] Verrouiller l'ecran, ouvrir le centre de controle, changer d'app puis revenir : aucune note bloquee.
+- [ ] Verifier le son apres une interruption et hors ligne, ainsi que sa latence ressentie.
+- [ ] Verifier que le jeu libre ne modifie aucune progression.
+
 ## Persistance
 
 - [ ] Repondre a au moins une note.

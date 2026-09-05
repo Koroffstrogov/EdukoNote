@@ -34,7 +34,7 @@ describe("Aurora Session", () => {
       ["Révision", "/exercise?mode=review"],
       ["Vitesse", "/exercise?mode=speed"],
       ["Symboles", "/symbols"],
-      ["Piano", "/exercise?mode=piano"],
+      ["Piano", "/piano"],
     ] as const;
 
     destinations.forEach(([name, href]) => {

@@ -26,7 +26,7 @@ export function PianoExercisePage() {
   const rotationRequired = useMediaQuery(PIANO_ROTATION_MEDIA_QUERY);
 
   if (rotationRequired) {
-    return <PianoOrientationPrompt />;
+    return <PianoOrientationPrompt exitHref="/piano" />;
   }
 
   function handleKeyPress(keyId: PianoKeyId) {

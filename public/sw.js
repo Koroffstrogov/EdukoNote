@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "edukonote-shell-";
-const CACHE_NAME = `${CACHE_PREFIX}v5`;
+const CACHE_NAME = `${CACHE_PREFIX}v7`;
 const STAGING_CACHE_NAME = `${CACHE_NAME}-staging`;
 const APP_SHELL_URLS = [
   "/",
@@ -176,7 +176,8 @@ async function networkFirst(request) {
 
     return response;
   } catch {
-    const cachedResponse = await cache.match(request);
+    const isShellAsset = APP_SHELL_URLS.includes(new URL(request.url).pathname);
+    const cachedResponse = await cache.match(request, { ignoreVary: isShellAsset });
 
     if (cachedResponse) {
       return cachedResponse;
@@ -188,7 +189,9 @@ async function networkFirst(request) {
 
 async function cacheFirst(request) {
   const cache = await caches.open(CACHE_NAME);
-  const cachedResponse = await cache.match(request);
+  // Hashed same-origin assets are identical for all callers. The preload request
+  // and a crossorigin module request can otherwise mismatch a server's Vary: Origin.
+  const cachedResponse = await cache.match(request, { ignoreVary: true });
 
   if (cachedResponse) {
     return cachedResponse;

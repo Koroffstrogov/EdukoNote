@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
+  FREE_PIANO_KEYS,
   PIANO_KEYS,
   PIANO_SPELLINGS,
   generateNextPianoQuestion,
+  getFreePianoKeyByKeyboardCode,
   getPianoCatalog,
   getPianoKeyFrequency,
   getPianoKeyMidi,
@@ -33,6 +35,38 @@ describe("piano domain", () => {
     expect(getPianoKeyMidi("bass", "c")).toBe(48);
     expect(getPianoKeyFrequency("treble", "a")).toBeCloseTo(440, 6);
     expect(getPianoKeyFrequency("bass", "a")).toBeCloseTo(220, 6);
+  });
+
+  it("defines a fixed two-octave free piano from C4 to B5", () => {
+    expect(FREE_PIANO_KEYS).toHaveLength(24);
+    expect(FREE_PIANO_KEYS.filter((key) => key.color === "white")).toHaveLength(14);
+    expect(FREE_PIANO_KEYS.filter((key) => key.color === "black")).toHaveLength(10);
+    expect(FREE_PIANO_KEYS[0]).toMatchObject({
+      id: "c-4",
+      label: "Do4",
+      midi: 60,
+      shortcut: "A",
+      keyboardCode: "KeyQ",
+    });
+    expect(FREE_PIANO_KEYS[FREE_PIANO_KEYS.length - 1]).toMatchObject({
+      id: "b-5",
+      label: "Si5",
+      midi: 83,
+      shortcut: "*",
+      keyboardCode: "Backslash",
+    });
+    expect(FREE_PIANO_KEYS.find((key) => key.id === "c-sharp-4")?.label)
+      .toBe("Do♯4 / Ré♭4");
+    expect(FREE_PIANO_KEYS.find((key) => key.id === "a-4")?.frequency).toBeCloseTo(440, 6);
+  });
+
+  it("maps the two AZERTY rows to every free piano key", () => {
+    const keyboardCodes = FREE_PIANO_KEYS.map((key) => key.keyboardCode);
+
+    expect(new Set(keyboardCodes).size).toBe(24);
+    expect(getFreePianoKeyByKeyboardCode("KeyQ")?.id).toBe("c-4");
+    expect(getFreePianoKeyByKeyboardCode("KeyA")?.id).toBe("c-5");
+    expect(getFreePianoKeyByKeyboardCode("Space")).toBeNull();
   });
 
   it("avoids the previous question and the three recent spellings", () => {

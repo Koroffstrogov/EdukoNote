@@ -9,6 +9,8 @@ Le MVP permet de reconnaitre les notes en cle de sol, une note a la fois, avec c
 - Entrainement progressif sur deux octaves internes en cle de sol.
 - Defi 10 notes avec score final.
 - Revision des erreurs en priorite.
+- Piano en jeu libre polyphonique sur deux octaves et exercice de lecture sur clavier.
+- Glissement entre les touches, accords tactiles et option « Grandes touches » (une octave) sur petit ecran.
 - Progression stockee dans `localStorage`.
 - PWA installable avec manifest, icones locales et service worker.
 - Recharge hors ligne apres une premiere visite en production.
@@ -37,6 +39,8 @@ Pages utiles :
 ```text
 http://localhost:5173/styleguide
 http://localhost:5173/exercise?mode=training
+http://localhost:5173/piano
+http://localhost:5173/piano/play
 ```
 
 ## Build production
@@ -139,6 +143,7 @@ npm run check:design
 
 - Charte graphique : `docs/DESIGN_SYSTEM.md`
 - Checklist PWA : `docs/PWA_CHECKLIST.md`
+- Verification Piano sur formats iPhone et limites des simulations : [PIANO_IPHONE_QA.md](docs/PIANO_IPHONE_QA.md)
 
 ## Regle de design verrouillee
 

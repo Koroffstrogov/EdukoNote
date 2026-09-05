@@ -1,12 +1,12 @@
 import { AppButton } from "../ui/AppButton";
 import { StudioBrand } from "../ui/StudioBrand";
 
-export function PianoOrientationPrompt() {
+export function PianoOrientationPrompt({ exitHref = "/" }: { exitHref?: string }) {
   return (
     <main className="studio-shell aurora-shell piano-orientation-prompt">
       <nav className="piano-orientation-prompt__topbar" aria-label="Navigation principale">
         <StudioBrand />
-        <AppButton href="/" tone="cream">Quitter</AppButton>
+        <AppButton href={exitHref} tone="cream">Quitter</AppButton>
       </nav>
       <section className="piano-orientation-prompt__content">
         <svg className="piano-orientation-prompt__icon" viewBox="0 0 180 150" aria-hidden="true" focusable="false">
@@ -19,7 +19,7 @@ export function PianoOrientationPrompt() {
         </svg>
         <p className="studio-overline">Mode Piano</p>
         <h1>Tourne ton appareil</h1>
-        <p>Le clavier a besoin du format paysage pour afficher toute l’octave confortablement.</p>
+        <p>Le clavier a besoin du format paysage pour afficher toutes les touches confortablement.</p>
       </section>
     </main>
   );

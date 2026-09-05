@@ -5,6 +5,7 @@ import { StaffNote } from "../music/StaffNote";
 import { AppButton } from "../ui/AppButton";
 import { FeedbackCard } from "../ui/FeedbackCard";
 import { StudioBrand } from "../ui/StudioBrand";
+import { PianoSoundToggle } from "./PianoControls";
 import { PianoKeyboard } from "./PianoKeyboard";
 
 type PianoExerciseViewProps = {
@@ -44,17 +45,8 @@ export function PianoExerciseView({
       <nav className="piano-exercise__topbar" aria-label="Navigation principale">
         <StudioBrand />
         <div className="piano-exercise__topbar-actions">
-          <button
-            className="piano-sound-toggle"
-            type="button"
-            aria-pressed={isMuted}
-            aria-label={isMuted ? "Activer le son du piano" : "Couper le son du piano"}
-            onClick={onToggleMuted}
-          >
-            <SoundIcon muted={isMuted} />
-            <span>{isMuted ? "Son coupé" : "Son actif"}</span>
-          </button>
-          <AppButton className="piano-exercise__exit" href="/" tone="cream">
+          <PianoSoundToggle isMuted={isMuted} onToggleMuted={onToggleMuted} />
+          <AppButton className="piano-exercise__exit" href="/piano" tone="cream">
             <span aria-hidden="true">←</span> Quitter
           </AppButton>
         </div>
@@ -102,22 +94,6 @@ export function PianoExerciseView({
         onKeyPress={onKeyPress}
       />
     </main>
-  );
-}
-
-function SoundIcon({ muted }: { muted: boolean }) {
-  return (
-    <svg viewBox="0 0 28 28" aria-hidden="true" focusable="false">
-      <path d="M4 11h5l6-5v16l-6-5H4v-6Z" />
-      {muted ? (
-        <path d="m19 11 5 6m0-6-5 6" />
-      ) : (
-        <>
-          <path d="M19 10.5a5 5 0 0 1 0 7" />
-          <path d="M22 7.5a9 9 0 0 1 0 13" />
-        </>
-      )}
-    </svg>
   );
 }
 
