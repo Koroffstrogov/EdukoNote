@@ -141,6 +141,15 @@ npm run check:design
 
 ## Documentation
 
+Les interactions des QCM (Notes et Symboles, dont Vitesse) se vérifient avec Playwright et le serveur de développement sur le port 5173 :
+
+```bash
+node scripts/check-qcm-interactions.mjs chromium
+node scripts/check-qcm-interactions.mjs webkit
+```
+
+Playwright et ses navigateurs doivent être disponibles ; `PLAYWRIGHT_MODULE` peut pointer vers le fichier `index.mjs` d'une installation existante. Les tests utilisent des contextes isolés et ne modifient pas la progression de l'utilisateur.
+
 - Charte graphique : `docs/DESIGN_SYSTEM.md`
 - Checklist PWA : `docs/PWA_CHECKLIST.md`
 - Verification Piano sur formats iPhone et limites des simulations : [PIANO_IPHONE_QA.md](docs/PIANO_IPHONE_QA.md)

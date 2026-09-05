@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "edukonote-shell-";
-const CACHE_NAME = `${CACHE_PREFIX}v7`;
+const CACHE_NAME = `${CACHE_PREFIX}v9`;
 const STAGING_CACHE_NAME = `${CACHE_NAME}-staging`;
 const APP_SHELL_URLS = [
   "/",

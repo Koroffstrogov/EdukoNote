@@ -25,6 +25,7 @@ Chaque profil est rejoué avec 90 px de hauteur retirés pour stresser l'espace 
 - Pas de hitbox invisible autour des noires : leur surface visible est prioritaire, le blanc visible dessous reste jouable. Le test contrôle trois points par touche et deux points sous chaque noire. L'appui ne déplace plus la géométrie des touches.
 - Noms agrandis, deux écritures enharmoniques sur deux lignes. Les raccourcis restent affichés sur ordinateur, mais sont masqués sur interface tactile pour alléger la lecture.
 - Une courte mélodie à essayer et les notes jouées apportent un repère ludique. Même un accord de 24 notes ne redimensionne plus le clavier. Aucun score ni progression n'est enregistré en jeu libre.
+- La sélection de texte et les menus d'appui long iOS sont désactivés sur tout le jeu libre, en-tête compris. Les tests navigateur vérifient les doubles clics et glissements sans sélection ; les autres écrans restent sélectionnables.
 
 ## Jeu et son
 
@@ -43,7 +44,7 @@ Rendu numérique Web Audio dans Chromium : La4 mesuré à 440 Hz, décroissance 
 - Cible JavaScript/CSS Safari 15. Les styles Piano ont un repli sans `color-mix()`, contrôlé en désactivant cette fonction dans la feuille de style servie. L'apparence y est simplifiée, mais le clavier, ses séparations et les appuis restent lisibles. Ce test ne remplace pas Safari 15 sur iPhone 7.
 - Le build de production a été rechargé hors ligne : jeu libre, grandes touches Do5–Si5, retour au choix Piano et exercice après réponse fonctionnent.
 - Ce contrôle a découvert et corrigé un défaut de cache avec `Vary: Origin` : les requêtes des modules pouvaient manquer les ressources pourtant précachées. La tolérance est limitée aux ressources publiques du shell et aux assets hashés. Les autres URL conservent le comportement `Vary` normal.
-- Le cache applicatif passe en v7 ; les progressions locales ne sont pas effacées.
+- Le cache applicatif passe en v9 ; les progressions locales ne sont pas effacées.
 
 ## Rejouer les vérifications
 

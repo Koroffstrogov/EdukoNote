@@ -30,6 +30,7 @@ Les valeurs hexadecimales sont autorisees uniquement dans :
 - Les fenêtres de notation restent claires, presque opaques et sans lueur sur les glyphes.
 - Les portées et symboles utilisent la géométrie SMuFL existante et conservent un fort contraste.
 - Les boutons sont grands, tactiles et faciles a viser sur iPhone.
+- Les réponses des QCM ne gardent aucun effet de survol sur écran tactile : leur survol est réservé à `(hover: hover) and (pointer: fine)`. Le retour d'appui et le focus visible au clavier restent disponibles.
 - Les coins sont souples mais architecturaux, sans effet jouet.
 - Les ombres sont diffuses ; aucun effet lumineux ne doit gêner la lecture musicale.
 - L'interface est mobile first et compatible iPhone.

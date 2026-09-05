@@ -19,7 +19,7 @@ try {
   await page.reload();
   await page.locator(".piano-key").first().waitFor({ timeout: 10000 }).catch(async (error) => {
     console.error({ errors, url: page.url(), body: await page.content(), caches: await page.evaluate(async () => {
-      const cache = await caches.open("edukonote-shell-v7");
+      const cache = await caches.open("edukonote-shell-v9");
       return Promise.all((await cache.keys()).map(async (request) => ({url: request.url, length: (await (await cache.match(request)).text()).length})));
     }) });
     throw error;

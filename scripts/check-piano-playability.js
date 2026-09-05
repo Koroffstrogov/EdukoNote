@@ -14,6 +14,24 @@ export default async function checkPianoPlayability(browser) {
   };
   try {
     await page.goto("http://localhost:5173/piano/play");
+    // The whole playing surface must resist selection, not just the keys:
+    // repeated taps can otherwise select the changing note text in the header.
+    const selectableText = await page.locator(".free-piano").evaluate((root) =>
+      [root, ...root.querySelectorAll("*")].filter((element) => {
+        const style = getComputedStyle(element);
+        return style.userSelect !== "none" && style.webkitUserSelect !== "none";
+      }).map((element) => element.className),
+    );
+    assert(selectableText.length === 0, `Selectable piano content: ${selectableText.join(", ")}`);
+    const expectNoSelection = async () => assert(await page.evaluate(() => !window.getSelection()?.toString()), "A piano gesture selected page text");
+    await page.locator(".free-piano__tip").dblclick();
+    await expectNoSelection();
+    const hint = await page.locator(".free-piano__notes").boundingBox();
+    await page.mouse.move(hint.x + 4, hint.y + hint.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(hint.x + hint.width - 4, hint.y + hint.height / 2, { steps: 10 });
+    await page.mouse.up();
+    await expectNoSelection();
     const c = await point("c-4"), cs = await point("c-sharp-4", true), e = await point("e-4"), g = await point("g-4");
     await page.mouse.move(c.x, c.y);
     await page.mouse.down();
@@ -29,6 +47,7 @@ export default async function checkPianoPlayability(browser) {
     await expectActive("c-4");
     await page.keyboard.up("q");
     await expectActive();
+    await expectNoSelection();
 
     let multitouch = "not available in this engine; pointer lifecycle covered by unit tests";
     if (browser.browserType().name() === "chromium") {
@@ -122,6 +141,9 @@ export default async function checkPianoPlayability(browser) {
     assert(legacy.background !== "none" && legacy.idle !== "none" && legacy.border === "1px", "Safari 15 fallback loses the keyboard");
     assert(legacy.whitePressed !== "rgba(0, 0, 0, 0)" && legacy.blackPressed !== "rgba(0, 0, 0, 0)", "Safari 15 fallback loses active feedback");
     await page.screenshot({ path: `.playwright-mcp/${browser.browserType().name()}-iphone-7-legacy-css.png` });
-    return { gliding: "passed", sharedInputs: "passed", chordLayout: "passed", multitouch, audio, legacy };
+    await page.goto("http://localhost:5173/piano");
+    const hubSelection = await page.getByRole("heading", { name: "Choisis ton mode" }).evaluate((element) => getComputedStyle(element).userSelect);
+    assert(hubSelection !== "none", "Text selection was disabled outside free play");
+    return { textSelection: "blocked only in free play", gliding: "passed", sharedInputs: "passed", chordLayout: "passed", multitouch, audio, legacy };
   } finally { await context.close(); }
 }

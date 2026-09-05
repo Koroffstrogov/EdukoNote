@@ -615,7 +615,8 @@ a {
     box-shadow 160ms ease;
 }
 
-.app-button:hover {
+/* QCM pads opt into hover only for a fine pointer; touch browsers can retain :hover. */
+.app-button:hover:where(:not(.studio-answer-pad)) {
   transform: translateY(calc(var(--space-1) * -1));
 }
 
@@ -1641,7 +1642,7 @@ a {
     background 120ms ease;
 }
 
-.studio-shell .app-button:hover {
+.studio-shell .app-button:hover:where(:not(.studio-answer-pad)) {
   transform: translate(-0.08rem, -0.08rem);
 }
 
@@ -2166,8 +2167,11 @@ a {
   font-size: var(--font-size-lg);
 }
 
-.studio-answer-pad:hover {
-  --button-bg: color-mix(in srgb, var(--studio-view-accent) 16%, var(--studio-sheet));
+@media (hover: hover) and (pointer: fine) {
+  .studio-answer-pad:hover {
+    --button-bg: color-mix(in srgb, var(--studio-view-accent) 16%, var(--studio-sheet));
+    transform: translate(-0.08rem, -0.08rem);
+  }
 }
 
 .studio-exercise .feedback-card {
@@ -2982,6 +2986,14 @@ a {
   overflow: hidden;
 }
 
+/* Repeated taps must not select the live notes or open iOS text/link callouts. */
+.free-piano,
+.free-piano * {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
 .free-piano__topbar-actions {
   display: flex;
   align-items: center;
@@ -3021,9 +3033,6 @@ a {
   --piano-black-key-width: clamp(2rem, 5.14%, 3rem);
   width: min(100%, 90rem);
   touch-action: none;
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-touch-callout: none;
 }
 
 .piano-keyboard--free-play .piano-key {
@@ -4141,7 +4150,7 @@ a {
 
 .aurora-shell .settings-button:hover,
 .aurora-shell .studio-exit-button:hover,
-.aurora-shell .app-button--cream:hover {
+.aurora-shell .app-button--cream:hover:where(:not(.studio-answer-pad)) {
   border-color: color-mix(in srgb, var(--aurora-blue) 66%, var(--aurora-cream));
   background: color-mix(in srgb, var(--aurora-panel-strong) 92%, transparent);
 }
@@ -4153,7 +4162,7 @@ a {
   letter-spacing: 0.01em;
 }
 
-.aurora-shell .app-button:hover {
+.aurora-shell .app-button:hover:where(:not(.studio-answer-pad)) {
   box-shadow: 0 1rem 2.5rem color-mix(in srgb, var(--aurora-night-deep) 60%, transparent);
 }
 
@@ -5002,11 +5011,13 @@ a {
   font-size: var(--font-size-lg);
 }
 
-.aurora-exercise .studio-answer-pad:hover {
-  --button-bg: color-mix(in srgb, var(--studio-view-accent) 18%, var(--aurora-panel-strong));
-  border-color: color-mix(in srgb, var(--studio-view-accent) 58%, var(--aurora-cream));
-  background: color-mix(in srgb, var(--studio-view-accent) 18%, var(--aurora-panel-strong));
-  box-shadow: 0 0 1.8rem color-mix(in srgb, var(--studio-view-accent) 18%, transparent);
+@media (hover: hover) and (pointer: fine) {
+  .aurora-exercise .studio-answer-pad:hover {
+    --button-bg: color-mix(in srgb, var(--studio-view-accent) 18%, var(--aurora-panel-strong));
+    border-color: color-mix(in srgb, var(--studio-view-accent) 58%, var(--aurora-cream));
+    background: color-mix(in srgb, var(--studio-view-accent) 18%, var(--aurora-panel-strong));
+    box-shadow: 0 0 1.8rem color-mix(in srgb, var(--studio-view-accent) 18%, transparent);
+  }
 }
 
 .aurora-exercise .feedback-card {
