@@ -8,7 +8,7 @@ PWA d'apprentissage musical en français, conçue pour l'iPhone et utilisable su
 - Notes : entraînement progressif, défi de 10 questions, révision des erreurs et mode Vitesse.
 - Symboles : entraînement, défi de 10 questions et révision.
 - Piano : lecture sur clavier et jeu libre polyphonique Do4–Si5, avec glissement, accords et vue « Grandes touches » sur une octave.
-- Rythmes : prototype « Garde la pulsation » et [vingt formules à confronter au cours](docs/RHYTHMS.md), sans progression enregistrée.
+- Rythmes : « Garde la pulsation », « Écho rythmique » et « Lis et frappe » sur un moteur commun, réglages rapides et progression locale ; [vingt formules à confronter au cours](docs/RHYTHMS.md).
 - Progression locale et installation PWA ; utilisation hors ligne après une première visite du build de production mis en cache.
 
 ## Démarrer
@@ -37,7 +37,7 @@ Ouvrir `http://localhost:4173/`. Le service worker est activé uniquement en pro
 | [src/domain](src/domain) | Notes, symboles, questions, progression et normalisation des données. |
 | [src/hooks](src/hooks) | Sessions React, persistance, synchronisation entre onglets et cycle de vie audio. |
 | [src/components](src/components) | Composants d'interface, exercices et rendu de la notation musicale. |
-| [src/theme](src/theme), [src/audio](src/audio) | Thème graphique, synthèse du piano et horloge sonore de pulsation. |
+| [src/theme](src/theme), [src/audio](src/audio) | Thème graphique, synthèse du piano et horloge sonore commune aux exercices de rythmes. |
 | [public/sw.js](public/sw.js), [public](public) | Cache hors ligne, manifest, icônes et police musicale locale. |
 | [scripts](scripts) | Contrôles du design et scénarios navigateur. Les tests unitaires et de composants sont placés près du code dans `src/`. |
 
@@ -53,8 +53,10 @@ Les clés `localStorage` et leurs formats sont définis dans les modules suivant
 | Piano pédagogique, par clé et écriture musicale | `edukonote.pianoProgress.v1` | [pianoProgress.ts](src/domain/pianoProgress.ts) |
 | Symboles | `edukonote.symbolProgress.v1` | [symbolProgress.ts](src/domain/symbolProgress.ts) |
 | Zones de lecture | `edukonote.settings.v1` | [settings.ts](src/domain/settings.ts) |
+| Rythmes, par exercice, formule, tempo et aides | `edukonote.rhythmProgress.v1` | [rhythmProgress.ts](src/domain/rhythmProgress.ts) |
+| Derniers réglages de rythmes | `edukonote.rhythmSettings.v1` | [rhythmExercise.ts](src/domain/rhythmExercise.ts) |
 
-L'ancienne progression `edukonote.progress.v1` est migrée vers la clé de Sol du format actuel. Le jeu libre ne sauvegarde aucune progression. Une mise à jour du cache applicatif conserve ces données ; leur suppression par l'utilisateur ou leur purge par le navigateur les efface.
+L'ancienne progression `edukonote.progress.v1` est migrée vers la clé de Sol du format actuel. Le jeu libre ne sauvegarde aucune progression. Rythmes enregistre uniquement les séances terminées ; son bouton de remise à zéro ne touche pas les autres exercices. Une mise à jour du cache applicatif conserve ces données ; leur suppression par l'utilisateur ou leur purge par le navigateur les efface.
 
 ## Contribuer
 

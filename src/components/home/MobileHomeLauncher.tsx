@@ -66,7 +66,7 @@ export function MobileHomeLauncher({ activeClef, notesToReview }: MobileHomeLaun
 
       <a className="mobile-home-rhythms" href="/rhythms">
         <AuroraMenuIcon name="rhythm" />
-        <span><strong>Rythmes</strong> · Garde la pulsation</span>
+        <span><strong>Rythmes</strong> · Trois exercices</span>
         <AuroraMenuIcon name="arrow" />
       </a>
 

@@ -1,8 +1,8 @@
-import { COUNT_IN_BEATS, PRACTICE_BEATS, type PulseTempo } from "../domain/pulse";
+import type { RhythmPlan } from "../domain/rhythmExercise";
 
 type WebkitAudioWindow = Window & { webkitAudioContext?: typeof AudioContext };
 
-export function createPulseAudio(onInterrupted: () => void) {
+export function createRhythmAudio(onInterrupted: () => void) {
   const AudioConstructor = window.AudioContext ?? (window as WebkitAudioWindow).webkitAudioContext;
   if (!AudioConstructor) throw new Error("Audio unavailable");
   const context = new AudioConstructor({ latencyHint: "interactive" });
@@ -18,29 +18,32 @@ export function createPulseAudio(onInterrupted: () => void) {
   };
   context.addEventListener("statechange", onStateChange);
 
-  function schedule(tempo: PulseTempo) {
-    if (disposed || context.state !== "running") throw new Error("Audio not running");
+  function schedule(plan: RhythmPlan) {
+    if (disposed || scheduled || context.state !== "running") throw new Error("Audio not running or already scheduled");
     const startAt = context.currentTime + 0.2;
-    const beatSeconds = 60 / tempo;
+    const beatSeconds = 60 / plan.settings.tempo;
     // This short, fixed-tempo trial is scheduled entirely on the audio clock.
     // Every voice remains cancellable, including voices that have not started.
-    for (let beat = 0; beat < COUNT_IN_BEATS + PRACTICE_BEATS; beat += 1) {
-      const at = startAt + beat * beatSeconds;
+    for (const tone of plan.tones) {
+      const at = startAt + tone.beat * beatSeconds;
+      const model = tone.kind === "model";
+      const duration = model ? Math.max(0.08, tone.duration * beatSeconds - 0.025) : 0.065;
       const oscillator = context.createOscillator();
       const gain = context.createGain();
-      oscillator.type = "sine";
-      oscillator.frequency.setValueAtTime(beat % 4 === 0 ? 1100 : 780, at);
+      oscillator.type = model ? "triangle" : "sine";
+      oscillator.frequency.setValueAtTime(model ? 440 : tone.accent ? 1100 : 780, at);
       gain.gain.setValueAtTime(0, at);
-      gain.gain.linearRampToValueAtTime(0.28, at + 0.002);
-      gain.gain.exponentialRampToValueAtTime(0.0001, at + 0.055);
+      gain.gain.linearRampToValueAtTime(model ? 0.22 : 0.28, at + 0.002);
+      if (model) gain.gain.setValueAtTime(0.22, at + duration - 0.035);
+      gain.gain.exponentialRampToValueAtTime(0.0001, at + duration - 0.01);
       oscillator.connect(gain);
       gain.connect(output);
       voices.push({ oscillator, gain });
       oscillator.start(at);
-      oscillator.stop(at + 0.065);
+      oscillator.stop(at + duration);
     }
     scheduled = true;
-    return { startAt, firstBeat: startAt + COUNT_IN_BEATS * beatSeconds, beatSeconds };
+    return { startAt, firstBeat: startAt + plan.responseAt * beatSeconds, beatSeconds };
   }
 
   function clock(eventTime = performance.now()) {
@@ -74,4 +77,4 @@ export function createPulseAudio(onInterrupted: () => void) {
   return { resume: () => context.resume(), schedule, clock, dispose };
 }
 
-export type PulseAudio = ReturnType<typeof createPulseAudio>;
+export type RhythmAudio = ReturnType<typeof createRhythmAudio>;

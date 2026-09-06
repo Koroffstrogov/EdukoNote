@@ -35,25 +35,46 @@ Notation textuelle : `N` noire, `B` blanche, `R` ronde, `C` croche, `D` double c
 
 Pour la confrontation au cours, noter pour chaque notion : **déjà vue / à introduire / à reporter**, le vocabulaire employé, le tempo confortable et un exemple expliqué par l'élève. Faire d'abord marcher ou battre la pulsation, puis dire ou jouer la formule. Pour les blanches, rondes, liaisons et silences, utiliser la voix ou un instrument qui tient le son : une frappe seule ne prouve pas que la durée ou le silence sont compris.
 
-## Prototype « Garde la pulsation »
+## Trois exercices, un moteur
 
-- Accès par « Rythmes » depuis l'accueil, route `/rhythms`.
-- Tempos 60, 72 et 90 bpm ; repères visuels facultatifs. Quatre clics d'écoute, puis seize pulsations à frapper avec un doigt, Espace ou Entrée. Le métronome reste audible pendant toute la tentative.
-- Aucun son supplémentaire n'est déclenché par la frappe. Le compteur donne le retour immédiat ; une frappe prolongée ne répète pas l'entrée au clavier.
-- Le bilan distingue pulsations retrouvées, absences et frappes supplémentaires, puis donne un conseil de régularité. Il n'est pas sauvegardé et n'affecte pas les autres exercices.
-- Il affiche aussi l'écart moyen et médian entre son et réponse, en millisecondes entières : positif après le son, négatif avant. Ces estimations portent uniquement sur les frappes associées (une par pulsation), sans les absences ni les frappes supplémentaires. Sans frappe associée, les deux valeurs sont indisponibles.
-- Une perte de visibilité, un changement d'app, une interruption audio ou un arrêt volontaire annule la tentative. Le retour demande « Recommencer » ; aucun redémarrage automatique.
+Accès par « Rythmes » depuis l'accueil, route `/rhythms`. Les trois exercices utilisent le même plan musical ([rhythmExercise.ts](../src/domain/rhythmExercise.ts)), la même horloge sonore ([rhythmAudio.ts](../src/audio/rhythmAudio.ts)) et le même cycle de séance ([useRhythmSession.ts](../src/hooks/useRhythmSession.ts)).
 
-Le catalogue prépare les activités suivantes ; il n'est pas encore joué ni évalué par cet atelier. Après validation pédagogique et matérielle, essayer R01, R05 et R09 dans une activité d'écho, puis ajouter les autres notions progressivement.
+| Exercice | Déroulement |
+| --- | --- |
+| Garde la pulsation | Quatre clics de départ, puis seize pulsations à frapper. Le métronome reste audible. |
+| Écho rythmique | Une mesure de décompte, deux mesures de modèle sonore, une nouvelle mesure de décompte, puis deux mesures à reproduire de mémoire. La partition apparaît au bilan. |
+| Lis et frappe | Une mesure de décompte, puis deux mesures à lire et frapper, sans modèle sonore. La partition complète est visible avant le départ ; pendant le jeu, une mesure est affichée à la fois. |
+
+Dans les formules, le décompte respecte la mesure choisie : deux, trois ou quatre temps. Les silences n'ont pas d'attaque ; une note liée prolonge la précédente, y compris à travers la barre de mesure. Le modèle sonore de l'écho respecte ces durées. L'évaluation des frappes porte uniquement sur les **débuts de notes**, pas sur leur durée tenue.
+
+Une frappe se fait avec un doigt, Espace ou Entrée. Aucun son supplémentaire n'est déclenché par la frappe. Le compteur donne le retour immédiat ; tenir la touche ne répète pas l'entrée. L'écoute du modèle et les décomptes sont exclus du bilan, à l'exception de la petite anticipation admise juste avant la réponse.
+
+### Réglages rapides
+
+Le bouton « Réglages » reste disponible pendant le jeu. Il propose les tempos 60, 72 et 90 bpm et les repères visuels facultatifs. Pour l'écho et la lecture : choix d'une notion, puis d'une des quatre formules correspondantes ; métronome facultatif pendant la formule. Les extensions R13–R20 portent un rappel de confrontation au cours.
+
+Les choix sont mémorisés localement. Ouvrir les réglages arrête une tentative en cours ; la fermeture rend le focus au bouton et le redémarrage reste explicite. « Formule suivante » parcourt la notion choisie ; chaque entrée du catalogue peut aussi être lancée en écho ou en lecture.
+
+### Bilan et progression locale
+
+Une séance est enregistrée uniquement après la fin des deux mesures de réponse, ou des seize temps de pulsation. Arrêt volontaire, perte de visibilité, changement d'app, interruption audio ou blocage prolongé de l'affichage : tentative annulée, sans résultat enregistré ni reprise automatique. Une demande de démarrage audio annulée ne peut pas repartir plus tard.
+
+Le bilan distingue attaques retrouvées, absences et frappes supplémentaires ; il affiche les écarts moyen et médian en millisecondes entières. « Ma progression » conserve le nombre de séances, les repères atteints, les erreurs historiques, les réglages à reprendre et les derniers écarts. Chaque entrée permet de reprendre l'exercice avec ses réglages. Les résultats sont séparés par exercice, formule, tempo, repères visuels et métronome ; pour la pulsation, la formule ne compte pas et le métronome est toujours actif.
+
+Un repère est atteint lorsque toutes les attaques sont retrouvées sans frappe supplémentaire, sans irrégularité ni dérive détectée. Il ne constitue pas une validation scolaire : avec moins de quatre attaques, la régularité ne peut pas être conclue. Une réussite lève le besoin de reprise sans effacer les erreurs passées. Les notions restent librement accessibles : aucun déblocage automatique ne remplace l'avis du professeur.
+
+Les deux clés de stockage sont listées dans le [README](../README.md#données-locales). Une remise à zéro confirmée dans l'interface efface seulement la progression Rythmes, en conservant ses réglages et les autres exercices. Les données invalides sont normalisées au chargement. Si l'écriture locale échoue, un message l'indique et les résultats restent en mémoire dans la page ; ils peuvent être perdus à sa fermeture.
 
 ## Horloge et limites du bilan
 
-Les vingt clics de cette séance courte à tempo fixe sont programmés sur l'horloge Web Audio. Les voix futures restent annulables. L'affichage suit l'horloge de sortie ; il ne cadence pas le son. Les frappes utilisent l'horodatage de l'événement, rapproché de `getOutputTimestamp()` quand disponible, sinon des latences exposées par le navigateur.
+Tous les sons d'une séance courte à tempo fixe sont programmés sur l'horloge Web Audio. Les voix futures restent annulables. L'affichage suit l'horloge de sortie ; il ne cadence pas le son. Les frappes utilisent l'horodatage de l'événement, rapproché de `getOutputTimestamp()` quand disponible, sinon des latences exposées par le navigateur.
 
-Pour chaque frappe retenue, l'écart vaut `(instant de frappe − instant de la pulsation sonore associée) × 1000`. La moyenne conserve les signes : des avances et des retards peuvent se compenser. La médiane utilise la valeur centrale après tri, ou la moyenne des deux valeurs centrales si l'effectif est pair. Les calculs gardent leur précision ; seul l'affichage est arrondi à la milliseconde. Ce sont des estimations issues de l'horloge audio, pas une mesure acoustique du son réellement émis par le haut-parleur.
+Pour chaque frappe retenue, l'écart vaut `(instant de frappe − instant de l'attaque attendue) × 1000`. En pulsation, cette cible correspond au clic sonore ; en écho et lecture, elle correspond au début de note attendu pendant la réponse, même sans son à cet instant. Un signe positif indique un retard, un signe négatif une avance. Une seule frappe, la plus proche, est retenue par cible ; absences et frappes supplémentaires n'entrent pas dans les écarts. Sans association, les deux valeurs sont indisponibles.
 
-Seuils **provisoires**, sans valeur d'évaluation scolaire : une frappe peut être associée à une pulsation dans une fenêtre de ±45 % du temps ; une seule est retenue par pulsation. La régularité compare les intervalles entre frappes associées (écart moyen de 12 % maximum), avec au moins quatre frappes. Un décalage constant dans cette fenêtre ne dégrade pas la régularité. La dérive est signalée à partir de huit frappes lorsque l'écart cumulé dépasse un quart de temps.
+La moyenne conserve les signes : des avances et des retards peuvent se compenser. La médiane utilise la valeur centrale après tri, ou la moyenne des deux valeurs centrales si l'effectif est pair. Seul l'affichage est arrondi à la milliseconde. Ce sont des estimations issues de l'horloge audio, pas une mesure acoustique du son réellement émis par le haut-parleur.
 
-Ces seuils restent à ajuster après les essais matériels. Un retard important, notamment Bluetooth, peut encore fausser l'association des frappes. Les tests simulés ne mesurent ni le délai tactile réel ni le son entendu. Le prototype ne mesure pas la durée tenue, ne reconnaît pas le microphone et n'étalonne pas automatiquement l'appareil.
+Seuils **provisoires**, sans valeur d'évaluation scolaire : la fenêtre d'association est de ±45 % du plus petit intervalle entre la cible et ses voisines, plafonné à un temps. Elle se resserre donc pour les croches, doubles croches et triolets. La régularité compare les intervalles réellement frappés aux intervalles attendus entre les attaques associées (écart relatif moyen de 12 % maximum), avec au moins quatre frappes. Un décalage constant dans la fenêtre admise ne dégrade pas la régularité. La dérive est signalée à partir de huit frappes lorsque l'écart cumulé dépasse un quart de temps.
 
-Références techniques : [programmation audio sur une horloge dédiée](https://web.dev/articles/audio-scheduling) et [horodatage de sortie Web Audio](https://webaudio.github.io/web-audio-api/#dom-audiocontext-getoutputtimestamp). Procédure et relevé sur appareil dans le [guide de validation](VALIDATION.md#atelier-garde-la-pulsation-sur-iphone-réel).
+Ces seuils restent à ajuster après les essais matériels. Un retard important, notamment Bluetooth, peut encore fausser l'association des frappes. Les tests simulés ne mesurent ni le délai tactile réel ni le son entendu. L'atelier ne reconnaît pas le microphone et n'étalonne pas automatiquement l'appareil.
+
+Références techniques : [programmation audio sur une horloge dédiée](https://web.dev/articles/audio-scheduling) et [horodatage de sortie Web Audio](https://webaudio.github.io/web-audio-api/#dom-audiocontext-getoutputtimestamp). Procédure et relevé sur appareil dans le [guide de validation](VALIDATION.md#atelier-rythmes-sur-iphone-réel).

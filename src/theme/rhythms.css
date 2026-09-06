@@ -18,6 +18,36 @@
 .pulse-page .page-hero { margin-bottom: var(--space-4); }
 .aurora-shell.pulse-page .page-title { font-size: clamp(1.75rem, 6vw, 3rem); }
 .pulse-workshop, .rhythm-catalog { max-width: 44rem; margin: 0 auto var(--space-5); }
+.rhythm-modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-2); max-width: 44rem; margin: 0 auto var(--space-4); }
+.rhythm-modes button { min-height: var(--touch-target); border: 1px solid var(--aurora-panel-line); border-radius: var(--radius-md); padding: var(--space-3) var(--space-2); background: var(--aurora-panel); color: var(--aurora-cream); font: inherit; cursor: pointer; }
+.rhythm-modes button[aria-pressed="true"] { border-color: var(--aurora-coral); background: var(--aurora-panel-strong); }
+.rhythm-modes strong, .rhythm-modes span { display: block; }
+.rhythm-modes strong { font-size: 0.85rem; }
+.rhythm-modes span { font-size: 0.75rem; margin-top: var(--space-2); color: var(--aurora-muted); }
+.rhythm-settings-dialog .notes-mode-dialog__sheet { gap: var(--space-3); }
+.rhythm-select { display: grid; gap: var(--space-2); margin-top: var(--space-3); color: var(--aurora-cream); }
+.rhythm-select select { width: 100%; min-width: 0; min-height: var(--touch-target); padding: var(--space-2); background: var(--aurora-panel-strong); color: var(--aurora-cream); border: 1px solid var(--aurora-panel-line); border-radius: var(--radius-md); font: inherit; }
+.rhythm-current-formula { margin: 0; color: var(--aurora-muted); font-size: 0.85rem; }
+.rhythm-current-formula button, .rhythm-catalog-actions button, .rhythm-reset-button, .rhythm-reset-confirm button { min-height: var(--touch-target); padding: var(--space-2); background: var(--aurora-panel-strong); color: var(--aurora-cream); border: 1px solid var(--aurora-panel-line); border-radius: var(--radius-md); cursor: pointer; font: inherit; }
+.rhythm-current-formula button { margin-top: var(--space-2); display: block; }
+.rhythm-catalog-actions { display: flex; gap: var(--space-2); margin-top: var(--space-2); }
+.rhythm-progress { max-width: 44rem; margin: 0 auto var(--space-4); color: var(--aurora-cream); }
+.rhythm-progress summary { min-height: var(--touch-target); padding: var(--space-3) 0; cursor: pointer; font-weight: 700; }
+.rhythm-progress p { color: var(--aurora-muted); font-size: 0.85rem; }
+.rhythm-progress-entry { display: grid; gap: var(--space-2); text-align: left; width: 100%; margin: var(--space-2) 0; padding: var(--space-3); border: 1px solid var(--aurora-panel-line); border-radius: var(--radius-md); background: var(--aurora-panel); color: var(--aurora-cream); font: inherit; cursor: pointer; }
+.rhythm-progress-entry span { font-size: 0.8rem; color: var(--aurora-muted); }
+.rhythm-score-preview { margin-bottom: var(--space-3); }
+.rhythm-current-score { margin: 0 auto var(--space-2); max-width: 22rem; }
+.rhythm-current-score .rhythm-notation { grid-template-columns: minmax(0, 1fr); }
+.rhythm-current-score svg { max-height: 90px; }
+.rhythm-current-score small { color: var(--aurora-muted); }
+.aurora-shell.rhythm-active .page-title { font-size: clamp(1.4rem, 5vw, 2rem); }
+.aurora-shell.rhythm-active .page-hero { margin-bottom: var(--space-3); }
+.rhythm-active .pulse-workshop { padding: var(--space-3); }
+.rhythm-active .pulse-pad { min-height: clamp(6rem, 18dvh, 9rem); }
+.rhythm-active .pulse-status { margin: var(--space-2) 0; }
+.rhythm-active .pulse-lights { margin: var(--space-2) 0; }
+.pulse-page .pulse-result > .rhythm-notation { margin-top: var(--space-3); }
 .pulse-workshop {
   padding: clamp(1rem, 4vw, 2rem);
   border: 1px solid var(--aurora-panel-line);
@@ -107,4 +137,12 @@
 @media (max-width: 35rem) {
   .rhythm-notation { grid-template-columns: minmax(0, 1fr); }
   .pulse-page .page-hero { margin-bottom: var(--space-3); }
+}
+@media (max-width: 40rem) and (max-height: 44rem) {
+  .aurora-shell.rhythm-active { padding-bottom: var(--space-2); }
+  .rhythm-active .pulse-workshop { margin-bottom: 0; padding: var(--space-2); }
+  .rhythm-active .pulse-status { margin: var(--space-1) 0; }
+  .rhythm-active .rhythm-current-score svg { max-height: 72px; }
+  .rhythm-active .pulse-cue { display: flex; align-items: center; justify-content: center; gap: var(--space-4); }
+  .rhythm-active .pulse-actions .app-button { min-height: var(--touch-target); padding: var(--space-2); }
 }

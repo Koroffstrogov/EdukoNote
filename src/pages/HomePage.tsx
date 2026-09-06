@@ -114,7 +114,7 @@ function DesktopHomeDashboard({ progress, activeClef, onResetProgress }: Desktop
           />
           <HomeActionCard
             title="Rythmes"
-            text="Garde la pulsation · Atelier"
+            text="Pulsation, écho et lecture"
             icon={<AuroraMenuIcon name="rhythm" />}
             href="/rhythms"
             tone="vanilla"

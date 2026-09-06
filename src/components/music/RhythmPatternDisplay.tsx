@@ -13,11 +13,12 @@ function Glyph({ name, x, y }: { name: SmuflGlyphName; x: number; y: number }) {
 }
 
 /** Two short bars on an unpitched line. Subdivisions are beamed by quarter beat. */
-export function RhythmPatternDisplay({ pattern }: { pattern: RhythmPattern }) {
+export function RhythmPatternDisplay({ pattern, barIndex: selectedBar }: { pattern: RhythmPattern; barIndex?: number }) {
   const titleId = useId();
   return <div className="rhythm-notation" role="img" aria-labelledby={titleId}>
-    <span id={titleId} className="sr-only">{pattern.beatsPerBar}/4 : {describeRhythmPattern(pattern)}</span>
+    <span id={titleId} className="sr-only">{selectedBar === undefined ? "" : `Mesure ${selectedBar + 1}. `}{selectedBar !== undefined && selectedBar > 0 && pattern.bars[selectedBar - 1].slice(-1)[0]?.tieToNext ? "Première note liée à la mesure précédente, sans nouvelle attaque. " : ""}{pattern.beatsPerBar}/4 : {describeRhythmPattern(selectedBar === undefined ? pattern : { ...pattern, bars: [pattern.bars[selectedBar]] })}</span>
     {pattern.bars.map((bar, barIndex) => {
+      if (selectedBar !== undefined && barIndex !== selectedBar) return null;
       let tick = 0;
       const events = bar.map((event) => {
         const at = tick;

@@ -96,9 +96,9 @@ Pour les écrans modifiés, vérifier Safari et la PWA installée :
 
 Le script Piano couvre les profils iPhone 7, 13 mini, 14 et 16 Pro. Le parc cible de l'atelier Rythmes ci-dessous inclut également l'iPhone 15. Pour annoncer une compatibilité sur un appareil, consigner le modèle, la version iOS, le build testé et les observations physiques ; distinguer les simulations des essais matériels.
 
-### Atelier Garde la pulsation sur iPhone réel
+### Atelier Rythmes sur iPhone réel
 
-Ouvrir `/rhythms` dans Safari, d'abord au haut-parleur, volume modéré. Une URL HTTP sur le réseau local suffit à ce premier essai audio/tactile ; tester séparément la PWA depuis une URL HTTPS de production. Le [catalogue et les limites du bilan](RHYTHMS.md) précisent le périmètre du prototype.
+Ouvrir `/rhythms` dans Safari, d'abord au haut-parleur, volume modéré. Une URL HTTP sur le réseau local suffit à ce premier essai audio/tactile ; tester séparément la PWA depuis une URL HTTPS de production. Le [catalogue et les limites du bilan](RHYTHMS.md) précisent le fonctionnement des trois exercices.
 
 Parc cible retenu : iPhone 7, 13 mini, 14, 15 et 16 Pro. Le modèle 15 désigne ici l'iPhone 15 standard. Renseigner la version d'iOS réellement installée sur chaque appareil, puis appliquer le même protocole dans Safari et dans la PWA.
 
@@ -112,19 +112,26 @@ Parc cible retenu : iPhone 7, 13 mini, 14, 15 et 16 Pro. Le modèle 15 désigne 
 
 Les dimensions viennent des [profils Playwright](https://raw.githubusercontent.com/microsoft/playwright/main/packages/isomorphic/deviceDescriptorsSource.json), consultés le 6 septembre 2026. Elles servent de repères de mise en page ; la surface réelle varie avec les barres de Safari, le zoom d'affichage et les marges d'écran. ¹ Pour l'iPhone 7, 547 px est un cas de contrôle volontairement réduit de 120 px, pas une mesure sur appareil.
 
-Contrôle du 6 septembre 2026 sur le build local `index-IYjQm-mf.js` / `index-DKXowcSP.css` : les dix formats ont été vérifiés dans le navigateur Chromium intégré. Bouton de démarrage visible dans les cinq hauteurs réduites ; zone de frappe et bouton « Arrêter » visibles dans les dix formats ; aucun débordement horizontal ni erreur navigateur relevée. Ce contrôle modifie uniquement la taille de la fenêtre : il ne reproduit pas le moteur Safari, les encoches, le tactile ou la latence de ces iPhone.
+Contrôle du 6 septembre 2026 sur le build local `index-CERyUI0C.js` / `index-DoXbk8dE.css` : les dix formats ont été vérifiés pour chacun des trois exercices dans le navigateur Chromium intégré, soit trente combinaisons. Pendant le décompte, réglages, zone de frappe et bouton « Arrêter » visibles ; aucun débordement horizontal. La lecture a aussi été inspectée visuellement à 375 × 547. Avant le départ et au bilan, la page peut défiler pour consulter la partition ou les résultats. Ce contrôle modifie uniquement la taille de la fenêtre : il ne reproduit pas le moteur Safari, les encoches, le tactile ou la latence de ces iPhone.
 
 | Essai | Résultat attendu |
 | --- | --- |
-| Démarrer à 72 bpm, puis à 60 et 90 | Quatre clics d'écoute, puis seize pulsations ; sons distincts et réguliers, premier temps accentué tous les quatre temps. |
+| Garde la pulsation à 72 bpm, puis à 60 et 90 | Quatre clics d'écoute, puis seize pulsations ; sons distincts et réguliers, premier temps accentué tous les quatre temps. |
+| Écho : R01, R05, R09 puis R16 si la liaison est au cours | Décompte d'une mesure, modèle de deux mesures, nouveau décompte et réponse de deux mesures. Le pad est désactivé pendant le modèle ; les silences et liaisons n'ajoutent pas d'attaque. |
+| Lecture : les mêmes formules | Aucun modèle sonore ; partition complète avant le départ, puis mesure courante pendant le jeu. La liaison entrante de R16 est visible au début de la seconde mesure. |
+| Réglages en écho et lecture : notion, formule, tempo, métronome et repères visuels | Quatre formules par notion ; choix mémorisés au rechargement. Sans métronome, les décomptes restent audibles ; la réponse n'est pas jouée par l'app. |
+| Ouvrir les réglages pendant le décompte, l'écoute ou la réponse ; fermer avec Terminé ou Échap | Silence immédiat, aucun résultat enregistré. Focus rendu au bouton Réglages, nouvelle séance lancée explicitement. |
 | Frapper une fois par clic, puis volontairement deux fois | Le compteur augmente d'une unité par contact ; les doubles frappes apparaissent dans « Frappes en plus ». Aucun clic tactile supplémentaire. |
 | Garder le doigt posé, le relâcher, retaper | Un contact tenu compte une fois ; le suivant compte à nouveau. Pas de sélection de texte, zoom ou défilement sur la zone de frappe. |
 | Omettre une pulsation, finir la séance | Le bilan signale l'absence ; il reste compréhensible sans pourcentage de précision. |
+| Finir une séance en avance ou en retard, puis sans aucune frappe | Moyenne et médiane signées en ms ; uniquement les frappes associées. Sans association : tirets, jamais un faux zéro. En écho/lecture, référence à l'attaque attendue. |
+| Finir une séance, recharger, ouvrir Ma progression et reprendre son entrée | Une seule séance ajoutée avec ses réglages. La reprise restaure mode, formule, tempo et aides ; une réussite lève « À reprendre » sans effacer les erreurs historiques. |
+| Dans un profil de test, annuler puis confirmer Réinitialiser les rythmes | Annuler conserve tout ; confirmer remet seulement Rythmes à zéro. Réglages, Notes, Symboles et Piano inchangés. |
 | Désactiver les repères visuels | Son et frappe restent utilisables ; aucun repère de temps ne s'allume. |
 | Arrêter pendant le décompte et pendant le jeu | Silence immédiat, aucune évaluation ; « Recommencer » lance une nouvelle séance complète. |
 | Verrouiller ; changer d'app ; ouvrir le centre de contrôle ; recevoir un appel si possible | Le son cesse et ne repart pas seul. Au retour, tentative annulée, redémarrage explicite sans doublons. |
 | Interrompre aussitôt après « Commencer » | Une reprise audio retardée ne déclenche aucun clic après l'arrêt. |
 | Tester casque filaire/Bluetooth et changer de sortie pendant une séance | Relever le décalage perçu. Une interruption audio annule la tentative ; un changement de sortie non signalé peut nécessiter un arrêt manuel. Ne pas valider les seuils sur le seul Bluetooth. |
-| Refaire dans la PWA installée, puis hors ligne après mise en cache | Même cycle de jeu, notation locale et arrêt ; aucune progression Notes/Symboles/Piano modifiée. |
+| Refaire les trois exercices dans la PWA installée, puis hors ligne après mise en cache | Même cycle de jeu, notation locale et arrêt ; progression Rythmes conservée, aucune progression Notes/Symboles/Piano modifiée. |
 
 Relevé à compléter : date, modèle, iOS, Safari/PWA, URL et identifiant de build, sortie audio, état du mode silencieux, clics entendus, réactions aux frappes, interruptions, problèmes reproductibles et décision sur les seuils. **Validation matérielle à effectuer : aucun essai physique iPhone n'est attesté par les tests automatisés du dépôt.**
