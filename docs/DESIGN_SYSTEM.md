@@ -1,95 +1,36 @@
 # Design system EdukoNote
 
-Ce document décrit le socle graphique Aurora Session.
+## Intention visuelle
 
-## Intention
+Aurora Session évoque un studio musical contemporain pour les 7–12 ans : fond indigo, halos discrets, titres ivoire et accents corail, cyan ou menthe. Les corrections restent encourageantes : « Bravo ! » et « Presque ! ».
 
-EdukoNote doit évoquer une application de création musicale contemporaine : immersive, claire et attirante pour les 7-12 ans, sans reprendre les codes de l'école ni tomber dans un univers enfantin. Aurora Session associe une nuit indigo calme, des lueurs corail et cyan, et des surfaces de notation très lisibles.
+La notation reste sombre sur une surface claire, avec un contraste fort et sans lueur sur les glyphes. Les coins sont souples et les ombres diffuses ; la décoration doit préserver la lisibilité musicale.
 
-## Palette obligatoire
+## Sources de référence
 
-| Nom | Hex | Usage |
-| --- | --- | --- |
-| Corail aurore | `#FF8A70` | action principale, réponse active, énergie |
-| Bleu crépuscule | `#708AC7` | orbites, sélections secondaires, profondeur |
-| Abricot doux | `#F2B08F` | lumière chaude, micro-accents |
-| Menthe signal | `#66D1B5` | succès, validation, progression acquise |
-| Nuit claire | `#171C35` | panneaux et cartes |
-| Indigo profond | `#0E1329` | surfaces sombres et ancrages |
-| Ivoire lunaire | `#F8EEE4` | texte principal et surfaces claires |
+- [tokens.ts](../src/theme/tokens.ts) définit les palettes, leurs noms et leur association aux clés.
+- [theme.css](../src/theme/theme.css) contient les variables et les styles. Utiliser les tokens existants pour les couleurs, espacements, rayons, ombres et tailles tactiles.
+- [StyleGuidePage.tsx](../src/pages/StyleGuidePage.tsx), accessible sur `/styleguide`, présente les palettes, composants et symboles. Actualiser cette page lorsqu'un élément du socle change.
+- [components/ui](../src/components/ui) fournit les boutons, cartes, retours et indicateurs réutilisables.
 
-Les valeurs hexadecimales sont autorisees uniquement dans :
+Les couleurs directes dans `src/` sont réservées aux deux fichiers de thème. Le contrôle automatique détecte les valeurs hexadécimales et les fonctions RGB/HSL ailleurs dans ce dossier ; sa commande figure dans le [guide de validation](VALIDATION.md).
 
-- `src/theme/tokens.ts`
-- `src/theme/theme.css`
+Conserver un rendu léger en CSS/SVG, avec la police musicale locale et sans dépendance graphique lourde.
 
-## Regles graphiques strictes
+## Notation musicale
 
-- Le fond principal est une nuit indigo enrichie de halos statiques et discrets.
-- Les titres sont ivoire ; le corail est réservé aux actions ou états importants.
-- Les fenêtres de notation restent claires, presque opaques et sans lueur sur les glyphes.
-- Les portées et symboles utilisent la géométrie SMuFL existante et conservent un fort contraste.
-- Les boutons sont grands, tactiles et faciles a viser sur iPhone.
-- Les réponses des QCM ne gardent aucun effet de survol sur écran tactile : leur survol est réservé à `(hover: hover) and (pointer: fine)`. Le retour d'appui et le focus visible au clavier restent disponibles.
-- Les coins sont souples mais architecturaux, sans effet jouet.
-- Les ombres sont diffuses ; aucun effet lumineux ne doit gêner la lecture musicale.
-- L'interface est mobile first et compatible iPhone.
-- Les corrections restent positives : `Bravo !` et `Presque !`.
-- Aucune couleur n'est codee directement dans les composants.
-- Toutes les couleurs, rayons, espacements et ombres passent par des tokens ou variables CSS.
-- Aucune police externe n'est chargee.
-- Aucune dependance graphique lourde n'est autorisee.
-- Aucune API externe n'est appelee.
-- Aucun compte, aucune publicite et aucune donnee distante.
+Réutiliser les composants de [components/music](../src/components/music), leurs glyphes SMuFL et leur géométrie : proportions, placement des clés, lignes supplémentaires et altérations doivent rester cohérents. Une modification de taille doit conserver l'alignement sur la portée.
 
-## Tokens
+La [provenance de la police](../public/fonts/README.md) et sa [licence](../public/fonts/OFL.txt) accompagnent l'asset distribué.
 
-Les tokens TypeScript sont dans `src/theme/tokens.ts`.
+## Interactions
 
-Les variables CSS et les styles des composants sont dans `src/theme/theme.css`.
+- Prévoir des commandes faciles à viser sur iPhone et garder la question, le retour et l'action suivante accessibles sur petit écran.
+- Réserver le survol des réponses QCM à `(hover: hover) and (pointer: fine)`. Conserver le retour d'appui et le focus visible au clavier.
+- Garder les libellés accessibles cohérents avec l'exercice ; les réglages d'affichage des réponses doivent être respectés.
+- Sur le piano, préserver les marges d'encoche et d'indicateur d'accueil, ainsi que l'invitation à tourner l'appareil en portrait mobile.
+- Les commandes du piano visent au moins 44 × 44 px CSS. La vue complète de deux octaves accepte des touches noires plus étroites ; « Grandes touches » donne accès à une octave avec des cibles plus larges.
+- La surface visible détermine la touche jouée : le blanc sous une noire reste jouable. Les appuis et les accords ne déplacent pas le clavier.
+- En jeu libre, bloquer la sélection de texte et les menus d'appui long sur l'ensemble de l'écran. Limiter cette règle à ce mode.
 
-Familles verrouillees :
-
-- couleurs : `--color-*`
-- espacements : `--space-*`
-- rayons : `--radius-*`
-- ombres : `--shadow-*`
-- tailles tactiles : `--touch-target*`
-- portee musicale : `--staff-*`
-
-## Composants du socle
-
-- `AppButton` : bouton tactile, gros, arrondi, decline par ton.
-- `AppCard` : surface douce pour question ou contenu.
-- `FeedbackCard` : retour positif `Bravo !` ou correction douce `Presque !`.
-- `ProgressChip` : indicateur court de progression.
-- `HomeActionCard` : carte d'action d'accueil.
-- `StaffPreview` : portee simplifiee pour les apercus visuels.
-
-## Page style guide
-
-La route `/styleguide` doit toujours afficher :
-
-- la palette complete avec noms et codes hex ;
-- les boutons `Do`, `Ré`, `Mi`, `Fa` ;
-- une carte question `Quelle est cette note ?` avec portee simplifiee ;
-- le feedback succes `Bravo ! C’est Mi` ;
-- le feedback erreur `Presque ! C’était Fa` ;
-- les chips `Do ✅`, `Ré ✅`, `Mi 🟡`, `Fa 🔴` ;
-- les cartes `Entraînement`, `Défi 10 notes`, `Révision des erreurs` ;
-- une mini previsualisation mobile.
-
-## Checklist d'acceptation
-
-- [ ] `npm install` fonctionne.
-- [ ] `npm run dev` fonctionne.
-- [ ] `npm run build` fonctionne.
-- [ ] `npm run check:design` fonctionne.
-- [ ] Aucune couleur directe n'existe dans `src/` hors fichiers theme autorises.
-- [ ] Les ecrans visibles utilisent les composants UI du design system.
-- [ ] Le fond principal et le chrome PWA utilisent la nuit Aurora.
-- [ ] Les titres sont ivoire et les actions principales corail.
-- [ ] La notation reste sombre sur une surface claire et sans déformation.
-- [ ] Les boutons sont grands et tactiles sur iPhone.
-- [ ] Les coins et ombres correspondent a la charte.
-- [ ] La page `/styleguide` permet une verification visuelle complete.
+Les contrôles visuels, tactiles et iPhone sont regroupés dans le [guide de validation](VALIDATION.md).

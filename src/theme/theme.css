@@ -473,24 +473,32 @@ a {
   line-height: var(--line-height-base);
 }
 
+.reading-zone-selector {
+  display: grid;
+  gap: var(--space-3);
+}
+
 .reading-zone-choice-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
-  gap: var(--space-3);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
 }
 
 .reading-zone-choice-card {
   display: grid;
-  gap: var(--space-3);
-  min-height: 12rem;
-  padding: var(--space-4);
+  justify-items: center;
+  align-content: center;
+  gap: var(--space-1);
+  min-width: 0;
+  min-height: var(--touch-target-lg);
+  padding: var(--space-3) var(--space-2);
   border: var(--border-thin) solid color-mix(in srgb, var(--color-lavender) 58%, var(--color-plum));
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--color-surface) 84%, var(--color-cream));
   color: var(--color-text);
   box-shadow: var(--shadow-card);
   cursor: pointer;
-  text-align: left;
+  text-align: center;
   transition:
     transform 160ms ease,
     box-shadow 160ms ease,
@@ -508,10 +516,19 @@ a {
   background: color-mix(in srgb, var(--color-lavender) 44%, var(--color-cream));
 }
 
-.reading-zone-choice-card__content {
-  display: grid;
-  gap: var(--space-1);
-  min-width: var(--space-0);
+.reading-zone-choice-card__check {
+  width: 1.1rem;
+  height: 1.1rem;
+  visibility: hidden;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.reading-zone-choice-card--active .reading-zone-choice-card__check {
+  visibility: visible;
 }
 
 .reading-zone-choice-card__title,
@@ -521,7 +538,7 @@ a {
 
 .reading-zone-choice-card__title {
   color: var(--color-text);
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-md);
   font-weight: var(--font-weight-strong);
   line-height: var(--line-height-tight);
 }
@@ -535,7 +552,7 @@ a {
 .reading-zone-diagram {
   display: block;
   width: 100%;
-  max-width: 12rem;
+  max-width: 7rem;
   justify-self: center;
   color: var(--color-plum);
   overflow: visible;
@@ -5309,6 +5326,83 @@ a {
 
 .aurora-shell .reading-zone-diagram__note {
   fill: var(--aurora-coral);
+}
+
+.exercise-context {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.aurora-shell .exercise-context .page-eyebrow {
+  padding: 0;
+  border: 0;
+  background: none;
+  letter-spacing: 0;
+}
+
+.reading-zone-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--touch-target);
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-thin) solid var(--aurora-coral);
+  border-radius: var(--radius-md);
+  background: var(--aurora-panel);
+  color: var(--aurora-cream);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+}
+
+.reading-zone-trigger svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.reading-zone-dialog {
+  overflow-y: auto;
+}
+
+.reading-zone-dialog .notes-mode-dialog__sheet {
+  padding: var(--space-4);
+}
+
+.reading-zone-dialog .notes-mode-dialog__header h2 {
+  font-size: var(--font-size-xl);
+}
+
+.reading-zone-dialog .notes-mode-dialog__header p {
+  margin-top: var(--space-1);
+  color: var(--aurora-muted);
+  font-weight: normal;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.reading-zone-hint {
+  margin: 0;
+  color: var(--aurora-muted);
+  font-size: var(--font-size-sm);
+}
+
+.aurora-settings-page .settings-reading-zone {
+  padding: var(--space-4);
+  border-radius: var(--radius-card);
+}
+
+.empty-review {
+  display: grid;
+  gap: var(--space-4);
 }
 
 .aurora-shell .reset-confirmation {

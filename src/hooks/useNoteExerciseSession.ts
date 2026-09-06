@@ -35,6 +35,7 @@ export function useNoteExerciseSession({
   );
   const questionIndexRef = useRef(1);
   const answeredRef = useRef(false);
+  const previousReadingZoneRef = useRef(activeReadingZone);
   const speedDeadlineAtRef = useRef<number | null>(
     mode === "speed"
       ? Date.now() + secondsToMs(getSpeedTimeLimitSeconds(0))
@@ -44,6 +45,7 @@ export function useNoteExerciseSession({
     generateQuestion(null, mode, recentHistoryRef.current, questionIndexRef.current),
   );
   const [selectedAnswerLabel, setSelectedAnswerLabel] = useState<AnswerLabel | null>(null);
+  const [questionReadingZone, setQuestionReadingZone] = useState(activeReadingZone);
   const [questionNumber, setQuestionNumber] = useState(1);
   const [answers, setAnswers] = useState<ChallengeAnswer[]>([]);
   const [challengeFinished, setChallengeFinished] = useState(false);
@@ -65,6 +67,30 @@ export function useNoteExerciseSession({
     },
     [question.note, recordNoteAnswer, recordRecentNote],
   );
+
+  useEffect(() => {
+    if (previousReadingZoneRef.current === activeReadingZone) {
+      return;
+    }
+    previousReadingZoneRef.current = activeReadingZone;
+
+    // An answered question keeps its correction until Next; replacing an
+    // unanswered question must not record an attempt or update recent history.
+    if ((mode !== "training" && mode !== "review") || answeredRef.current) {
+      return;
+    }
+
+    questionIndexRef.current += 1;
+    setQuestion((currentQuestion) => generateNextQuestion(
+      currentQuestion,
+      recentHistoryRef.current,
+      getQuestionPool(mode, activeClef, progress, activeReadingZone),
+      mode,
+      Math.random,
+      questionIndexRef.current,
+    ));
+    setQuestionReadingZone(activeReadingZone);
+  }, [activeReadingZone, activeClef, mode, progress]);
 
   useEffect(() => {
     if (mode !== "speed" || speedFailure) {
@@ -204,6 +230,7 @@ export function useNoteExerciseSession({
       generateQuestion(currentQuestion, mode, nextHistory, nextQuestionIndex),
     );
     setSelectedAnswerLabel(null);
+    setQuestionReadingZone(activeReadingZone);
     answeredRef.current = false;
 
     if (mode === "challenge") {
@@ -227,6 +254,7 @@ export function useNoteExerciseSession({
 
   function resetQuestionState(questionMode: QuizMode) {
     setSelectedAnswerLabel(null);
+    setQuestionReadingZone(activeReadingZone);
     answeredRef.current = false;
     recentHistoryRef.current = [];
     questionIndexRef.current = 1;
@@ -239,6 +267,7 @@ export function useNoteExerciseSession({
 
   return {
     question,
+    questionReadingZone,
     selectedAnswerLabel,
     questionNumber,
     answers,

@@ -5,6 +5,7 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-li
 import { createEmptyProgress, PROGRESS_STORAGE_KEY, recordAnswer } from "../domain/progress";
 import { PIANO_PROGRESS_STORAGE_KEY, createEmptyPianoProgress, recordPianoAnswer } from "../domain/pianoProgress";
 import { SettingsPage } from "./SettingsPage";
+import { SETTINGS_STORAGE_KEY, type SettingsState } from "../domain/settings";
 
 beforeEach(() => {
   window.localStorage.clear();
@@ -46,5 +47,35 @@ describe("SettingsPage progression", () => {
     fireEvent.click(within(confirmation).getByRole("button", { name: "Confirmer la réinitialisation" }));
 
     await waitFor(() => expect(statistics.textContent).toContain("0 essais"));
+  });
+});
+
+describe("SettingsPage reading zone", () => {
+  it("shows three compact choices, explains their scope and remembers the choice per clef", () => {
+    render(<SettingsPage />);
+    fireEvent.click(screen.getByRole("tab", { name: "Zone de lecture" }));
+
+    expect(screen.getByText("Clé de Sol")).toBeTruthy();
+    expect(screen.getByText(/Exercices de notes/)).toBeTruthy();
+    const selector = screen.getByRole("group", { name: "Choisir la zone de lecture" });
+    expect(within(selector).getAllByRole("button")).toHaveLength(3);
+    expect(within(selector).getByRole("button", { name: "Tout", pressed: true })).toBeTruthy();
+    fireEvent.click(within(selector).getByRole("button", { name: "Haut" }));
+    expect(within(selector).getByRole("button", { name: "Haut", pressed: true })).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("tab", { name: "Clé à travailler" }));
+    fireEvent.click(screen.getByRole("button", { name: /Clé de Fa/ }));
+    fireEvent.click(screen.getByRole("tab", { name: "Zone de lecture" }));
+    expect(screen.getByText("Clé de Fa")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Tout", pressed: true })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Bas" }));
+
+    fireEvent.click(screen.getByRole("tab", { name: "Clé à travailler" }));
+    fireEvent.click(screen.getByRole("button", { name: /Clé de Sol/ }));
+    fireEvent.click(screen.getByRole("tab", { name: "Zone de lecture" }));
+    expect(screen.getByRole("button", { name: "Haut", pressed: true })).toBeTruthy();
+
+    const stored: SettingsState = JSON.parse(window.localStorage.getItem(SETTINGS_STORAGE_KEY)!);
+    expect(stored.readingZones).toEqual({ treble: "upper", bass: "lower", tenor: "full" });
   });
 });

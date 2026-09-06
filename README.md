@@ -1,164 +1,63 @@
 # EdukoNote
 
-PWA React + TypeScript + Vite pour EdukoNote, une application iPhone d'apprentissage des notes de musique.
+PWA d'apprentissage musical en français, conçue pour l'iPhone et utilisable sur ordinateur. React, TypeScript et Vite ; ressources et synthèse sonore locales, sans compte, publicité ni API externe.
 
-Le MVP permet de reconnaitre les notes en cle de sol, une note a la fois, avec correction immediate, progression locale et defi 10 notes. La charte graphique reste verrouillee par le design system et par le garde-fou anti-couleurs directes dans `src/`.
+## Fonctionnalités
 
-## Fonctionnalites
+- Lecture en clés de Sol, Fa et Ut 4, avec choix de la zone par clé et accès rapide en entraînement ou révision.
+- Notes : entraînement progressif, défi de 10 questions, révision des erreurs et mode Vitesse.
+- Symboles : entraînement, défi de 10 questions et révision.
+- Piano : lecture sur clavier et jeu libre polyphonique Do4–Si5, avec glissement, accords et vue « Grandes touches » sur une octave.
+- Progression locale et installation PWA ; utilisation hors ligne après une première visite du build de production mis en cache.
 
-- Entrainement progressif sur deux octaves internes en cle de sol.
-- Defi 10 notes avec score final.
-- Revision des erreurs en priorite.
-- Piano en jeu libre polyphonique sur deux octaves et exercice de lecture sur clavier.
-- Glissement entre les touches, accords tactiles et option « Grandes touches » (une octave) sur petit ecran.
-- Progression stockee dans `localStorage`.
-- PWA installable avec manifest, icones locales et service worker.
-- Recharge hors ligne apres une premiere visite en production.
-- Aucune API externe, aucun compte, aucune publicite, aucune donnee distante.
+## Démarrer
 
-## Installation
+Avec Node.js et npm installés, depuis la racine du dépôt :
 
-```bash
-npm install
-```
-
-## Lancement sur PC
-
-```bash
+```sh
+npm ci
 npm run dev
 ```
 
-Ouvrir ensuite :
+Ouvrir `http://localhost:5173/`. Pour consulter le build de production :
 
-```text
-http://localhost:5173/
-```
-
-Pages utiles :
-
-```text
-http://localhost:5173/styleguide
-http://localhost:5173/exercise?mode=training
-http://localhost:5173/piano
-http://localhost:5173/piano/play
-```
-
-## Build production
-
-```bash
-npm run build
-```
-
-Tester le build localement :
-
-```bash
-npm run preview
-```
-
-Par defaut, Vite Preview expose l'application sur :
-
-```text
-http://localhost:4173/
-```
-
-Le service worker est enregistre uniquement en mode production, donc `npm run preview` est le bon mode pour tester le hors-ligne sur PC.
-
-## Test iPhone via reseau local
-
-1. Connecter l'iPhone et l'ordinateur au meme Wi-Fi.
-2. Lancer le serveur de developpement :
-
-```bash
-npm run dev
-```
-
-3. Trouver l'adresse IPv4 locale de l'ordinateur.
-   - Windows PowerShell : `Get-NetIPAddress -AddressFamily IPv4`
-   - macOS/Linux : `ipconfig getifaddr en0` ou `ip addr`
-4. Depuis Safari sur l'iPhone, ouvrir :
-
-```text
-http://ADRESSE_IP_LOCALE:5173/
-```
-
-Ce test valide le rendu mobile et l'ergonomie tactile. Le service worker ne tourne pas en mode `dev`.
-
-## Ajouter a l'ecran d'accueil sur iPhone
-
-Pour tester la vraie PWA iOS, utiliser une URL HTTPS de production ou un tunnel HTTPS vers le build `npm run preview`.
-
-1. Ouvrir l'URL HTTPS dans Safari sur l'iPhone.
-2. Appuyer sur le bouton de partage.
-3. Choisir `Sur l'ecran d'accueil`.
-4. Garder le nom `EdukoNote`.
-5. Ouvrir EdukoNote depuis l'icone ajoutee.
-6. Faire une premiere visite en ligne pour laisser le service worker mettre l'application en cache.
-7. Couper le reseau puis relancer l'application depuis l'icone.
-
-## Tester le hors-ligne sur PC
-
-1. Lancer :
-
-```bash
+```sh
 npm run build
 npm run preview
 ```
 
-2. Ouvrir `http://localhost:4173/`.
-3. Naviguer au moins une fois vers l'accueil et un exercice.
-4. Ouvrir DevTools, onglet Application, Service Workers.
-5. Verifier que `sw.js` est actif.
-6. Passer en mode Offline dans DevTools.
-7. Recharger la page.
-8. Verifier que l'application se recharge et que `/exercise?mode=training` reste utilisable.
+Ouvrir `http://localhost:4173/`. Le service worker est activé uniquement en production ; les procédures iPhone et hors ligne figurent dans le [guide de validation](docs/VALIDATION.md).
 
-## Progression locale
+## Se repérer dans le code
 
-La progression est stockee dans `localStorage` sous la cle :
+| Emplacement | Rôle |
+| --- | --- |
+| [src/App.tsx](src/App.tsx), [src/pages](src/pages) | Routes choisies par le chemin de l'URL et assemblage des écrans. |
+| [src/domain](src/domain) | Notes, symboles, questions, progression et normalisation des données. |
+| [src/hooks](src/hooks) | Sessions React, persistance, synchronisation entre onglets et cycle de vie audio. |
+| [src/components](src/components) | Composants d'interface, exercices et rendu de la notation musicale. |
+| [src/theme](src/theme), [src/audio](src/audio) | Thème graphique et synthèse du piano. |
+| [public/sw.js](public/sw.js), [public](public) | Cache hors ligne, manifest, icônes et police musicale locale. |
+| [scripts](scripts) | Contrôles du design et scénarios navigateur. Les tests unitaires et de composants sont placés près du code dans `src/`. |
 
-```text
-edukonote.progress.v1
-```
+Routes utiles : `/exercise?mode=training`, `/symbols`, `/piano`, `/piano/play`, `/settings` et `/styleguide`. Les modes des exercices sont définis dans les pages correspondantes.
 
-Les mises a jour du service worker ne suppriment pas cette cle. La progression reste conservee apres rafraichissement, relance de l'app installee et mise a jour applicative normale.
+## Données locales
 
-## Limites connues iOS PWA
+Les clés `localStorage` et leurs formats sont définis dans les modules suivants :
 
-- iOS exige un contexte securise pour les service workers : HTTPS en production, ou `localhost` sur la machine locale.
-- Une URL `http://ADRESSE_IP_LOCALE` est utile pour tester le rendu iPhone, mais ne permet pas de valider completement le service worker hors ligne.
-- Safari peut purger le stockage local si l'espace manque ou si les donnees du site sont supprimees.
-- Le mode hors ligne doit etre teste apres une premiere visite en ligne.
+| Données | Clé | Source |
+| --- | --- | --- |
+| Notes, par clé musicale | `edukonote.progress.v2` | [progress.ts](src/domain/progress.ts) |
+| Piano pédagogique, par clé et écriture musicale | `edukonote.pianoProgress.v1` | [pianoProgress.ts](src/domain/pianoProgress.ts) |
+| Symboles | `edukonote.symbolProgress.v1` | [symbolProgress.ts](src/domain/symbolProgress.ts) |
+| Zones de lecture | `edukonote.settings.v1` | [settings.ts](src/domain/settings.ts) |
 
-## Commandes utiles
+L'ancienne progression `edukonote.progress.v1` est migrée vers la clé de Sol du format actuel. Le jeu libre ne sauvegarde aucune progression. Une mise à jour du cache applicatif conserve ces données ; leur suppression par l'utilisateur ou leur purge par le navigateur les efface.
 
-```bash
-npm run dev
-npm run build
-npm run preview
-npm test
-npm run check:design
-```
+## Contribuer
 
-## Documentation
-
-Les interactions des QCM (Notes et Symboles, dont Vitesse) se vérifient avec Playwright et le serveur de développement sur le port 5173 :
-
-```bash
-node scripts/check-qcm-interactions.mjs chromium
-node scripts/check-qcm-interactions.mjs webkit
-```
-
-Playwright et ses navigateurs doivent être disponibles ; `PLAYWRIGHT_MODULE` peut pointer vers le fichier `index.mjs` d'une installation existante. Les tests utilisent des contextes isolés et ne modifient pas la progression de l'utilisateur.
-
-- Charte graphique : `docs/DESIGN_SYSTEM.md`
-- Checklist PWA : `docs/PWA_CHECKLIST.md`
-- Verification Piano sur formats iPhone et limites des simulations : [PIANO_IPHONE_QA.md](docs/PIANO_IPHONE_QA.md)
-
-## Regle de design verrouillee
-
-Les composants et pages ne doivent pas coder de couleurs directement. Les valeurs de couleur autorisees dans `src/` sont limitees a :
-
-- `src/theme/tokens.ts`
-- `src/theme/theme.css`
-
-Le script `npm run check:design` echoue si une valeur hexadecimale, `rgb(...)`, `rgba(...)`, `hsl(...)` ou `hsla(...)` est ajoutee ailleurs dans `src/`.
+- [Design system](docs/DESIGN_SYSTEM.md) : intentions visuelles et règles d'interface.
+- [Validation](docs/VALIDATION.md) : choix des contrôles, commandes et limites des simulations.
+- [Skill contribuer-edukonote](.agents/skills/contribuer-edukonote/SKILL.md) : repères et précautions propres au projet pour les agents.
+- [Police musicale](public/fonts/README.md) : provenance du sous-ensemble SMuFL et licence.

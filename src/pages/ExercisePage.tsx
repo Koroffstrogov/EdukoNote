@@ -1,6 +1,7 @@
 import { useMemo } from "react";
-import { EmptyReviewState, SpeedResultState } from "../components/exercise/ExerciseStates";
+import { SpeedResultState } from "../components/exercise/ExerciseStates";
 import { NoteExerciseView } from "../components/exercise/NoteExerciseView";
+import { ReadingZoneControl } from "../components/exercise/ReadingZoneControl";
 import { getReviewNotes, type QuizMode } from "../domain/quiz";
 import { useNoteExerciseSession } from "../hooks/useNoteExerciseSession";
 import { useProgress } from "../hooks/useProgress";
@@ -20,7 +21,7 @@ export function ExercisePage() {
 
 function NoteExercisePage({ mode }: { mode: QuizMode }) {
   const { progress, activeClef, recordNoteAnswer, recordRecentNote } = useProgress();
-  const { settings } = useSettings();
+  const { settings, updateReadingZone } = useSettings();
   const activeReadingZone = settings.readingZones[activeClef];
   const session = useNoteExerciseSession({
     mode,
@@ -33,10 +34,6 @@ function NoteExercisePage({ mode }: { mode: QuizMode }) {
   const reviewNotes = mode === "review"
     ? getReviewNotes(activeClef, progress, activeReadingZone)
     : [];
-
-  if (mode === "review" && reviewNotes.length === 0) {
-    return <EmptyReviewState activeClef={activeClef} activeReadingZone={activeReadingZone} />;
-  }
 
   if (mode === "challenge" && session.challengeFinished) {
     return <ResultPage answers={session.answers} onRestart={session.restartChallenge} />;
@@ -57,6 +54,16 @@ function NoteExercisePage({ mode }: { mode: QuizMode }) {
       mode={mode}
       activeClef={activeClef}
       activeReadingZone={activeReadingZone}
+      readingZoneControl={mode === "training" || mode === "review" ? (
+        <ReadingZoneControl
+          mode={mode}
+          activeClef={activeClef}
+          value={activeReadingZone}
+          onSelect={(readingZone) => updateReadingZone(activeClef, readingZone)}
+        />
+      ) : undefined}
+      readingZonePending={(mode === "training" || mode === "review") && session.questionReadingZone !== activeReadingZone}
+      emptyReview={mode === "review" && reviewNotes.length === 0 && session.selectedAnswerLabel === null}
       question={session.question}
       selectedAnswerLabel={session.selectedAnswerLabel}
       questionNumber={session.questionNumber}

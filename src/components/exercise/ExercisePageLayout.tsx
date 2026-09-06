@@ -5,6 +5,7 @@ import { StudioBrand } from "../ui/StudioBrand";
 type ExercisePageLayoutProps = {
   eyebrow: ReactNode;
   title?: ReactNode;
+  contextAction?: ReactNode;
   className?: string;
   navLabel?: string;
   children: ReactNode;
@@ -13,6 +14,7 @@ type ExercisePageLayoutProps = {
 export function ExercisePageLayout({
   eyebrow,
   title,
+  contextAction,
   className = "",
   navLabel = "Quitter",
   children,
@@ -27,7 +29,12 @@ export function ExercisePageLayout({
       </nav>
 
       <header className="page-hero">
-        <p className="page-eyebrow">{eyebrow}</p>
+        {contextAction ? (
+          <div className="exercise-context">
+            <p className="page-eyebrow">{eyebrow}</p>
+            {contextAction}
+          </div>
+        ) : <p className="page-eyebrow">{eyebrow}</p>}
         {title ? <h1 className="page-title">{title}</h1> : null}
       </header>
 
