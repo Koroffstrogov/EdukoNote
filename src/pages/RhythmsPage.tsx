@@ -7,6 +7,12 @@ import { RHYTHM_NOTIONS, RHYTHM_PATTERNS } from "../domain/rhythmPatterns";
 import { usePulseSession } from "../hooks/usePulseSession";
 import "../theme/rhythms.css";
 
+function formatOffsetMs(value: number | null) {
+  if (value === null) return "—";
+  const rounded = Math.round(value);
+  return `${rounded > 0 ? "+" : ""}${rounded} ms`;
+}
+
 export function RhythmsPage() {
   const [tempo, setTempo] = useState<PulseTempo>(72);
   const [visualGuide, setVisualGuide] = useState(true);
@@ -83,7 +89,12 @@ export function RhythmsPage() {
               <div><dt>Pulsations retrouvées</dt><dd>{session.result.matched} / {PRACTICE_BEATS}</dd></div>
               <div><dt>Sans frappe</dt><dd>{session.result.missed}</dd></div>
               <div><dt>Frappes en plus</dt><dd>{session.result.extra}</dd></div>
+              <div><dt>Écart moyen</dt><dd>{formatOffsetMs(session.result.meanOffsetMs)}</dd></div>
+              <div><dt>Écart médian</dt><dd>{formatOffsetMs(session.result.medianOffsetMs)}</dd></div>
             </dl>
+            <p className="pulse-input-help">{session.result.matched
+              ? `Écarts estimés sur ${session.result.matched} frappe${session.result.matched > 1 ? "s associées" : " associée"} : + = après le son ; − = avant le son.`
+              : "Aucune frappe associée : les écarts ne sont pas disponibles."}</p>
             <p>Régularité : {session.result.regularity === "steady" ? "stable" : session.result.regularity === "variable" ? "à travailler" : "pas assez de frappes pour conclure"}.</p>
             <small>Ces repères sont provisoires. Ils ne sont pas enregistrés dans ta progression.</small>
           </div>}

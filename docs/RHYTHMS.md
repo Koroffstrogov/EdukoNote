@@ -41,6 +41,7 @@ Pour la confrontation au cours, noter pour chaque notion : **déjà vue / à int
 - Tempos 60, 72 et 90 bpm ; repères visuels facultatifs. Quatre clics d'écoute, puis seize pulsations à frapper avec un doigt, Espace ou Entrée. Le métronome reste audible pendant toute la tentative.
 - Aucun son supplémentaire n'est déclenché par la frappe. Le compteur donne le retour immédiat ; une frappe prolongée ne répète pas l'entrée au clavier.
 - Le bilan distingue pulsations retrouvées, absences et frappes supplémentaires, puis donne un conseil de régularité. Il n'est pas sauvegardé et n'affecte pas les autres exercices.
+- Il affiche aussi l'écart moyen et médian entre son et réponse, en millisecondes entières : positif après le son, négatif avant. Ces estimations portent uniquement sur les frappes associées (une par pulsation), sans les absences ni les frappes supplémentaires. Sans frappe associée, les deux valeurs sont indisponibles.
 - Une perte de visibilité, un changement d'app, une interruption audio ou un arrêt volontaire annule la tentative. Le retour demande « Recommencer » ; aucun redémarrage automatique.
 
 Le catalogue prépare les activités suivantes ; il n'est pas encore joué ni évalué par cet atelier. Après validation pédagogique et matérielle, essayer R01, R05 et R09 dans une activité d'écho, puis ajouter les autres notions progressivement.
@@ -48,6 +49,8 @@ Le catalogue prépare les activités suivantes ; il n'est pas encore joué ni é
 ## Horloge et limites du bilan
 
 Les vingt clics de cette séance courte à tempo fixe sont programmés sur l'horloge Web Audio. Les voix futures restent annulables. L'affichage suit l'horloge de sortie ; il ne cadence pas le son. Les frappes utilisent l'horodatage de l'événement, rapproché de `getOutputTimestamp()` quand disponible, sinon des latences exposées par le navigateur.
+
+Pour chaque frappe retenue, l'écart vaut `(instant de frappe − instant de la pulsation sonore associée) × 1000`. La moyenne conserve les signes : des avances et des retards peuvent se compenser. La médiane utilise la valeur centrale après tri, ou la moyenne des deux valeurs centrales si l'effectif est pair. Les calculs gardent leur précision ; seul l'affichage est arrondi à la milliseconde. Ce sont des estimations issues de l'horloge audio, pas une mesure acoustique du son réellement émis par le haut-parleur.
 
 Seuils **provisoires**, sans valeur d'évaluation scolaire : une frappe peut être associée à une pulsation dans une fenêtre de ±45 % du temps ; une seule est retenue par pulsation. La régularité compare les intervalles entre frappes associées (écart moyen de 12 % maximum), avec au moins quatre frappes. Un décalage constant dans cette fenêtre ne dégrade pas la régularité. La dérive est signalée à partir de huit frappes lorsque l'écart cumulé dépasse un quart de temps.
 

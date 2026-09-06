@@ -1,8 +1,9 @@
 /** @vitest-environment jsdom */
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { usePulseSession } from "../hooks/usePulseSession";
 import { RhythmsPage } from "./RhythmsPage";
+import { analyzePulse } from "../domain/pulse";
 
 vi.mock("../hooks/usePulseSession", () => ({ usePulseSession: vi.fn() }));
 let session: ReturnType<typeof usePulseSession>;
@@ -15,6 +16,27 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
 describe("pulse workshop interactions", () => {
+  it("shows rounded signed mean and median offsets in the completed session only", () => {
+    const { rerender } = render(<RhythmsPage />);
+    expect(screen.queryByText("Écart moyen")).toBeNull();
+    session.phase = "result";
+    session.result = analyzePulse([9.9, 10.98, 12.3], 10, 1);
+    rerender(<RhythmsPage />);
+    expect(within(screen.getByText("Écart moyen").parentElement!).getByText("+60 ms")).toBeTruthy();
+    expect(within(screen.getByText("Écart médian").parentElement!).getByText("-20 ms")).toBeTruthy();
+    expect(screen.getByText(/Écarts estimés sur 3 frappes associées/)).toBeTruthy();
+  });
+  it("shows unavailable offsets for an empty session and zero for an on-time tap", () => {
+    session.phase = "result";
+    session.result = analyzePulse([], 10, 1);
+    const { rerender } = render(<RhythmsPage />);
+    expect(screen.getAllByText("—")).toHaveLength(2);
+    expect(screen.getByText(/Aucune frappe associée/)).toBeTruthy();
+    session.result = analyzePulse([10], 10, 1);
+    rerender(<RhythmsPage />);
+    expect(screen.getAllByText("0 ms")).toHaveLength(2);
+    expect(screen.queryByText("—")).toBeNull();
+  });
   it("offers three tempos and twenty teacher-review patterns", () => {
     const { container } = render(<RhythmsPage />);
     expect(screen.getByRole("button", { name: "72 bpm" }).getAttribute("aria-pressed")).toBe("true");

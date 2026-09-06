@@ -11,6 +11,8 @@ export type PulseResult = {
   regularity: "steady" | "variable" | "insufficient";
   drift: "faster" | "slower" | "steady";
   intervalError: number | null;
+  meanOffsetMs: number | null;
+  medianOffsetMs: number | null;
   message: string;
 };
 
@@ -36,6 +38,13 @@ export function analyzePulse(taps: number[], firstBeat: number, beatSeconds: num
   const entries = [...slots.entries()].sort((a, b) => a[0] - b[0]);
   const matched = entries.length;
   const missed = PRACTICE_BEATS - matched;
+  // Signed response minus sound time, using only the retained tap per pulse.
+  const offsetsMs = entries.map(([slot, time]) => (time - (firstBeat + slot * beatSeconds)) * 1000).sort((a, b) => a - b);
+  const middle = Math.floor(matched / 2);
+  const meanOffsetMs = matched ? offsetsMs.reduce((sum, offset) => sum + offset, 0) / matched : null;
+  const medianOffsetMs = matched
+    ? matched % 2 ? offsetsMs[middle] : (offsetsMs[middle - 1] + offsetsMs[middle]) / 2
+    : null;
   // Compare intervals, not absolute phase: a constant output/input delay must
   // not turn a regular series into an irregular one. Thresholds are provisional.
   const errors = entries.slice(1).map(([slot, time], index) => {
@@ -55,5 +64,5 @@ export function analyzePulse(taps: number[], firstBeat: number, beatSeconds: num
     : drift === "slower" ? "Tu ralentis un peu. Garde le même pas jusqu’au bout."
     : regularity === "variable" ? "Écoute l’espace entre deux sons, puis essaie de le garder."
     : "Bravo ! Tes frappes gardent un rythme régulier.";
-  return { matched, missed, extra, regularity, drift, intervalError, message };
+  return { matched, missed, extra, regularity, drift, intervalError, meanOffsetMs, medianOffsetMs, message };
 }

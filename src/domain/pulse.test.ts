@@ -9,6 +9,8 @@ describe("pulse feedback", () => {
       const result = analyzePulse(sequence(offset), 10, 1);
       expect(result).toMatchObject({ matched: 16, missed: 0, extra: 0, regularity: "steady", drift: "steady" });
       expect(result.intervalError).toBeCloseTo(0);
+      expect(result.meanOffsetMs).toBeCloseTo(offset * 1000);
+      expect(result.medianOffsetMs).toBeCloseTo(offset * 1000);
     }
   });
   it("counts missing and duplicate taps independently", () => {
@@ -34,5 +36,23 @@ describe("pulse feedback", () => {
     const original = [...taps];
     expect(analyzePulse(taps, 5, 0.5).matched).toBe(16);
     expect(taps).toEqual(original);
+  });
+  it("computes distinct signed means and medians for odd and even sample counts", () => {
+    const odd = analyzePulse([10.1, 10.98, 12.3], 10, 1);
+    expect(odd.meanOffsetMs).toBeCloseTo(380 / 3);
+    expect(odd.medianOffsetMs).toBeCloseTo(100);
+    const even = analyzePulse([10.1, 10.98, 12.3, 13.04], 10, 1);
+    expect(even.meanOffsetMs).toBeCloseTo(105);
+    expect(even.medianOffsetMs).toBeCloseTo(70);
+  });
+  it("excludes unmatched taps and duplicates, and uses milliseconds at any tempo", () => {
+    const result = analyzePulse([10.3, 10.1, 10.25, 10.5, 11.05, 50, NaN], 10, 0.5);
+    expect(result).toMatchObject({ matched: 3, missed: 13, extra: 3 });
+    expect(result.meanOffsetMs).toBeCloseTo(50);
+    expect(result.medianOffsetMs).toBeCloseTo(50);
+  });
+  it("distinguishes no sample from a single tap exactly on the pulse", () => {
+    expect(analyzePulse([], 10, 1)).toMatchObject({ meanOffsetMs: null, medianOffsetMs: null });
+    expect(analyzePulse([10], 10, 1)).toMatchObject({ meanOffsetMs: 0, medianOffsetMs: 0 });
   });
 });
