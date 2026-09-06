@@ -5,6 +5,7 @@ export type AuroraMenuIconName =
   | "review"
   | "speed"
   | "piano"
+  | "rhythm"
   | "symbols"
   | "arrow"
   | "complete"
@@ -34,6 +35,8 @@ export function AuroraMenuIcon({ name, className = "" }: AuroraMenuIconProps) {
 
 function getIconPaths(name: AuroraMenuIconName) {
   switch (name) {
+    case "rhythm":
+      return <><path d="M12 5h8l7 22H5L12 5Z" /><path d="m16 22 7-16M10 23h12" /><circle className="aurora-menu-icon__fill" cx="20" cy="13" r="2" /></>;
     case "play":
       return <path className="aurora-menu-icon__fill" d="M11.25 8.2 24.5 16l-13.25 7.8V8.2Z" />;
     case "note":

@@ -8,6 +8,7 @@ PWA d'apprentissage musical en français, conçue pour l'iPhone et utilisable su
 - Notes : entraînement progressif, défi de 10 questions, révision des erreurs et mode Vitesse.
 - Symboles : entraînement, défi de 10 questions et révision.
 - Piano : lecture sur clavier et jeu libre polyphonique Do4–Si5, avec glissement, accords et vue « Grandes touches » sur une octave.
+- Rythmes : prototype « Garde la pulsation » et [vingt formules à confronter au cours](docs/RHYTHMS.md), sans progression enregistrée.
 - Progression locale et installation PWA ; utilisation hors ligne après une première visite du build de production mis en cache.
 
 ## Démarrer
@@ -36,11 +37,11 @@ Ouvrir `http://localhost:4173/`. Le service worker est activé uniquement en pro
 | [src/domain](src/domain) | Notes, symboles, questions, progression et normalisation des données. |
 | [src/hooks](src/hooks) | Sessions React, persistance, synchronisation entre onglets et cycle de vie audio. |
 | [src/components](src/components) | Composants d'interface, exercices et rendu de la notation musicale. |
-| [src/theme](src/theme), [src/audio](src/audio) | Thème graphique et synthèse du piano. |
+| [src/theme](src/theme), [src/audio](src/audio) | Thème graphique, synthèse du piano et horloge sonore de pulsation. |
 | [public/sw.js](public/sw.js), [public](public) | Cache hors ligne, manifest, icônes et police musicale locale. |
 | [scripts](scripts) | Contrôles du design et scénarios navigateur. Les tests unitaires et de composants sont placés près du code dans `src/`. |
 
-Routes utiles : `/exercise?mode=training`, `/symbols`, `/piano`, `/piano/play`, `/settings` et `/styleguide`. Les modes des exercices sont définis dans les pages correspondantes.
+Routes utiles : `/exercise?mode=training`, `/symbols`, `/piano`, `/piano/play`, `/rhythms`, `/settings` et `/styleguide`. Les modes des exercices sont définis dans les pages correspondantes.
 
 ## Données locales
 

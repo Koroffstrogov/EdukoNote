@@ -6,9 +6,14 @@ import { StyleGuidePage } from "./pages/StyleGuidePage";
 import { SymbolExercisePage } from "./pages/SymbolExercisePage";
 import { SymbolsPage } from "./pages/SymbolsPage";
 import { PianoModePage } from "./pages/PianoModePage";
+import { RhythmsPage } from "./pages/RhythmsPage";
 
 export function App() {
   const path = window.location.pathname;
+
+  if (path === "/rhythms") {
+    return <RhythmsPage />;
+  }
 
   if (path === "/styleguide") {
     return <StyleGuidePage />;

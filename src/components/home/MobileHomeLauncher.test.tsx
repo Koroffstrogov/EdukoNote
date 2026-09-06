@@ -42,6 +42,7 @@ describe("mobile Aurora home launcher", () => {
     expect(within(activityNavigation).getByRole("link", { name: "Défi" }).getAttribute("href"))
       .toBe("/exercise?mode=challenge");
     expect(activityNavigation.querySelectorAll("[data-home-icon]")).toHaveLength(3);
+    expect(screen.getByRole("link", { name: /Rythmes/ }).getAttribute("href")).toBe("/rhythms");
     expect(activityNavigation.textContent).not.toMatch(/[♪↺↗♯▶→]/u);
   });
 

@@ -74,7 +74,7 @@ function DesktopHomeDashboard({ progress, activeClef, onResetProgress }: Desktop
               <p className="studio-overline">Choisis ton mode</p>
               <h2 id="home-sessions-title">Ta prochaine session</h2>
             </div>
-            <span>5 options</span>
+            <span>6 options</span>
           </div>
           <HomeActionCard
             title="Défi 10 notes"
@@ -111,6 +111,13 @@ function DesktopHomeDashboard({ progress, activeClef, onResetProgress }: Desktop
             icon={<AuroraMenuIcon name="piano" />}
             href="/piano"
             tone="lavender"
+          />
+          <HomeActionCard
+            title="Rythmes"
+            text="Garde la pulsation · Atelier"
+            icon={<AuroraMenuIcon name="rhythm" />}
+            href="/rhythms"
+            tone="vanilla"
           />
         </section>
 
