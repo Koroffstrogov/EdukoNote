@@ -1,4 +1,7 @@
-import { CLEFS, getNotesForClef, isClef, isNoteId, type Clef, type NoteId } from "./notes";
+import { CLEFS, getNotesForClef, isClef, isNoteId, type Clef, type NoteId, type ReadingZone } from "./notes";
+import { localDay } from "./calendar";
+import { earnedZoneBadges, isNoteMastered, normalizeRecall, type NoteRecall } from "./noteMastery";
+import type { ChallengeAnswer } from "./quiz";
 
 export const PROGRESS_STORAGE_KEY = "edukonote.progress.v2";
 export const LEGACY_PROGRESS_STORAGE_KEY = "edukonote.progress.v1";
@@ -9,11 +12,16 @@ export type NoteProgress = {
   errors: number;
   needsReview: boolean;
   lastPracticedAt: string | null;
+  recall?: NoteRecall[];
+  masteredAt?: string;
 };
 
 export type ClefProgress = {
   notes: Partial<Record<NoteId, NoteProgress>>;
   recentHistory: NoteId[];
+  badges?: Partial<Record<"lower" | "upper" | "full", string>>;
+  examPassedAt?: string;
+  bestFluencyMsByZone?: Partial<Record<ReadingZone, number>>;
 };
 
 export type ProgressState = {
@@ -106,7 +114,7 @@ export function recordAnswer(
 
   const current = progress.clefs[clef].notes[noteId] ?? createEmptyNoteProgress();
 
-  return {
+  const next: ProgressState = {
     ...progress,
     clefs: {
       ...progress.clefs,
@@ -120,11 +128,30 @@ export function recordAnswer(
             errors: current.errors + (isCorrect ? 0 : 1),
             needsReview: !isCorrect,
             lastPracticedAt: practicedAt,
+            ...(isCorrect && current.masteredAt ? { masteredAt: current.masteredAt } : {}),
+            recall: [...(current.recall ?? []), { day: localDay(new Date(practicedAt)), correct: isCorrect }].slice(-3),
           },
         },
       },
     },
   };
+  const updatedNote = next.clefs[clef].notes[noteId]!;
+  if (isNoteMastered(updatedNote)) updatedNote.masteredAt ??= practicedAt;
+  const badges = earnedZoneBadges(next, clef, practicedAt);
+  if (badges) next.clefs[clef].badges = badges;
+  return next;
+}
+
+export function recordReadingAward(progress: ProgressState, clef: Clef, mode: "exam" | "fluency", answers: ChallengeAnswer[], medianMs: number | null, at = new Date().toISOString(), zone: ReadingZone = "full"): ProgressState {
+  const expected = mode === "exam" ? getNotesForClef(clef).length : 10;
+  if (answers.length !== expected || answers.some((answer) => !answer.isCorrect || !noteBelongsToClef(answer.noteId, clef))) return progress;
+  const current = progress.clefs[clef];
+  if (mode === "exam" && (!current.badges?.full || new Set(answers.map((answer) => answer.noteId)).size !== expected)) return progress;
+  if (mode === "fluency" && (medianMs === null || !Number.isFinite(medianMs) || medianMs <= 0)) return progress;
+  return { ...progress, clefs: { ...progress.clefs, [clef]: {
+    ...current,
+    ...(mode === "exam" ? { examPassedAt: current.examPassedAt ?? at } : { bestFluencyMsByZone: { ...current.bestFluencyMsByZone, [zone]: Math.min(current.bestFluencyMsByZone?.[zone] ?? Infinity, medianMs!) } }),
+  } } };
 }
 
 export function recordRecentQuestion(progress: ProgressState, clef: Clef, noteId: NoteId): ProgressState {
@@ -208,9 +235,19 @@ function normalizeClefProgress(clef: Clef, value: unknown): ClefProgress {
   const candidate = value && typeof value === "object" ? (value as Partial<ClefProgress>) : {};
   const candidateNotes = candidate.notes && typeof candidate.notes === "object" ? candidate.notes : {};
   const candidateHistory = Array.isArray(candidate.recentHistory) ? candidate.recentHistory : [];
+  const badges = Object.fromEntries(["lower", "upper", "full"].flatMap((zone) => {
+    const at = candidate.badges?.[zone as "lower" | "upper" | "full"];
+    return validDate(at) ? [[zone, at]] : [];
+  }));
 
   return {
     notes: normalizeNotes(candidateNotes as Record<string, Partial<NoteProgress> | undefined>, clef, false),
+    ...(Object.keys(badges).length ? { badges } : {}),
+    ...(badges.full && validDate(candidate.examPassedAt) ? { examPassedAt: candidate.examPassedAt } : {}),
+    ...(candidate.bestFluencyMsByZone && typeof candidate.bestFluencyMsByZone === "object" ? { bestFluencyMsByZone: Object.fromEntries(["lower", "upper", "full"].flatMap((zone) => {
+      const ms = candidate.bestFluencyMsByZone?.[zone as ReadingZone];
+      return typeof ms === "number" && Number.isFinite(ms) && ms > 0 ? [[zone, ms]] : [];
+    })) } : {}),
     recentHistory: candidateHistory
       .filter(
         (value): value is NoteId =>
@@ -235,10 +272,16 @@ function normalizeNotes(
       errors,
       needsReview: asNeedsReview(noteProgress?.needsReview, errors),
       lastPracticedAt: typeof noteProgress?.lastPracticedAt === "string" ? noteProgress.lastPracticedAt : null,
+      ...(noteProgress?.needsReview !== true && validDate(noteProgress?.masteredAt) ? { masteredAt: noteProgress.masteredAt } : {}),
+      ...(Array.isArray(noteProgress?.recall) ? { recall: normalizeRecall(noteProgress.recall) } : {}),
     };
 
     return accumulator;
   }, {} as Partial<Record<NoteId, NoteProgress>>);
+}
+
+function validDate(value: unknown): value is string {
+  return typeof value === "string" && Number.isFinite(Date.parse(value));
 }
 
 function isProgressV2(value: unknown): value is ProgressState {

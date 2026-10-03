@@ -7,9 +7,11 @@ import { SymbolExercisePage } from "./pages/SymbolExercisePage";
 import { SymbolsPage } from "./pages/SymbolsPage";
 import { PianoModePage } from "./pages/PianoModePage";
 import { RhythmsPage } from "./pages/RhythmsPage";
+import { NoteJourneyPage } from "./pages/NoteJourneyPage";
 
 export function App() {
   const path = window.location.pathname;
+  if (path === "/journey") return <NoteJourneyPage />;
 
   if (path === "/rhythms") {
     return <RhythmsPage />;

@@ -52,6 +52,26 @@ Pour les réglages de lecture, vérifier à `375 × 667` que Bas / Haut / Tout r
 
 Les marges d'encoche et les barres de navigateur sont simulées ; les captures à facteur de pixels 1 ne mesurent pas les performances Retina. Chromium et WebKit ne remplacent pas Safari sur iPhone. Si le rapport signale une API audio indisponible, le comportement sans cette API est couvert, mais la synthèse correspondante reste à tester sur appareil. Les mesures numériques ne valident ni la latence tactile ni la qualité sonore perçue.
 
+## Parcours quotidien de lecture
+
+Les règles sont décrites dans [DAILY_PRACTICE.md](DAILY_PRACTICE.md). Les tests de `noteJourney`, `practiceDays`, `useJourneySession`, `usePracticeDays` et `NoteJourneyPage` couvrent notamment les migrations, dates locales, doubles réponses, pauses, verrouillage du mini-examen et attribution des récompenses. Les anciens tests Notes, Piano, Symboles et Rythmes restent à exécuter lors d'une évolution de la progression partagée.
+
+Dans un profil de test, vérifier :
+
+| Parcours | Résultat attendu |
+| --- | --- |
+| Accueil → série du jour, terminer avec une erreur | Dix réponses, journée validée, encouragement ; aucune étoile sans faute. |
+| Terminer à 10/10, puis refaire une série le même jour | Étoile affichée ; le nombre de jours n'augmente pas une seconde fois. Recharger conserve le résultat. |
+| Revenir demain, puis après un jour manqué | Série de jours prolongée puis redémarrée ; badges et record conservés. Couvrir aussi minuit et les changements d'heure dans les tests à horloge contrôlée. |
+| Changer de clé et de zone, puis recharger | Choix conservés par clé ; questions dans la zone demandée, confirmations séparées par note et octave. |
+| Confirmer les quinze notes sur deux jours dans une fixture de test | Trois badges ; mini-examen de quinze notes distinctes. Aucun corrigé avant le bilan ; passeport seulement à 15/15. Un lien direct ne contourne pas le verrou. |
+| Lecture fluide, erreur, interruption, puis série juste | Médiane et meilleur repère seulement pour la série juste sans interruption, record indépendant par clé et zone. |
+| Masquer l'app, revenir ; quitter avant la fin | Reprise explicite ; pas de temps comparable après pause. Les réponses précédentes restent enregistrées, aucune journée pour une série incomplète. |
+| Ancien Défi Notes, puis les autres exercices | Défi valide aussi la journée ; entraînement libre et anciens modes restent accessibles. Les autres compartiments gardent leurs données. |
+| Stockage refusé ou quota dépassé | Parcours utilisable en mémoire et avertissement visible ; aucun plantage ou promesse de sauvegarde durable. |
+
+Contrôle du 3 octobre 2026 dans Chromium intégré : sept réponses visibles, cibles d'au moins 48 px de haut et aucun débordement horizontal aux dix dimensions complètes/réduites du tableau iPhone ci-dessous. Série quotidienne terminée avec correction et récompense. Ce sont des dimensions de fenêtre, pas des essais matériels. Sur les appareils réels, refaire l'accueil, les sept touches, les corrections, le bilan, la pause et le rechargement dans Safari et en PWA.
+
 ## Hors ligne et persistance
 
 Le service worker est enregistré uniquement en production. Lancer :

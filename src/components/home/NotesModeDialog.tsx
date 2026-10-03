@@ -97,6 +97,7 @@ export function NotesModeDialog({
           </button>
         </header>
         <nav className="notes-mode-dialog__modes" aria-label="Modes Notes">
+          <ModeLink href="/journey" icon="note" title="Mon parcours" text="Série du jour, badges et petite scène" />
           <ModeLink
             href="/exercise?mode=training"
             icon="note"

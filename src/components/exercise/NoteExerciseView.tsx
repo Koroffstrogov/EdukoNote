@@ -36,6 +36,9 @@ type NoteExerciseViewProps = {
   speedTimeLeftMs: number;
   onAnswer: (answerLabel: AnswerLabel) => void;
   onNextQuestion: () => void;
+  seriesTitle?: string;
+  seriesLength?: number;
+  hideCorrection?: boolean;
 };
 
 export function NoteExerciseView({
@@ -52,6 +55,9 @@ export function NoteExerciseView({
   speedTimeLeftMs,
   onAnswer,
   onNextQuestion,
+  seriesTitle,
+  seriesLength = NOTE_CHALLENGE_LENGTH,
+  hideCorrection = false,
 }: NoteExerciseViewProps) {
   const isCorrect = selectedAnswerLabel === question.note.answerLabel;
   const questionTitleRef = useRef<HTMLHeadingElement>(null);
@@ -71,8 +77,8 @@ export function NoteExerciseView({
 
   return (
     <ExercisePageLayout
-      className={`exercise-shell studio-exercise aurora-exercise studio-exercise--notes studio-exercise--${mode}`}
-      eyebrow={`${modeLabels[mode]} · ${CLEF_LABELS[activeClef]}${readingZoneControl ? "" : ` · ${READING_ZONE_LABELS[activeReadingZone]}`}`}
+      className={`exercise-shell studio-exercise aurora-exercise studio-exercise--notes studio-exercise--${mode}${seriesTitle ? " journey-exercise" : ""}`}
+      eyebrow={`${seriesTitle ?? modeLabels[mode]} · ${CLEF_LABELS[activeClef]}${readingZoneControl ? "" : ` · ${READING_ZONE_LABELS[activeReadingZone]}`}`}
       contextAction={readingZoneControl}
     >
       {emptyReview ? (
@@ -99,11 +105,11 @@ export function NoteExerciseView({
                   ) : (
                     <div className="studio-question-progress">
                       <StudioTrack
-                        total={NOTE_CHALLENGE_LENGTH}
+                        total={seriesLength}
                         active={questionNumber}
-                        label={`Question ${questionNumber} sur ${NOTE_CHALLENGE_LENGTH}`}
+                        label={`Question ${questionNumber} sur ${seriesLength}`}
                       />
-                      <span aria-hidden="true">{questionNumber}/{NOTE_CHALLENGE_LENGTH}</span>
+                      <span aria-hidden="true">{questionNumber}/{seriesLength}</span>
                     </div>
                   )}
                 </div>
@@ -120,15 +126,15 @@ export function NoteExerciseView({
           <section className="exercise-action-panel">
             {selectedAnswerLabel ? (
               <div className="exercise-feedback">
-                <FeedbackCard status={isCorrect ? "success" : "near"}>
+                {hideCorrection ? <p className="journey-answer-saved" role="status">Réponse enregistrée. Continue à ton rythme.</p> : <FeedbackCard status={isCorrect ? "success" : "near"}>
                   {isCorrect ? `C’est ${question.note.answerLabel}` : `C’était ${question.note.answerLabel}`}
-                </FeedbackCard>
+                </FeedbackCard>}
                 <AppButton className="studio-primary-action" tone="plum" autoFocus onClick={onNextQuestion}>
-                  {mode === "challenge" && questionNumber >= NOTE_CHALLENGE_LENGTH
+                  {mode === "challenge" && questionNumber >= seriesLength
                     ? "Voir le score"
                     : "Note suivante"}
                 </AppButton>
-                {!isCorrect ? (
+                {!isCorrect && !hideCorrection ? (
                   <p className="exercise-hint">Tu avais choisi {selectedAnswerLabel}.</p>
                 ) : null}
                 {readingZonePending ? (

@@ -1,13 +1,15 @@
 import { type AnswerLabel } from "../domain/notes";
+import type { ReactNode } from "react";
 import { NOTE_CHALLENGE_LENGTH, type ChallengeAnswer, getNotesToReview } from "../domain/quiz";
 import { ChallengeResultView } from "../components/exercise/ChallengeResultView";
 
 export type ResultPageProps = {
   answers: ChallengeAnswer[];
   onRestart: () => void;
+  reward?: ReactNode;
 };
 
-export function ResultPage({ answers, onRestart }: ResultPageProps) {
+export function ResultPage({ answers, onRestart, reward }: ResultPageProps) {
   const score = answers.filter((answer) => answer.isCorrect).length;
   const notesToReview = uniqueLabelsToReview(answers);
 
@@ -21,6 +23,7 @@ export function ResultPage({ answers, onRestart }: ResultPageProps) {
       reviewTitle="Notes à rejouer"
       reviewItems={notesToReview}
       onRestart={onRestart}
+      reward={reward}
     />
   );
 }

@@ -1,0 +1,87 @@
+.journey-page { max-width: 68rem; }
+.journey-heading { margin-bottom: var(--space-5); color: var(--aurora-cream); }
+.journey-heading h1 { margin: 0 0 var(--space-2); font-size: clamp(1.7rem, 6vw, 2.7rem); }
+.journey-heading h1:focus { outline: none; }
+.journey-heading p, .journey-card p, .journey-footer { color: var(--aurora-muted); line-height: 1.5; }
+.journey-card { padding: clamp(1rem, 3vw, 1.5rem); margin: 0 0 var(--space-4); border: 1px solid var(--aurora-panel-line); border-radius: var(--radius-card); background: var(--aurora-panel); color: var(--aurora-cream); }
+.journey-card h2 { font-size: 1.3rem; margin: 0 0 var(--space-2); }
+.journey-card > .aurora-menu-icon { width: 2rem; height: 2rem; color: var(--aurora-coral); margin-bottom: var(--space-2); }
+.journey-card > small { display: block; margin-top: var(--space-2); color: var(--aurora-muted); }
+.journey-card .app-button { min-height: var(--touch-target); }
+.journey-today { border-color: var(--aurora-coral); }
+.journey-today > .app-button { width: 100%; }
+.journey-today-heading { display: flex; align-items: center; gap: var(--space-3); }
+.journey-today-heading .aurora-menu-icon { width: 2rem; height: 2rem; color: var(--aurora-apricot); flex-shrink: 0; }
+.journey-today-heading h2 { margin: 0; }
+.journey-week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); list-style: none; gap: var(--space-2); padding: 0; margin: var(--space-4) 0; }
+.journey-week li { display: grid; justify-items: center; gap: var(--space-2); color: var(--aurora-muted); font-size: 0.75rem; }
+.journey-week strong { display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: var(--radius-circle); border: 1px solid var(--aurora-panel-line); background: var(--aurora-panel-strong); font-size: 1.1rem; }
+.journey-week .is-done strong { background: var(--aurora-coral); color: var(--aurora-ink); }
+.journey-week [aria-current="date"] strong { outline: 2px solid var(--aurora-apricot); outline-offset: 3px; }
+.journey-records { font-size: 0.8rem; }
+.journey-options { display: grid; gap: var(--space-3); }
+.journey-options fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.journey-options legend { margin-bottom: var(--space-2); font-weight: 700; }
+.journey-choices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-2); }
+.journey-choices button { min-height: var(--touch-target); padding: var(--space-2); color: var(--aurora-cream); background: var(--aurora-panel-strong); border: 1px solid var(--aurora-panel-line); border-radius: var(--radius-md); font: inherit; cursor: pointer; }
+.journey-choices button[aria-pressed="true"] { border-color: var(--aurora-coral); background: var(--aurora-coral); color: var(--aurora-ink); }
+.journey-badges { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-2); margin: var(--space-4) 0; }
+.journey-badge { display: grid; justify-items: center; text-align: center; gap: var(--space-2); border: 1px solid var(--aurora-panel-line); border-radius: var(--radius-md); padding: var(--space-3) var(--space-2); color: var(--aurora-muted); font-size: 0.8rem; }
+.journey-badge .aurora-menu-icon { width: 2rem; height: 2rem; }
+.journey-badge.is-earned { border-color: var(--aurora-apricot); color: var(--aurora-apricot); }
+.journey-note-map { display: grid; grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr)); list-style: none; padding: 0; gap: var(--space-2); }
+.journey-note-map li { display: grid; gap: var(--space-1); padding: var(--space-2); border: 1px solid var(--aurora-panel-line); border-radius: var(--radius-md); color: var(--aurora-muted); }
+.journey-note-map small { font-size: 0.7rem; }
+.journey-note-map .is-mastered { border-color: var(--aurora-mint); color: var(--aurora-mint); }
+.journey-note-map .needs-review { border-color: var(--aurora-coral); color: var(--aurora-coral); }
+.journey-explanation summary { padding-block: var(--space-3); min-height: var(--touch-target); cursor: pointer; }
+.journey-explanation p { font-size: 0.85rem; }
+.journey-next { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+.journey-card .journey-earned, .journey-passport { color: var(--aurora-apricot); font-weight: 700; }
+.journey-footer { font-size: 0.85rem; }
+.journey-footer a { display: inline-block; padding: var(--space-3); min-height: var(--touch-target); }
+.journey-page a, .practice-reward a { color: var(--aurora-cream); }
+.journey-page button:focus-visible, .journey-page summary:focus-visible, .journey-page a:focus-visible, .daily-home-card:focus-visible { outline: 3px solid var(--aurora-cyan); outline-offset: 3px; }
+.practice-reward { display: grid; justify-items: center; gap: var(--space-2); margin-block: var(--space-4); padding: var(--space-4); border: 1px solid var(--aurora-panel-line); border-radius: var(--radius-md); color: var(--aurora-cream); background: var(--aurora-panel-strong); text-align: center; }
+.practice-reward--perfect { border-color: var(--aurora-apricot); }
+.practice-reward .aurora-menu-icon, .journey-passport .aurora-menu-icon { width: 2.5rem; height: 2.5rem; color: var(--aurora-apricot); }
+.practice-reward p { margin: 0; }
+.practice-reward small { color: var(--aurora-muted); }
+.practice-reward a { min-height: var(--touch-target); display: grid; place-items: center; }
+.journey-passport { display: flex; gap: var(--space-3); align-items: center; }
+.journey-result-time { color: var(--aurora-muted); font-size: 0.9rem; }
+.aurora-shell.journey-exercise .answer-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.aurora-shell.journey-exercise .answer-grid .app-button { min-height: 4rem; padding: var(--space-2); font-size: clamp(1rem, 4vw, 1.5rem); }
+.journey-answer-saved { color: var(--aurora-cream); padding: var(--space-4); text-align: center; }
+.daily-home-card { position: relative; z-index: 4; display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3); border: 1px solid var(--aurora-panel-line); border-radius: var(--radius-md); background: var(--aurora-panel); color: var(--aurora-cream); text-decoration: none; margin-bottom: var(--space-4); }
+.daily-home-card > .aurora-menu-icon { flex-shrink: 0; width: 1.6rem; height: 1.6rem; color: var(--aurora-apricot); }
+.daily-home-card span { flex: 1; min-width: 0; }
+.daily-home-card strong, .daily-home-card small { display: block; }
+.daily-home-card small { color: var(--aurora-muted); margin-top: var(--space-1); }
+.aurora-shell.mobile-home-launcher.daily-home { grid-template-rows: 3.5rem auto minmax(9rem, 1fr) clamp(5.5rem, 15dvh, 8rem) auto; min-height: 35rem; }
+.daily-home .daily-home-card { margin: 0; padding: var(--space-2); font-size: 0.85rem; }
+.daily-home .mobile-home-wordmark { font-size: clamp(2.2rem, 10vw, 3rem); }
+.daily-home .mobile-home-play { top: 50%; width: clamp(8rem, 39vw, 11rem); gap: var(--space-2); }
+.daily-home .mobile-home-play > span { font-size: 1.5rem; }
+.daily-home .mobile-home-play > small { font-size: 0.7rem; text-transform: none; }
+.daily-home .mobile-home-play > .aurora-menu-icon { width: 1.6rem; height: 1.6rem; }
+@media (min-width: 48rem) {
+  .aurora-home.daily-desktop-home .studio-home-hero { min-height: 22rem; padding: clamp(var(--space-5), 4vw, var(--space-7)); margin-bottom: var(--space-4); }
+  .aurora-home.daily-desktop-home .studio-home-hero h1 { max-width: 12ch; font-size: clamp(2.8rem, 6vw, 4.5rem); }
+}
+@media (max-width: 40rem) { .journey-next { grid-template-columns: minmax(0, 1fr); gap: 0; } }
+@media (max-width: 47.99rem) {
+  .aurora-shell.has-practice-reward .studio-result-ticket { gap: var(--space-2); padding: var(--space-4); }
+  .aurora-shell.has-practice-reward .studio-result-score { width: 7rem; }
+  .aurora-shell.has-practice-reward .studio-result-score strong { font-size: 3rem; }
+  .aurora-shell.has-practice-reward .studio-result-score span { font-size: 1.5rem; padding-bottom: 0.5rem; }
+  .aurora-shell.has-practice-reward .studio-result-title { font-size: 1.75rem; }
+  .aurora-shell.has-practice-reward .practice-reward { margin-block: var(--space-2); padding: var(--space-3); width: 100%; }
+}
+@media (max-height: 40rem) and (max-width: 47.99rem) {
+  .aurora-shell.mobile-home-launcher.daily-home { min-height: 32rem; }
+  .aurora-shell.journey-exercise .app-topbar { margin-bottom: var(--space-2); }
+  .aurora-shell.journey-exercise .exercise-layout { gap: var(--space-2); }
+  .aurora-shell.journey-exercise .staff-note-svg { max-height: 8rem; }
+  .aurora-shell.journey-exercise .answer-grid .app-button { min-height: var(--touch-target) !important; }
+}

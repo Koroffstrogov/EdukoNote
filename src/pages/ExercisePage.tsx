@@ -6,6 +6,9 @@ import { getReviewNotes, type QuizMode } from "../domain/quiz";
 import { useNoteExerciseSession } from "../hooks/useNoteExerciseSession";
 import { useProgress } from "../hooks/useProgress";
 import { useSettings } from "../hooks/useSettings";
+import { usePracticeDays } from "../hooks/usePracticeDays";
+import { PracticeReward } from "../components/progress/PracticeReward";
+import "../theme/journey.css";
 import { ResultPage } from "./ResultPage";
 import { PianoExercisePage } from "./PianoExercisePage";
 
@@ -20,8 +23,9 @@ export function ExercisePage() {
 }
 
 function NoteExercisePage({ mode }: { mode: QuizMode }) {
-  const { progress, activeClef, recordNoteAnswer, recordRecentNote } = useProgress();
+  const { progress, activeClef, recordNoteAnswer, recordRecentNote, storageAvailable } = useProgress();
   const { settings, updateReadingZone } = useSettings();
+  const practice = usePracticeDays();
   const activeReadingZone = settings.readingZones[activeClef];
   const session = useNoteExerciseSession({
     mode,
@@ -30,13 +34,14 @@ function NoteExercisePage({ mode }: { mode: QuizMode }) {
     activeReadingZone,
     recordNoteAnswer,
     recordRecentNote,
+    onChallengeComplete: (answers, id) => practice.completeSeries({ id, score: answers.filter((answer) => answer.isCorrect).length, total: answers.length }),
   });
   const reviewNotes = mode === "review"
     ? getReviewNotes(activeClef, progress, activeReadingZone)
     : [];
 
   if (mode === "challenge" && session.challengeFinished) {
-    return <ResultPage answers={session.answers} onRestart={session.restartChallenge} />;
+    return <ResultPage answers={session.answers} onRestart={session.restartChallenge} reward={<PracticeReward summary={practice.summary} total={10} perfect={session.answers.every((answer) => answer.isCorrect)} storageAvailable={practice.storageAvailable && storageAvailable} />} />;
   }
 
   if (mode === "speed" && session.speedFailure) {

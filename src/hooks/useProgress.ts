@@ -1,15 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
-import type { Clef, NoteId } from "../domain/notes";
+import type { Clef, NoteId, ReadingZone } from "../domain/notes";
 import {
   LEGACY_PROGRESS_STORAGE_KEY,
   PROGRESS_STORAGE_KEY,
   normalizeProgress,
   recordAnswer,
   recordRecentQuestion,
+  recordReadingAward,
   resetProgress,
   setActiveClef,
   type ProgressState,
 } from "../domain/progress";
+import type { ChallengeAnswer } from "../domain/quiz";
 import { getPaletteForClef } from "../theme/tokens";
 import { parseStoredJson, useStorageSync } from "./useStorageSync";
 
@@ -36,13 +38,15 @@ function readStoredProgress(): ProgressState {
 function writeStoredProgress(progress: ProgressState) {
   try {
     window.localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(progress));
+    return true;
   } catch {
-    undefined;
+    return false;
   }
 }
 
 export function useProgress() {
   const [progress, setProgress] = useState<ProgressState>(() => readStoredProgress());
+  const [storageAvailable, setStorageAvailable] = useState(true);
 
   useStorageSync(PROGRESS_STORAGE_KEY, normalizeProgress, setProgress);
 
@@ -51,15 +55,16 @@ export function useProgress() {
       document.documentElement.dataset.palette = getPaletteForClef(progress.activeClef);
     }
 
-    writeStoredProgress(progress);
+    setStorageAvailable(writeStoredProgress(progress));
   }, [progress]);
 
   const switchActiveClef = useCallback((clef: Clef) => {
     setProgress((currentProgress) => setActiveClef(currentProgress, clef));
   }, []);
 
-  const recordNoteAnswer = useCallback((noteId: NoteId, isCorrect: boolean) => {
-    setProgress((currentProgress) => recordAnswer(currentProgress, currentProgress.activeClef, noteId, isCorrect));
+  const recordNoteAnswer = useCallback((noteId: NoteId, isCorrect: boolean, clef?: Clef) => {
+    const at = new Date().toISOString();
+    setProgress((currentProgress) => recordAnswer(currentProgress, clef ?? currentProgress.activeClef, noteId, isCorrect, at));
   }, []);
 
   const recordRecentNote = useCallback((noteId: NoteId) => {
@@ -70,12 +75,19 @@ export function useProgress() {
     setProgress((currentProgress) => resetProgress(currentProgress, currentProgress.activeClef));
   }, []);
 
+  const saveReadingAward = useCallback((clef: Clef, mode: "exam" | "fluency", answers: ChallengeAnswer[], medianMs: number | null, zone: ReadingZone = "full") => {
+    const at = new Date().toISOString();
+    setProgress((current) => recordReadingAward(current, clef, mode, answers, medianMs, at, zone));
+  }, []);
+
   return {
     progress,
+    storageAvailable,
     activeClef: progress.activeClef,
     switchActiveClef,
     recordNoteAnswer,
     recordRecentNote,
     resetStoredProgress,
+    saveReadingAward,
   };
 }

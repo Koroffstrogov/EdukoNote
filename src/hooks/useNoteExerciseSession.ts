@@ -10,6 +10,7 @@ import {
 } from "../domain/quiz";
 import type { ProgressState } from "../domain/progress";
 import { getSpeedTimeLimitSeconds, type SpeedFailure } from "../domain/speed";
+import { createNoteSessionId } from "./useJourneySession";
 
 const SPEED_TIMER_TICK_MS = 100;
 
@@ -20,6 +21,7 @@ type UseNoteExerciseSessionOptions = {
   activeReadingZone: ReadingZone;
   recordNoteAnswer: (noteId: NoteId, isCorrect: boolean) => void;
   recordRecentNote: (noteId: NoteId) => void;
+  onChallengeComplete?: (answers: ChallengeAnswer[], sessionId: string) => void;
 };
 
 export function useNoteExerciseSession({
@@ -29,7 +31,10 @@ export function useNoteExerciseSession({
   activeReadingZone,
   recordNoteAnswer,
   recordRecentNote,
+  onChallengeComplete,
 }: UseNoteExerciseSessionOptions) {
+  const sessionIdRef = useRef<string>();
+  if (!sessionIdRef.current) sessionIdRef.current = createNoteSessionId();
   const recentHistoryRef = useRef<NoteId[]>(
     mode === "speed" ? [] : progress.clefs[activeClef].recentHistory,
   );
@@ -177,8 +182,8 @@ export function useNoteExerciseSession({
     recordNoteAnswer(question.note.id, isCorrect);
 
     if (mode === "challenge") {
-      setAnswers((currentAnswers) => [
-        ...currentAnswers,
+      const completedAnswers = [
+        ...answers,
         {
           questionNumber,
           noteId: question.note.id,
@@ -186,7 +191,9 @@ export function useNoteExerciseSession({
           selectedLabel: answerLabel,
           isCorrect,
         },
-      ]);
+      ];
+      setAnswers(completedAnswers);
+      if (completedAnswers.length === NOTE_CHALLENGE_LENGTH) onChallengeComplete?.(completedAnswers, sessionIdRef.current!);
     }
   }
 
@@ -214,6 +221,7 @@ export function useNoteExerciseSession({
   }
 
   function nextQuestion() {
+    if (!answeredRef.current || challengeFinished) return;
     recordRecentNote(question.note.id);
 
     if (mode === "challenge" && questionNumber >= NOTE_CHALLENGE_LENGTH) {
@@ -239,6 +247,7 @@ export function useNoteExerciseSession({
   }
 
   function restartChallenge() {
+    sessionIdRef.current = createNoteSessionId();
     resetQuestionState("challenge");
     setAnswers([]);
     setQuestionNumber(1);

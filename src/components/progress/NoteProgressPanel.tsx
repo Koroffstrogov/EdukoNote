@@ -50,7 +50,7 @@ export function NoteProgressPanel({
         <span><strong>{notesToReview}</strong> à revoir</span>
         <span><strong>{totalViews}</strong> essais</span>
       </div>
-      <div className="studio-note-ledger" role="list" aria-label="Maîtrise des notes">
+      <div className="studio-note-ledger" role="list" aria-label="Résultats par nom de note">
         {progressByLabel.map(({ label, noteProgress }) => (
           <span
             key={label}
@@ -65,6 +65,7 @@ export function NoteProgressPanel({
           </span>
         ))}
       </div>
+      <a href="/journey">Voir les notes par octave et mes badges</a>
       {totalViews > 0 ? (
         <div className="button-row">
           <ResetProgressControl
@@ -107,7 +108,7 @@ function getProgressStatusLabel(noteProgress: NoteProgress): string {
   }
 
   if (noteProgress.correct > 0) {
-    return "acquise";
+    return "déjà retrouvée";
   }
 
   return "à découvrir";

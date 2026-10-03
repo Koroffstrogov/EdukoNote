@@ -6,18 +6,21 @@ import { HomeLauncherIcon } from "./HomeLauncherIcon";
 import { HomeModeTile } from "./HomeModeTile";
 import { HomeMusicScene } from "./HomeMusicScene";
 import { NotesModeDialog } from "./NotesModeDialog";
+import { DailyHomeCard } from "./DailyHomeCard";
+import type { PracticeSummary } from "../progress/PracticeReward";
 
 export type MobileHomeLauncherProps = {
   activeClef: Clef;
   notesToReview: number;
+  practice: PracticeSummary;
 };
 
-export function MobileHomeLauncher({ activeClef, notesToReview }: MobileHomeLauncherProps) {
+export function MobileHomeLauncher({ activeClef, notesToReview, practice }: MobileHomeLauncherProps) {
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const notesButtonRef = useRef<HTMLButtonElement>(null);
 
   return (
-    <main className="studio-shell aurora-shell mobile-home-launcher">
+    <main className="studio-shell aurora-shell mobile-home-launcher daily-home">
       <nav className="mobile-home-launcher__topbar" aria-label="Navigation principale">
         <SettingsButton />
       </nav>
@@ -30,15 +33,17 @@ export function MobileHomeLauncher({ activeClef, notesToReview }: MobileHomeLaun
           <ellipse cx="8" cy="27" rx="6" ry="4.5" transform="rotate(-18 8 27)" />
         </svg>
       </h1>
+      <DailyHomeCard summary={practice} />
 
       <section className="mobile-home-launcher__stage" aria-label="Démarrer une session">
         <HomeMusicScene />
         <a
           className="mobile-home-play"
-          href="/exercise?mode=training"
-          aria-label={`Jouer les notes en ${CLEF_LABELS[activeClef]}`}
+          href="/journey?play=daily"
+          aria-label={`Commencer ma série du jour en ${CLEF_LABELS[activeClef]}`}
         >
-          <span>Jouer</span>
+          <span>10 notes</span>
+          <small>Ma série du jour</small>
           <AuroraMenuIcon name="play" />
         </a>
       </section>

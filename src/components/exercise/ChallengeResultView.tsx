@@ -1,4 +1,5 @@
 import { AppButton } from "../ui/AppButton";
+import { useEffect, useRef, type ReactNode } from "react";
 import { StudioTrack } from "../ui/StudioTrack";
 import { ExercisePageLayout } from "./ExercisePageLayout";
 
@@ -14,6 +15,8 @@ type ChallengeResultViewProps = {
   reviewTitle: string;
   reviewItems: string[];
   onRestart: () => void;
+  reward?: ReactNode;
+  perfectMessage?: string;
 };
 
 export function ChallengeResultView({
@@ -25,12 +28,16 @@ export function ChallengeResultView({
   reviewTitle,
   reviewItems,
   onRestart,
+  reward,
+  perfectMessage = "Cette série est sans faute",
 }: ChallengeResultViewProps) {
   const heading = getResultHeading(score, total);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  useEffect(() => { titleRef.current?.focus(); }, []);
 
   return (
     <ExercisePageLayout
-      className="studio-result-shell aurora-result-shell"
+      className={`studio-result-shell aurora-result-shell${reward ? " has-practice-reward" : ""}`}
       eyebrow={eyebrow}
       navLabel="Accueil"
     >
@@ -41,7 +48,7 @@ export function ChallengeResultView({
             <strong>{score}</strong>
             <span>/{total}</span>
           </p>
-          <h1 className="studio-result-title" id="challenge-result-title">
+          <h1 className="studio-result-title" id="challenge-result-title" ref={titleRef} tabIndex={-1}>
             {heading}
           </h1>
           <p className="studio-result-lead">
@@ -52,6 +59,7 @@ export function ChallengeResultView({
             results={resultStates}
             label={`${score} ${score === 1 ? "réponse juste" : "réponses justes"} sur ${total}`}
           />
+          {reward}
           <div className="studio-result-actions">
             <AppButton className="studio-primary-action" tone="plum" onClick={onRestart}>
               Rejouer la série
@@ -83,7 +91,7 @@ export function ChallengeResultView({
               ))}
             </ol>
           ) : (
-            <p className="studio-complete-stamp">Tout est maîtrisé</p>
+            <p className="studio-complete-stamp">{perfectMessage}</p>
           )}
         </section>
       </div>

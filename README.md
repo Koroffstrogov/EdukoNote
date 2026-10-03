@@ -6,6 +6,7 @@ PWA d'apprentissage musical en français, conçue pour l'iPhone et utilisable su
 
 - Lecture en clés de Sol, Fa et Ut 4, avec choix de la zone par clé et accès rapide en entraînement ou révision.
 - Notes : entraînement progressif, défi de 10 questions, révision des erreurs et mode Vitesse.
+- [Parcours quotidien](docs/DAILY_PRACTICE.md) : dix notes suffisent pour valider la journée, jours consécutifs, étoiles sans faute, badges par note et octave, mini-examen et lecture fluide.
 - Symboles : entraînement, défi de 10 questions et révision.
 - Piano : lecture sur clavier et jeu libre polyphonique Do4–Si5, avec glissement, accords et vue « Grandes touches » sur une octave.
 - Rythmes : « Garde la pulsation », « Écho rythmique » et « Lis et frappe » sur un moteur commun, réglages rapides et progression locale ; [vingt formules à confronter au cours](docs/RHYTHMS.md).
@@ -41,7 +42,7 @@ Ouvrir `http://localhost:4173/`. Le service worker est activé uniquement en pro
 | [public/sw.js](public/sw.js), [public](public) | Cache hors ligne, manifest, icônes et police musicale locale. |
 | [scripts](scripts) | Contrôles du design et scénarios navigateur. Les tests unitaires et de composants sont placés près du code dans `src/`. |
 
-Routes utiles : `/exercise?mode=training`, `/symbols`, `/piano`, `/piano/play`, `/rhythms`, `/settings` et `/styleguide`. Les modes des exercices sont définis dans les pages correspondantes.
+Routes utiles : `/journey` (parcours), `/journey?play=daily` (série du jour), `/exercise?mode=training`, `/symbols`, `/piano`, `/piano/play`, `/rhythms`, `/settings` et `/styleguide`. Les modes des exercices sont définis dans les pages correspondantes.
 
 ## Données locales
 
@@ -49,14 +50,15 @@ Les clés `localStorage` et leurs formats sont définis dans les modules suivant
 
 | Données | Clé | Source |
 | --- | --- | --- |
-| Notes, par clé musicale | `edukonote.progress.v2` | [progress.ts](src/domain/progress.ts) |
+| Notes, confirmations par octave, badges et passeport par clé, vitesse par zone | `edukonote.progress.v2` | [progress.ts](src/domain/progress.ts) |
+| Journées de lecture et séries sans faute | `edukonote.practiceDays.v1` | [practiceDays.ts](src/domain/practiceDays.ts) |
 | Piano pédagogique, par clé et écriture musicale | `edukonote.pianoProgress.v1` | [pianoProgress.ts](src/domain/pianoProgress.ts) |
 | Symboles | `edukonote.symbolProgress.v1` | [symbolProgress.ts](src/domain/symbolProgress.ts) |
 | Zones de lecture | `edukonote.settings.v1` | [settings.ts](src/domain/settings.ts) |
 | Rythmes, par exercice, formule, tempo et aides | `edukonote.rhythmProgress.v1` | [rhythmProgress.ts](src/domain/rhythmProgress.ts) |
 | Derniers réglages de rythmes | `edukonote.rhythmSettings.v1` | [rhythmExercise.ts](src/domain/rhythmExercise.ts) |
 
-L'ancienne progression `edukonote.progress.v1` est migrée vers la clé de Sol du format actuel. Le jeu libre ne sauvegarde aucune progression. Rythmes enregistre uniquement les séances terminées ; son bouton de remise à zéro ne touche pas les autres exercices. Une mise à jour du cache applicatif conserve ces données ; leur suppression par l'utilisateur ou leur purge par le navigateur les efface.
+L'ancienne progression `edukonote.progress.v1` est migrée vers la clé de Sol du format actuel. Les nouveaux repères complètent les compteurs Notes existants sans inventer de dates de pratique. Réinitialiser les notes d'une clé efface ses repères et récompenses ; l'historique des journées reste conservé. Le jeu libre ne sauvegarde aucune progression. Rythmes enregistre uniquement les séances terminées ; son bouton de remise à zéro ne touche pas les autres exercices. Une mise à jour du cache applicatif conserve ces données ; leur suppression par l'utilisateur ou leur purge par le navigateur les efface.
 
 ## Contribuer
 

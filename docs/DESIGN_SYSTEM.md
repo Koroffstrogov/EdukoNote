@@ -33,5 +33,6 @@ La [provenance de la police](../public/fonts/README.md) et sa [licence](../publi
 - La surface visible détermine la touche jouée : le blanc sous une noire reste jouable. Les appuis et les accords ne déplacent pas le clavier.
 - En jeu libre, bloquer la sélection de texte et les menus d'appui long sur l'ensemble de l'écran. Limiter ce blocage global à ce mode.
 - En Rythmes, réserver le blocage des gestes à la zone de frappe. Pendant une séance, garder Réglages, la zone de frappe et Arrêter visibles ; sur un écran court, regrouper les repères de pulsation sur une ligne et afficher une mesure de lecture à la fois. Le catalogue et les résultats peuvent défiler.
+- Dans le [parcours quotidien](DAILY_PRACTICE.md), distinguer journée terminée, série sans faute et confirmations par note. Garder un ton encourageant après une erreur ou une absence. Les sept réponses et l'action suivante restent visibles en portrait compact ; le bilan place la récompense avant les actions, avec un score compact sur mobile. Les détails du parcours peuvent défiler.
 
 Les contrôles visuels, tactiles et iPhone sont regroupés dans le [guide de validation](VALIDATION.md).

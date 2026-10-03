@@ -23,13 +23,14 @@ afterEach(() => {
 });
 
 describe("Aurora Session", () => {
-  it("presents the home page as one play action and six session modes", () => {
+  it("presents the home page as a daily action while retaining all existing modes", () => {
     render(<HomePage />);
 
-    expect(screen.getByRole("heading", { level: 1, name: "Entre dans le rythme" })).toBeTruthy();
+    expect(screen.getByRole("heading", { level: 1, name: "Un peu chaque jour" })).toBeTruthy();
     expect(screen.getByRole("heading", { level: 2, name: "Ta prochaine session" })).toBeTruthy();
     const destinations = [
-      ["Lancer l’entraînement", "/exercise?mode=training"],
+      ["Commencer ma série du jour", "/journey?play=daily"],
+      ["Entraînement libre", "/exercise?mode=training"],
       ["Défi 10 notes", "/exercise?mode=challenge"],
       ["Révision", "/exercise?mode=review"],
       ["Vitesse", "/exercise?mode=speed"],
@@ -48,8 +49,8 @@ describe("Aurora Session", () => {
       .map((icon) => icon.dataset.auroraIcon)
       .filter((name) => !["arrow", "complete", "review-needed", "undiscovered"].includes(name ?? ""));
 
-    expect(decorativeIconNames).toEqual(["play", "note", "challenge", "review", "speed", "symbols", "piano", "rhythm"]);
-    expect(document.querySelectorAll('.aurora-home [data-aurora-icon="arrow"]')).toHaveLength(6);
+    expect(decorativeIconNames).toEqual(["play", "note", "challenge", "note", "challenge", "review", "speed", "symbols", "piano", "rhythm"]);
+    expect(document.querySelectorAll('.aurora-home [data-aurora-icon="arrow"]')).toHaveLength(8);
     expect(document.querySelectorAll('.aurora-home [data-aurora-icon="undiscovered"]')).toHaveLength(7);
     expect(screen.queryByText("♪")).toBeNull();
   });
@@ -217,7 +218,7 @@ describe("Aurora Session", () => {
 
     expect(screen.getByRole("heading", { level: 1, name: "Sans faute !" })).toBeTruthy();
     expect(screen.getByText("10 notes trouvées sur 10.")).toBeTruthy();
-    expect(screen.getByText("Tout est maîtrisé")).toBeTruthy();
+    expect(screen.getByText("Cette série est sans faute")).toBeTruthy();
   });
 
   it("shares the result ticket with the symbol challenge", () => {

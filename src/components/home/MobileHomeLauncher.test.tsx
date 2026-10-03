@@ -30,8 +30,8 @@ describe("mobile Aurora home launcher", () => {
     render(<HomePage />);
 
     expect(screen.getByRole("heading", { level: 1, name: "EdukoNote" })).toBeTruthy();
-    expect(screen.getByRole("link", { name: "Jouer les notes en Clé de Sol" }).getAttribute("href"))
-      .toBe("/exercise?mode=training");
+    expect(screen.getByRole("link", { name: "Commencer ma série du jour en Clé de Sol" }).getAttribute("href"))
+      .toBe("/journey?play=daily");
 
     const activityNavigation = screen.getByRole("navigation", { name: "Choisir une activité" });
     const activityControls = activityNavigation.querySelectorAll("a, button");
